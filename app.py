@@ -1,10 +1,30 @@
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from openai import OpenAI
 from pydantic import BaseModel
+
+import branding
+
+ROOT = Path(__file__).resolve().parent
+INDEX_PATH = ROOT / "templates" / "index.html"
+
+
+def render_index() -> str:
+    html = INDEX_PATH.read_text(encoding="utf-8")
+    return (
+        html.replace("{{PAGE_TITLE}}", branding.PAGE_TITLE)
+        .replace("{{PRODUCT_NAME}}", branding.PRODUCT_NAME)
+        .replace("{{PRODUCT_SUBTITLE}}", branding.PRODUCT_SUBTITLE)
+        .replace("{{HERO_TITLE}}", branding.HERO_TITLE)
+        .replace("{{HERO_LEAD}}", branding.HERO_LEAD)
+        .replace("{{FOOTER_TEXT}}", branding.FOOTER_TEXT)
+        .replace("{{EVENT_PILL}}", branding.EVENT_PILL)
+    )
 
 if os.path.isfile(".env.local"):
     load_dotenv(".env.local")  # on Vercel, values come from project Environment Variables
@@ -64,29 +84,9 @@ def chat(req: ChatRequest):
         )
 
 
-PAGE = """<!doctype html>
-<html><body style="max-width:640px;margin:40px auto;font-family:sans-serif">
-  <h1>Agent-a-thon</h1>
-  <textarea id="q" rows="4" style="width:100%"></textarea>
-  <button id="ask">Ask</button>
-  <p id="reply" style="white-space:pre-wrap"></p>
-  <script>
-    document.getElementById("ask").onclick = async () => {
-      const btn = document.getElementById("ask");
-      btn.disabled = true; btn.textContent = "Thinking...";
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: document.getElementById("q").value }),
-      });
-      const data = await res.json();
-      document.getElementById("reply").textContent = data.reply ?? data.error;
-      btn.disabled = false; btn.textContent = "Ask";
-    };
-  </script>
-</body></html>"""
-
-
 @app.get("/", response_class=HTMLResponse)
 def home():
-    return PAGE
+    return render_index()
+
+
+app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")

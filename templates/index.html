@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>{{PAGE_TITLE}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/main.css?v=5" />
+    <script src="/static/js/theme.js?v=5" defer></script>
+  </head>
+  <body class="page">
+    <header class="site-header">
+      <div class="site-header__bar">
+        <div class="site-header__inner">
+          <a class="brand" href="/" aria-label="{{PRODUCT_NAME}} home">
+            <span class="brand__title">{{PRODUCT_NAME}}</span>
+            <span class="brand__subtitle">{{PRODUCT_SUBTITLE}}</span>
+          </a>
+          <div class="site-header__actions">
+            <button
+              type="button"
+              class="theme-toggle"
+              id="theme-toggle"
+              aria-label="Switch to dark theme"
+            >
+              <svg
+                class="theme-toggle__icon theme-toggle__icon--sun"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+              </svg>
+              <svg
+                class="theme-toggle__icon theme-toggle__icon--moon"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5z" />
+              </svg>
+            </button>
+            <span class="site-header__pill">{{EVENT_PILL}}</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="shell">
+        <div class="intro">
+          <h1 class="intro__title">{{HERO_TITLE}}</h1>
+          <p class="intro__lead">{{HERO_LEAD}}</p>
+        </div>
+
+        <article class="card">
+          <section class="card__section">
+            <form id="chat-form" novalidate>
+              <div class="field-group">
+                <label class="field-label" for="q">Your message</label>
+                <textarea
+                  id="q"
+                  class="field"
+                  name="message"
+                  rows="4"
+                  placeholder="What would you like to explore?"
+                  autocomplete="off"
+                ></textarea>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn--primary" id="ask">
+                  Send message
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="card__section" aria-live="polite">
+            <div class="reply-header">
+              <h2 class="reply-header__title">Response</h2>
+              <span class="reply-header__meta">From your assistant</span>
+            </div>
+            <p id="reply" class="reply is-empty" role="status"></p>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="site-footer">{{FOOTER_TEXT}}</footer>
+
+    <script src="/static/js/chat.js?v=5" defer></script>
+  </body>
+</html>

@@ -1,6 +1,6 @@
-# Agent-a-thon
+# Agent-a-thon (repo)
 
-Hackathon starter: **FastAPI** on Vercel, with LiteLLM for model access.
+Hackathon starter: **FastAPI** on Vercel, with LiteLLM for model access. The UI product name is a placeholder until you pick an idea — edit **`branding.py`** when ready.
 
 ## Quick start
 
@@ -10,4 +10,6 @@ Hackathon starter: **FastAPI** on Vercel, with LiteLLM for model access.
 
 See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for GitHub, Vercel, submit checklist, and troubleshooting.
 
-Official guide: https://ssi-ai-hackathon.vercel.app/guide
+**Hackathon links & checklist:** [HACKATHON.md](./HACKATHON.md)
+
+**UI:** See [FRONTEND.md](./FRONTEND.md) for colors, typography, and component rules.
