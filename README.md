@@ -1,4 +1,4 @@
-# Agent-a-thon (repo)
+# Agent-a-thon
 
 Hackathon starter: **FastAPI** on Vercel, with LiteLLM for model access. The UI product name is a placeholder until you pick an idea — edit **`branding.py`** when ready.
 
