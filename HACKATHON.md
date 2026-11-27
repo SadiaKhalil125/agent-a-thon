@@ -2,6 +2,33 @@
 
 Quick links, rules, rubric, ideas, and deadlines. Use this so you don’t re-paste portal URLs in chat.
 
+**Product (this repo):** **CompanyTwin AI** — fictional org **Northstar Systems**; disruption → multi-agent investigation → ≥2 recovery plans → verifier reject/revise → human approval → apply twin → verify outcome. **Build truth:** `AGENTS.md` + `docs/` (read order below).
+
+---
+
+## Project docs (repo — source of truth)
+
+| Read order | File | Contents |
+| --- | --- | --- |
+| 0 | [AGENTS.md](./AGENTS.md) | Entry point for Cursor/Claude: doc order, hard rules, active ticket |
+| 1 | [docs/PRD.md](./docs/PRD.md) | CompanyTwin: problem, Flow A, FR/NFR, acceptance, release gate |
+| 2 | [docs/architecture.md](./docs/architecture.md) | FastAPI; **solver owns all numbers**; **one agent step per request**; client-held `RunContext` |
+| 3 | [docs/design.md](./docs/design.md) | Single-page demo UI: state → event → agent trail → plans → approve → outcome |
+| 4 | [docs/rules.md](./docs/rules.md) | Engineering + AI guardrails (enforced) |
+| 5 | [docs/phases.md](./docs/phases.md) | P0–P6 phases; **TASK-001…023** + traceability |
+| 6 | [docs/memory.md](./docs/memory.md) | Verified implementation state (**active: TASK-001**, not started) |
+
+**Key architecture choices (memorize):**
+
+- **ADR-001:** `twin/solver.py` computes numbers; agents narrate only (no invented figures).
+- **ADR-002:** Browser loop — `POST /api/run/step` = **one** LiteLLM call; state in client (Vercel stateless / 5 min limit).
+- **Primary scenario:** dev unavailable days 1–5 → impact chain → wait / reassign backup / contractor; backup conflict on Project B.
+- **Replaces** current starter `/api/chat` + chat UI (see phases TASK-010+).
+
+**Ops:** LiteLLM key still TBD; P0/P1 (scaffold + solver) do **not** need the key. First real call target: **TASK-010** on Vercel.
+
+**Git note (per memory.md):** `docs/` and `AGENTS.md` may still be untracked — commit when you want the plan in history.
+
 ---
 
 ## Next steps (your checklist)
