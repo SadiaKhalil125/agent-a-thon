@@ -82,6 +82,11 @@ Based on: docs/PRD.md v0.2, docs/architecture.md v0.3, docs/design.md v0.1, docs
 | TASK-027a | UI: Connected Systems hub (tiles by tier, manifest chips, payload drawer) + event inbox preset cards | P5 | P2 | Planned | 002,015 (mock until 024/025) | FR-INT-001, FR-INT-003, FR-INT-006; AT-INT-006 |
 | TASK-027b | UI: integration-call chips in the agent trail + source links on evidence chips | P5 | P2 | Planned | 016 (mock until 025) | FR-INT-002, FR-INT-006; AT-INT-002, AT-INT-006 |
 | TASK-027c | UI: Action Center (dry-run grid, artifact cards, idempotency chips), audit log drawer, re-read confirmation | P5 | P2 | Planned | 018 (mock until 026) | FR-INT-004, FR-INT-005, FR-INT-006; AT-INT-004, AT-INT-005, AT-INT-006 |
+| TASK-029 | `datahub/`: schema, seeded generator, read-only `northstar.db` (CRM, engineering, HR, finance, delivery) + integrity tests | P6 | P1 | In progress | — | ADR-006 |
+| TASK-030 | Repository functions per department, data dictionary, guarded `run_sql` (`sqlguard`) + adversarial tests | P6 | P1 | Planned | 029 | ADR-006 |
+| TASK-031 | `/api/data/*` endpoints over the repository functions | P6 | P1 | Planned | 030 | ADR-006 |
+| TASK-032 | Chat LangGraph (Router, specialists with bounded tool loop, Synthesizer) + `POST /api/ask/stream` SSE + citation check | P6 | P1 | Planned | 030 | ADR-006 |
+| TASK-033 | "Ask the company" panel in the temporary demo page, real-model eval set, docs | P6 | P1 | Planned | 032 | ADR-006 |
 | TASK-028 | (Stretch) Tier-3 connectors: vendor management, spreadsheet read, meet transcript; `X-Simulate-Outage` honest degradation | — | P3 | Planned | 024,025 | FR-INT-001, FR-INT-006; AT-INT-006 |
 | TASK-S1 | (Stretch) Custom event params | — | P3 | Planned | 010 | FR-EVENT-003 |
 | TASK-S2 | (Stretch) Relationship graph view | — | P3 | Planned | 015 | FR-TWIN-003 |

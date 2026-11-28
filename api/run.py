@@ -14,6 +14,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from api.errors import ApiError
+from api.event import AnyEvent, twin_for
 from api.security import require_passcode
 from orchestration.runner import (
     NotConfiguredError,
@@ -27,6 +28,7 @@ router = APIRouter()
 
 class RunRequest(BaseModel):
     presetId: str = Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9_.-]+$")
+    event: AnyEvent | None = None  # a typed event: run the agents on the model built for it
 
 
 def sse(event: str, data: dict[str, Any]) -> str:
@@ -40,8 +42,9 @@ async def _frames(events: AsyncIterator[tuple[str, dict[str, Any]]]) -> AsyncIte
 
 @router.post("/api/run/stream", dependencies=[Depends(require_passcode)])
 async def run_stream(req: RunRequest) -> StreamingResponse:
+    twin = twin_for(req.presetId, req.event) if req.event is not None else None
     try:
-        prepared = prepare_run(req.presetId)
+        prepared = prepare_run(req.presetId, twin=twin)
     except UnknownPresetError:
         raise ApiError(400, "ValidationError", "Unknown presetId.") from None
     except NotConfiguredError:

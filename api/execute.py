@@ -17,6 +17,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 from api.errors import ApiError
+from api.event import AnyEvent, twin_for
 from api.state import StateResponse, build_state
 from twin import solver
 from twin.model import Twin
@@ -33,6 +34,7 @@ _Id = Annotated[str, Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9_.-
 class ApprovalRequest(BaseModel):
     presetId: _Id
     approvedPlanId: _Id
+    event: AnyEvent | None = None  # set when the plan belongs to a typed event
 
 
 class OutcomeRequest(ApprovalRequest):
@@ -73,7 +75,7 @@ def _check_schedule(twin: Twin, applied: AppliedState) -> None:
 
 @router.post("/api/execute")
 def execute(req: ApprovalRequest) -> dict[str, Any]:
-    twin = get_twin()
+    twin = twin_for(req.presetId, req.event)
     plan = approved_plan(twin, req.presetId, req.approvedPlanId)
     applied = solver.apply_plan(twin, req.presetId, plan.id)
     return {"applied": True, "twin": applied.model_dump(mode="json")}
@@ -81,7 +83,7 @@ def execute(req: ApprovalRequest) -> dict[str, Any]:
 
 @router.post("/api/outcome")
 def outcome(req: OutcomeRequest) -> dict[str, Any]:
-    twin = get_twin()
+    twin = twin_for(req.presetId, req.event)
     plan = approved_plan(twin, req.presetId, req.approvedPlanId)
     if req.twin is not None:
         _check_schedule(solver.effective_twin(twin, req.presetId), req.twin)

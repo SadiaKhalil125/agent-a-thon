@@ -77,6 +77,21 @@
   .company { display:flex; flex-wrap:wrap; gap:8px; margin:6px 0; }
   .chip { background:#fff; border:1px solid var(--line); border-radius:99px; padding:3px 12px; font-size:14px; }
   footer { color:var(--mute); font-size:14px; margin-top:30px; }
+  .askrow { display:flex; gap:8px; margin-top:10px; }
+  .askrow input { flex:1; font:inherit; padding:10px 14px; border-radius:9px; border:1px solid var(--line); background:#fff; }
+  .examples { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 4px; }
+  .examples button { font-size:14px; padding:4px 12px; border-radius:99px; color:var(--ink); }
+  hr.split { border:0; border-top:1px solid var(--line); margin:28px 0 14px; }
+  .msg { margin:10px 0; } .msg.you { text-align:right; }
+  .bubble { display:inline-block; max-width:100%; text-align:left; border-radius:12px; padding:10px 14px; white-space:pre-wrap; }
+  .you .bubble { background:var(--accent-soft); border:1px solid #ecd9c8; }
+  .bot .bubble { background:var(--card); border:1px solid var(--line); display:block; }
+  .cite { display:inline-block; font-size:11px; font-weight:600; color:var(--info); background:var(--info-soft); border-radius:99px; padding:0 6px; margin:0 1px; vertical-align:super; line-height:1.5; }
+  .tag { display:inline-block; font-size:12px; border-radius:99px; padding:1px 9px; margin-bottom:6px; }
+  .tag.gen { background:var(--warn-soft); color:var(--warn); } .tag.co { background:var(--ok-soft); color:var(--ok); }
+  .trace { margin-top:8px; font-size:14px; } .trace .step { padding:4px 0; border-top:1px solid var(--line); color:var(--mute); }
+  .trace code { background:#efede6; border-radius:4px; padding:0 4px; font-size:13px; color:var(--ink); }
+  .live { color:var(--info); font-size:15px; } .live .spinner { margin-right:6px; }
   [hidden] { display:none !important; }
 </style>
 </head>
@@ -93,6 +108,29 @@
 </header>
 
 <main class="wrap">
+  <section id="ask">
+    <h2>Ask the company anything</h2>
+    <p class="sub">Type a question in plain words. AI agents look up the company data (CRM, projects, people, finance) and answer with the evidence they used.</p>
+    <div id="chat"></div>
+    <form id="qa-form" class="askrow">
+      <input id="qa-input" type="text" maxlength="1000" autocomplete="off" placeholder="e.g. How many meetings do we have tomorrow?">
+      <button class="primary" id="qa-btn" type="submit">Ask</button>
+    </form>
+    <div class="examples" id="examples"></div>
+    <p class="sub" style="margin:8px 0 0">Or report something that happened, and the AI team works out the impact and recovery plans:</p>
+    <div class="examples" id="event-examples"></div>
+    <button class="link" id="qa-clear" type="button" hidden>Start a new conversation</button>
+  </section>
+  <hr class="split">
+  <section id="hooks">
+    <h2>Or let the connected systems tell the AI team</h2>
+    <p class="sub">Six simulated systems from six departments send events by themselves, each in its own format and signed like a real webhook. Send one and the AI team takes over, with no typing. Everything here is simulated and stays on this server.</p>
+    <div class="cards" id="hook-cards"></div>
+    <div id="hook-note"></div>
+  </section>
+  <hr class="split">
+  <p class="sub" style="margin-bottom:0"><b>Or watch the AI team handle a surprise.</b> This is a separate flow where a plan is recommended, double-checked and needs your approval.</p>
+
   <div class="steps" id="steps">
     <div data-n="1" class="on"><b>1</b>What happened</div>
     <div data-n="2"><b>2</b>AI team investigates</div>
@@ -133,7 +171,7 @@
 <script>
 "use strict";
 const $ = (id) => document.getElementById(id);
-const S = { data: null, presetId: null, plans: [], recommended: null, controller: null, passcodeRequired: false, running: false };
+const S = { data: null, base: null, event: null, origin: null, calendar: [], presetId: null, plans: [], recommended: null, controller: null, passcodeRequired: false, running: false };
 const log = [];
 
 function el(tag, attrs, ...kids) {
@@ -188,7 +226,7 @@ function renderCompany() {
 }
 async function loadState() {
   const r = await api("GET", "/api/state");
-  if (r.status === 200) { S.data = r.json; renderPresets(); renderCompany(); }
+  if (r.status === 200) { S.data = r.json; S.base = r.json; S.event = null; renderPresets(); renderCompany(); }
   else $("presets").append(el("div", { class: "box bad" }, "Could not load the company (HTTP " + r.status + "). " + (r.status === 401 ? "Enter the passcode at the top." : "")));
 }
 
@@ -240,16 +278,23 @@ function handle(ev, d) {
     renderPlans(d); setStep(3); $("s3").scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
-async function startRun(presetId) {
+const dayLabel = (iso) => new Date(iso + "T00:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+function calendarNote() {
+  if (!S.event || !S.calendar.length) return "";
+  return "Day numbers are working days (weekends and holidays skipped): day 1 = " + dayLabel(S.calendar[0]) + ", day 5 = " + dayLabel(S.calendar[4]) + ", day 10 = " + dayLabel(S.calendar[9]) + ".";
+}
+async function startRun(presetId, event) {
   if (S.running) return;
-  S.presetId = presetId; S.running = true; S.plans = [];
+  S.presetId = presetId; S.event = event || null; S.running = true; S.plans = [];
+  if (!event) S.origin = null;
+  if (!event && S.base && S.data !== S.base) { S.data = S.base; S.calendar = []; renderCompany(); }
   clear($("agents")); for (const k of Object.keys(rows)) delete rows[k]; seq = {}; log.length = 0; $("log").textContent = "";
-  setStep(2); say("Each specialist looks at the problem from its own side, then they hand over to the next.");
+  setStep(2); say((S.event ? (S.origin ? "This event arrived from " + S.origin + ". " : "Working on the event you reported. ") + "Using the real tickets, projects and budget. " : "") + "Each specialist looks at the problem from its own side, then they hand over to the next.");
   ORDER.forEach((n) => { const b = row(n + "#1", n, false); setRow(b, "", "waiting"); });
   $("s2").scrollIntoView({ behavior: "smooth", block: "start" });
   S.controller = new AbortController();
   try {
-    const res = await fetch("/api/run/stream", { method: "POST", headers: headers(), body: JSON.stringify({ presetId }), signal: S.controller.signal });
+    const res = await fetch("/api/run/stream", { method: "POST", headers: headers(), body: JSON.stringify(S.event ? { presetId, event: S.event } : { presetId }), signal: S.controller.signal });
     if (!res.ok || !res.body) { say("The server refused this run (HTTP " + res.status + "). " + (res.status === 401 ? "Enter the passcode at the top." : "Please try again."), "bad"); return; }
     const reader = res.body.getReader(), dec = new TextDecoder(); let buf = "";
     for (;;) {
@@ -285,10 +330,16 @@ function schedule(plan) {
   }
   return t;
 }
+function projectLabel(k) {
+  if (!S.event) return "Project " + k;
+  const known = (S.data?.projects || []).find((p) => p.id === "P-" + k);
+  if (known) return known.name;
+  return S.data?.presets?.[0]?.event?.demand?.taskName || "Project " + k;
+}
 const fact = (good, text) => el("li", { class: good ? "good" : "badf" }, el("span", { class: "ic" }, good ? "\u2713" : "\u2717"), el("span", {}, text));
 function planCard(p) {
   const rec = p.id === S.recommended, blocked = p.status === "rejected";
-  const done = Object.entries(p.projectCompletion || {}).map(([k, v]) => v === null ? "Project " + k + ": not finished in time" : "Project " + k + " finished on day " + v);
+  const done = Object.entries(p.projectCompletion || {}).map(([k, v]) => { const n = projectLabel(k); return v === null ? n + ": not finished in time" : n + " finished on day " + v; });
   const facts = el("ul", { class: "facts" },
     done.map((t) => fact(!t.includes("not finished"), t)),
     (p.deadlines || []).map((d) => fact(d.met, (d.name || "Deadline") + " (due day " + d.dueDay + "): " + (d.met ? "met" : "MISSED"))),
@@ -310,6 +361,7 @@ function renderPlans(done) {
   v.append(el("b", {}, "Safety check: "), blocked.length
     ? blocked.length + " plan(s) were blocked and cannot be approved. " + (done.verdict?.reason || "")
     : "No conflicts found. " + (done.verdict?.reason || ""));
+  if (calendarNote()) v.append(el("div", { class: "tagline" }, calendarNote()));
   const box = $("plans"); clear(box);
   [...S.plans].sort((a, b) => (b.id === S.recommended) - (a.id === S.recommended)).forEach((p) => box.append(planCard(p)));
 }
@@ -317,7 +369,7 @@ function renderPlans(done) {
 /* ---- approve and result ---- */
 async function approve(planId) {
   const plan = S.plans.find((p) => p.id === planId); const out = $("result"); clear(out);
-  const ex = await api("POST", "/api/execute", { presetId: S.presetId, approvedPlanId: planId });
+  const ex = await api("POST", "/api/execute", { presetId: S.presetId, approvedPlanId: planId, ...(S.event ? { event: S.event } : {}) });
   setStep(4); $("s4").scrollIntoView({ behavior: "smooth", block: "start" });
   if (ex.status !== 200) {
     out.append(el("div", { class: "result bad" }, el("h3", {}, "The system refused to apply \"" + (plan?.name || planId) + "\""),
@@ -326,7 +378,7 @@ async function approve(planId) {
     return;
   }
   const t = ex.json.twin;
-  const finished = Object.entries(t.projectCompletion).map(([k, d]) => el("li", {}, "Project " + k + (d === null ? " is not finished in time" : " finishes on working day " + d)));
+  const finished = Object.entries(t.projectCompletion).map(([k, d]) => el("li", {}, projectLabel(k) + (d === null ? " is not finished in time" : " finishes on working day " + d)));
   const late = (t.milestones || []).filter((m) => !m.met);
   out.append(el("div", { class: "result" }, el("h3", {}, "\u2713 Plan applied: " + (plan?.name || planId)),
     el("ul", {}, finished,
@@ -335,14 +387,152 @@ async function approve(planId) {
       el("li", {}, t.invoiceEligible ? "All client invoices can now be sent." : "Some client invoices stay blocked."),
       el("li", {}, (t.conflicts || []).length ? t.conflicts.length + " scheduling conflict(s) remain." : "No scheduling conflicts.")),
     el("p", { id: "outcome" }, "Checking the real result against the plan...")));
-  const o = await api("POST", "/api/outcome", { presetId: S.presetId, approvedPlanId: planId, twin: t });
+  const o = await api("POST", "/api/outcome", { presetId: S.presetId, approvedPlanId: planId, twin: t, ...(S.event ? { event: S.event } : {}) });
   $("outcome").textContent = o.json?.match ? "\u2713 The system re-checked the result and it matches exactly what the plan promised." : "\u2717 The re-check found a difference between the promise and the result.";
 }
 
-$("again").onclick = () => { setStep(1); window.scrollTo({ top: 0, behavior: "smooth" }); };
+/* ---- ask the company ---- */
+const EXAMPLES = [
+  "How many meetings do we have tomorrow?",
+  "How many discovery meetings are scheduled this month?",
+  "Which developers are overloaded?",
+  "List the 12 active projects and their health",
+  "Which invoices are overdue and how much is that?",
+  "Which departments are over budget?",
+  "Who is on leave next week?",
+];
+const chat = { history: [], busy: false };
+const AREA_LABEL = { orchestrator: "Orchestrator", synthesizer: "Answer writer" };
+function richText(text, parent) {
+  for (const part of String(text).split(/(\*\*[^*]+\*\*|\[c\d+\])/g)) {
+    if (!part) continue;
+    if (/^\[c\d+\]$/.test(part)) parent.append(el("span", { class: "cite", title: "Evidence " + part.slice(1, -1) }, part.slice(2, -1)));
+    else if (/^\*\*[^*]+\*\*$/.test(part)) parent.append(el("b", {}, part.slice(2, -2)));
+    else parent.append(document.createTextNode(part));
+  }
+}
+function argText(a) { return Object.entries(a || {}).map(([k, v]) => k + "=" + v).join(", "); }
+function addMsg(who) {
+  const bubble = el("div", { class: "bubble" });
+  const m = el("div", { class: "msg " + who }, bubble); $("chat").append(m); m.scrollIntoView({ block: "nearest" });
+  return { m, bubble };
+}
+async function ask(question) {
+  question = question.trim(); if (!question || chat.busy) return;
+  chat.busy = true; $("qa-btn").disabled = true; $("qa-input").value = ""; $("qa-clear").hidden = false;
+  const history = chat.history.slice(-6);
+  addMsg("you").bubble.textContent = question;
+  const bot = addMsg("bot"), live = el("div", { class: "live" }, el("span", { class: "spinner" }), el("span", {}, "Thinking..."));
+  const trace = el("div", { class: "trace" });
+  bot.bubble.append(live);
+  const calls = {}; let answered = null, failed = null;
+  const handle = (ev, d) => {
+    log.push(ev + " " + JSON.stringify(d).slice(0, 200));
+    if (ev === "node_started") live.lastChild.textContent = (AREA_LABEL[d.node] || d.role) + " is working...";
+    else if (ev === "node_completed") trace.append(el("div", { class: "step" }, el("b", {}, d.role + ": "), String(d.output).slice(0, 220) + (String(d.output).length > 220 ? "..." : "")));
+    else if (ev === "tool_call") { const s = el("div", { class: "step" }, "Looked up ", el("code", {}, d.tool), " (" + argText(d.arguments) + ") ... "); calls[d.callId] = s; trace.append(s); live.lastChild.textContent = "Looking up " + d.tool + "..."; }
+    else if (ev === "tool_result") { const s = calls[d.callId]; if (s) s.append(d.ok ? "evidence " + d.callId + ": " + (d.total ?? d.rowCount) + " result(s)" + (d.truncated ? " (partial list)" : "") : "refused: " + d.error); }
+    else if (ev === "answer") answered = d;
+    else if (ev === "failed") failed = d;
+  };
+  try {
+    const res = await fetch("/api/ask/stream", { method: "POST", headers: headers(), body: JSON.stringify({ question, history }) });
+    if (!res.ok || !res.body) failed = { message: res.status === 401 ? "Enter the passcode at the top." : res.status === 503 ? "The AI is not connected on the server." : "The server refused this question (HTTP " + res.status + ")." };
+    else {
+      const reader = res.body.getReader(), dec = new TextDecoder(); let buf = "";
+      for (;;) {
+        const { value, done } = await reader.read(); if (done) break;
+        buf += dec.decode(value, { stream: true }); let i;
+        while ((i = buf.indexOf("\n\n")) >= 0) {
+          const frame = buf.slice(0, i); buf = buf.slice(i + 2); let ev = "message", data = "";
+          for (const line of frame.split("\n")) { if (line.startsWith("event:")) ev = line.slice(6).trim(); else if (line.startsWith("data:")) data += line.slice(5).trim(); }
+          if (data) { try { handle(ev, JSON.parse(data)); } catch (e) { log.push("parse_error " + e); } }
+        }
+      }
+    }
+  } catch (e) { failed = { message: "The connection was interrupted: " + e.message }; }
+  live.remove();
+  if (answered) {
+    const tagText = { general: "General answer, not from company data", event: "Event reported: starting the recovery flow", clarify: "Cannot start a recovery flow yet" }[answered.mode] || "From company data";
+    bot.bubble.append(el("div", { class: "tag " + (answered.mode === "company" || answered.mode === "event" ? "co" : "gen") }, tagText));
+    const body = el("div", {}); richText(answered.text, body); bot.bubble.append(body);
+    if ((answered.unverifiedNumbers || []).length) bot.bubble.append(el("div", { class: "box warn", style: "margin-top:8px" }, "Check these numbers yourself, they did not match any lookup result: " + answered.unverifiedNumbers.join(", ")));
+    if (trace.childNodes.length) bot.bubble.append(el("details", { class: "trace" }, el("summary", {}, "How the AI got this (" + (answered.citations || []).length + " evidence item(s))"), trace));
+    chat.history.push({ role: "user", content: question }, { role: "assistant", content: answered.text.slice(0, 900) });
+  } else {
+    bot.bubble.append(el("div", { class: "box bad" }, "No answer: " + (failed?.message || "the run ended without an answer") + " Nothing was made up."));
+    if (trace.childNodes.length) bot.bubble.append(el("details", { class: "trace" }, el("summary", {}, "What happened before it stopped"), trace));
+  }
+  chat.busy = false; $("qa-btn").disabled = false; $("qa-input").focus();
+  if (answered && answered.mode === "event" && answered.event) await runEvent(answered.event, bot.bubble);
+}
+/* A reported event: load the company model built for it, then run the AI team on it. */
+async function runEvent(event, bubble, origin) {
+  S.origin = origin || null;
+  if (S.running) { bubble.append(el("div", { class: "box warn" }, "A recovery run is already in progress. Wait for it to finish, then report the event again.")); return; }
+  const r = await api("POST", "/api/event/state", event);
+  if (r.status !== 200) {
+    bubble.append(el("div", { class: "box bad" }, "Could not start the recovery flow: " + (r.json?.error || "HTTP " + r.status) + " Nothing was made up."));
+    return;
+  }
+  S.data = r.json.state; S.calendar = r.json.calendar || [];
+  renderCompany();
+  await startRun(r.json.presetId, event);
+}
+const EVENT_EXAMPLES = [
+  "Camila Kamara is on leave for the next 6 days",
+  "Marcus Lee is on leave for 3 days starting tomorrow",
+  "Pablo Schmidt is sick for the next 4 days",
+  "Quinn Okafor is out for 5 days starting Thursday",
+];
+EXAMPLES.forEach((q) => $("examples").append(el("button", { type: "button", onclick: () => ask(q) }, q)));
+EVENT_EXAMPLES.forEach((q) => $("event-examples").append(el("button", { type: "button", onclick: () => ask(q) }, q)));
+$("qa-form").onsubmit = (e) => { e.preventDefault(); ask($("qa-input").value); };
+$("qa-clear").onclick = () => { clear($("chat")); chat.history = []; $("qa-clear").hidden = true; };
+
+/* ---- connected systems: signed webhooks ---- */
+async function loadHooks() {
+  const r = await api("GET", "/api/webhooks/samples");
+  const box = $("hook-cards"); clear(box);
+  if (r.status !== 200) { box.append(el("div", { class: "box bad" }, "Could not load the connected systems (HTTP " + r.status + ")." + (r.status === 401 ? " Enter the passcode at the top." : ""))); return; }
+  for (const s of r.json) {
+    box.append(el("div", { class: "card" },
+      el("h3", {}, s.title),
+      el("div", { class: "tagline" }, s.system + " \u00b7 " + s.department + " (simulated)"),
+      el("p", {}, s.description),
+      el("details", {}, el("summary", {}, "Show the message this system sends"),
+        el("pre", {}, JSON.stringify(s.payload, null, 2)),
+        el("div", { class: "sub", style: "margin:4px 0 0; font-size:13px; word-break:break-all" }, "X-Demo-Signature: " + s.signature)),
+      el("div", { style: "display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:auto" },
+        el("button", { class: "primary", onclick: () => sendHook(s, false) }, "Send this webhook"),
+        el("button", { class: "link", onclick: () => sendHook(s, true) }, "Send a copy edited in transit"))));
+  }
+}
+async function sendHook(s, tampered) {
+  if (S.running) return;
+  const note = $("hook-note"); clear(note);
+  note.append(el("div", { class: "live", style: "margin:12px 0" }, el("span", { class: "spinner" }), el("span", {}, "Delivering to /api/webhooks/" + s.source + " ...")));
+  const res = await fetch("/api/webhooks/" + s.source, { method: "POST", headers: { ...headers(), "X-Demo-Signature": s.signature }, body: tampered ? s.tamperedBody : s.body });
+  let json = null; try { json = await res.json(); } catch { json = null; }
+  clear(note);
+  if (res.status === 401 && json?.code === "InvalidSignature") {
+    note.append(el("div", { class: "box bad", style: "margin:12px 0" }, el("b", {}, "Refused: signature does not match. "), "The body was changed after the sending system signed it, so the receiver ignored it and nothing was started. This is the safety check real webhooks use."));
+    return;
+  }
+  if (res.status !== 200) {
+    note.append(el("div", { class: "box " + (res.status === 409 ? "warn" : "bad"), style: "margin:12px 0" }, (json?.error || "The server refused this event (HTTP " + res.status + ").") + " Nothing was made up."));
+    return;
+  }
+  const lines = [el("div", {}, el("b", {}, "Signature verified (demo). "), json.summary)];
+  (json.fetched || []).forEach((f) => lines.push(el("div", { class: "sub", style: "margin:4px 0 0; font-size:14px" }, "Then fetched from " + f.system + ": " + f.method + " " + f.path + " \u2192 " + f.summary)));
+  lines.push(el("div", { class: "sub", style: "margin:4px 0 0; font-size:14px" }, "Starting the AI team on this event..."));
+  note.append(el("div", { class: "box ok", style: "margin:12px 0" }, lines));
+  await runEvent(json.event, note, s.system + " (" + s.department + ")");
+}
+$("again").onclick = () => { if (S.base) { S.data = S.base; S.event = null; renderPresets(); renderCompany(); } setStep(1); window.scrollTo({ top: 0, behavior: "smooth" }); };
 $("passcode").value = sessionStorage.getItem("ct-pass") || "";
 $("passcode").oninput = () => sessionStorage.setItem("ct-pass", $("passcode").value);
-loadHealth().then(loadState).then(() => {
+loadHealth().then(loadState).then(loadHooks).then(() => {
   const q = new URLSearchParams(location.search), want = q.get("preset");
   if (want && S.data?.presets.some((p) => p.id === want) && q.has("autorun")) startRun(want);
 });

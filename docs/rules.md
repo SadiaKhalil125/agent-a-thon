@@ -68,7 +68,8 @@ Based on: docs/PRD.md v0.2, docs/architecture.md v0.3, docs/design.md v0.1
 
 ## 5. Data handling
 
-- **No database, no persistence.** Seed lives in `data/seed/northstar.json`, read-only, validated on load (every invoice→milestone, every milestone→≥1 task, availability well-formed).
+- **Amendment (owner approved 2026-11-28, ADR-006, "Ask the company" chat path only; the recovery flow above is unchanged):** (1) a read-only SQLite file `data/company/northstar.db` is allowed (no runtime writes, no server state); (2) in the chat path every figure must come from a tool result (`datahub` repository functions or the guarded `run_sql`), never from the model's own arithmetic, and the answer must cite the tool calls it used; (3) the "one model call per node" rule becomes a **bounded tool loop per node** with a hard per-question budget (model calls and tool calls both capped); (4) `datahub/sqlguard.py` is a security boundary: SELECT only, one statement, table allow-list, row/length/time caps. Still true: no real data, key server-side only, honest `failed` events with no fabricated content.
+- **No database, no persistence** (recovery flow; see the amendment above for the chat path). Seed lives in `data/seed/northstar.json`, read-only, validated on load (every invoice→milestone, every milestone→≥1 task, availability well-formed).
 - **Fabricated/public data only** anywhere in repo, app, logs, tests, or fixtures (FR-SEC-002). No real client/customer/SSI data, ever, including for testing.
 - **Execution** mutates only the client's in-session working twin via the solver; **reset** restores the seed (FR-EXEC-004). Nothing is shared across users or requests.
 - No PII is collected from evaluators; no analytics in this release.

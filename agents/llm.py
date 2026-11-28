@@ -23,6 +23,7 @@ from langchain_core.callbacks import AsyncCallbackManagerForLLMRun, CallbackMana
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage, BaseMessage
 from langchain_core.outputs import ChatGeneration, ChatResult
+from langchain_core.runnables import Runnable
 from langchain_openai import ChatOpenAI
 from pydantic import Field, PrivateAttr, SecretStr
 
@@ -129,6 +130,28 @@ def invoke_model(model: BaseChatModel, messages: Sequence[BaseMessage]) -> str:
     return text
 
 
+async def ainvoke_message(model: Runnable[Any, Any], messages: Sequence[BaseMessage]) -> AIMessage:
+    """One model call that may answer with tool calls. Raises `UpstreamModelError` on failure.
+
+    Used by the tool-using chat specialists. An empty reply with no tool calls is a failure.
+    """
+    started = time.monotonic()
+    try:
+        response = await model.ainvoke(list(messages))
+    except Exception as exc:
+        raise _fail(started, exc, "invoke error") from None
+    if not isinstance(response, AIMessage):
+        raise _fail(started, None, "unexpected response type")
+    if not response.tool_calls and not _text_of(response):
+        raise _fail(started, None, "empty response")
+    return response
+
+
+def text_of(message: BaseMessage) -> str:
+    """The plain text of a model message."""
+    return _text_of(message)
+
+
 async def ainvoke_model(model: BaseChatModel, messages: Sequence[BaseMessage]) -> str:
     """Async twin of `invoke_model` (used by graph nodes so specialists can run in parallel)."""
     started = time.monotonic()
@@ -155,7 +178,8 @@ class ScriptedChatModel(BaseChatModel):
     responses: list[str] = Field(default_factory=lambda: ["ok"])
     fail_on_calls: list[int] = Field(default_factory=list)
     # Optional: choose the reply from the prompt instead of the call index (parallel-safe).
-    responder: Callable[[list[BaseMessage]], str] | None = None
+    # It may also return an `AIMessage` (use `tool_call_message`) to script a tool call.
+    responder: Callable[[list[BaseMessage]], str | AIMessage] | None = None
     _count: int = PrivateAttr(default=0)
     _prompts: list[str] = PrivateAttr(default_factory=list)
 
@@ -183,11 +207,17 @@ class ScriptedChatModel(BaseChatModel):
         self._prompts.append(_text_of(messages[-1]) if messages else "")
         if index in self.fail_on_calls:
             raise RuntimeError("simulated gateway failure")
+        reply: str | AIMessage
         if self.responder is not None:
-            text = self.responder(messages)
+            reply = self.responder(messages)
         else:
-            text = self.responses[min(index, len(self.responses) - 1)]
-        return ChatResult(generations=[ChatGeneration(message=AIMessage(content=text))])
+            reply = self.responses[min(index, len(self.responses) - 1)]
+        message = reply if isinstance(reply, AIMessage) else AIMessage(content=reply)
+        return ChatResult(generations=[ChatGeneration(message=message)])
+
+    def bind_tools(self, tools: Sequence[Any], **kwargs: Any) -> Runnable[Any, Any]:
+        """Accept tools like a real model does; the script decides whether to call any."""
+        return self
 
     async def _agenerate(
         self,
@@ -199,6 +229,11 @@ class ScriptedChatModel(BaseChatModel):
         return self._generate(messages, stop, None, **kwargs)
 
 
+def tool_call_message(name: str, args: dict[str, Any], call_id: str = "call_1") -> AIMessage:
+    """A scripted model reply that asks for one tool call (tests only)."""
+    return AIMessage(content="", tool_calls=[{"name": name, "args": args, "id": call_id}])
+
+
 __all__ = [
     "DEFAULT_TIMEOUT_SECONDS",
     "MAX_RETRIES",
@@ -206,9 +241,12 @@ __all__ = [
     "NotConfiguredError",
     "ScriptedChatModel",
     "UpstreamModelError",
+    "ainvoke_message",
     "ainvoke_model",
     "build_chat_model",
     "get_chat_model",
     "invoke_model",
     "override_chat_model",
+    "text_of",
+    "tool_call_message",
 ]

@@ -47,6 +47,7 @@ def test_home_page_is_the_guided_demo_even_on_vercel(monkeypatch: pytest.MonkeyP
     assert "engine test console" not in res.text
     assert "sk-" not in res.text
     assert "https://" not in res.text and "http://" not in res.text  # calls only this server
+    assert "/api/ask/stream" in res.text and "Ask the company anything" in res.text
 
 
 def test_console_page_holds_no_secret_and_only_calls_this_server() -> None:

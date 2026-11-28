@@ -50,6 +50,31 @@ def max_calls_per_run() -> int:
     return value if 0 <= value <= 50 else DEFAULT_MAX_CALLS_PER_RUN
 
 
+DEFAULT_CHAT_MAX_CALLS = 14  # orchestrator + up to 3 specialists x 4 rounds + synthesizer
+DEFAULT_CHAT_MAX_TOOL_CALLS = 24
+
+
+def _bounded_int(name: str, default: int, low: int, high: int) -> int:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    try:
+        value = int(raw)
+    except ValueError:
+        return default
+    return value if low <= value <= high else default
+
+
+def chat_max_calls() -> int:
+    """Model-call budget for one "Ask the company" question (`CHAT_MAX_CALLS`, 2 to 40)."""
+    return _bounded_int("CHAT_MAX_CALLS", DEFAULT_CHAT_MAX_CALLS, 2, 40)
+
+
+def chat_max_tool_calls() -> int:
+    """Data-tool-call budget for one question (`CHAT_MAX_TOOL_CALLS`, 1 to 60)."""
+    return _bounded_int("CHAT_MAX_TOOL_CALLS", DEFAULT_CHAT_MAX_TOOL_CALLS, 1, 60)
+
+
 DEFAULT_RUN_TIMEOUT_SECONDS = 240.0  # under Vercel's ~5-minute ceiling (NFR-PERF-001)
 
 
@@ -69,6 +94,19 @@ def demo_passcode() -> str | None:
     """Optional gate for the costly endpoints (`DEMO_PASSCODE`); unset or blank means open."""
     value = os.environ.get("DEMO_PASSCODE", "").strip()
     return value or None
+
+
+DEMO_WEBHOOK_SECRET = "northstar-simulated-webhook-demo"  # not a credential: it signs fake events
+
+
+def webhook_secret() -> bytes:
+    """Key for the simulated webhook signatures (`WEBHOOK_DEMO_SECRET` overrides the demo key).
+
+    The server both signs the sample events (playing the sending system) and verifies the inbox,
+    so this protects nothing real; it shows what a real HMAC check does.
+    """
+    value = os.environ.get("WEBHOOK_DEMO_SECRET", "").strip()
+    return (value or DEMO_WEBHOOK_SECRET).encode()
 
 
 def dev_console_enabled() -> bool:

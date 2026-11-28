@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from api.webhooks import router as webhooks_router
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -10,9 +11,12 @@ from pydantic import BaseModel, Field
 
 import branding
 import config
+from api.ask import router as ask_router
+from api.data import router as data_router
 from api.devconsole import demo_html
 from api.devconsole import router as devconsole_router
 from api.errors import register_error_handlers
+from api.event import router as event_router
 from api.execute import router as execute_router
 from api.integrations import router as integrations_router
 from api.run import router as run_router
@@ -47,6 +51,10 @@ app.include_router(run_router)
 app.include_router(execute_router)
 app.include_router(integrations_router)
 app.include_router(devconsole_router)
+app.include_router(data_router)
+app.include_router(ask_router)
+app.include_router(event_router)
+app.include_router(webhooks_router)
 
 
 class ChatRequest(BaseModel):
