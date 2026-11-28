@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-from api.webhooks import router as webhooks_router
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -22,6 +21,7 @@ from api.integrations import router as integrations_router
 from api.run import router as run_router
 from api.security import SecurityMiddleware, require_passcode
 from api.state import router as state_router
+from api.webhooks import router as webhooks_router
 
 ROOT = Path(__file__).resolve().parent
 INDEX_PATH = ROOT / "templates" / "index.html"
