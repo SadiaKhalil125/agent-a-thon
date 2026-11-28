@@ -19,9 +19,17 @@ router = APIRouter()
 CONSOLE_PATH = Path(__file__).resolve().parent.parent / "devconsole" / "index.html"
 
 
+DEMO_PATH = Path(__file__).resolve().parent.parent / "devconsole" / "demo.html"
+
+
 def console_html() -> str:
-    """The console page. Also served at `/` for now (see `app.home`) so it opens on Vercel."""
+    """The full engine test console (served at /dev)."""
     return CONSOLE_PATH.read_text(encoding="utf-8")
+
+
+def demo_html() -> str:
+    """The simple guided demo page. Served at `/` for now (see `app.home`) so it opens on Vercel."""
+    return DEMO_PATH.read_text(encoding="utf-8")
 
 
 @router.get("/dev", response_class=HTMLResponse, include_in_schema=False)
@@ -31,4 +39,4 @@ def dev_console() -> str:
     return console_html()
 
 
-__all__ = ["console_html", "router"]
+__all__ = ["console_html", "demo_html", "router"]

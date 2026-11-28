@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 
 import branding
 import config
-from api.devconsole import console_html
+from api.devconsole import demo_html
 from api.devconsole import router as devconsole_router
 from api.errors import register_error_handlers
 from api.execute import router as execute_router
@@ -92,10 +92,11 @@ def chat(req: ChatRequest):
 
 @app.get("/", response_class=HTMLResponse)
 def home():
-    # TEMPORARY (owner decision): the engine test console is the home page so it opens on Vercel,
-    # where /dev is hidden. Person B: when the product UI is ready, return render_index() here
-    # again and delete devconsole/, api/devconsole.py and tests/test_devconsole.py.
-    return console_html()
+    # TEMPORARY (owner decision): a simple guided demo page is the home page so it opens on Vercel
+    # (the full test console at /dev is hidden there). Person B: when the product UI is ready,
+    # return render_index() here again and delete devconsole/, api/devconsole.py and
+    # tests/test_devconsole.py.
+    return demo_html()
 
 
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")

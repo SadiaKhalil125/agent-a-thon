@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CompanyTwin AI - guided demo</title>
+<style>
+  :root { --bg:#f6f5f1; --card:#fff; --ink:#1c1c1a; --mute:#6a6a63; --line:#e1dfd7;
+          --accent:#8a4b1f; --accent-soft:#fbf3ec; --ok:#1b7f4b; --ok-soft:#e8f5ee; --bad:#b3261e; --bad-soft:#fdeeed;
+          --info:#1f5a8a; --info-soft:#e9f1f8; --warn:#a15c00; --warn-soft:#fdf4e3; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:17px/1.55 system-ui, "Segoe UI", sans-serif; background:var(--bg); color:var(--ink); }
+  header { background:#1c1c1a; color:#fff; padding:18px 22px; }
+  .wrap { max-width:860px; margin:0 auto; }
+  header .top { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  header h1 { margin:0; font-size:21px; }
+  header p { margin:6px 0 0; color:#d0d0c8; font-size:16px; }
+  #health { margin-left:auto; font-size:13px; padding:2px 10px; border-radius:99px; border:1px solid #666; color:#ddd; }
+  #health.ok { border-color:#58c08a; color:#58c08a; } #health.bad { border-color:#ff8a80; color:#ff8a80; }
+  #passcode-wrap { font-size:13px; color:#ddd; } #passcode-wrap input { font:inherit; font-size:13px; padding:3px 6px; border-radius:5px; border:1px solid #888; }
+  .steps { display:flex; gap:6px; margin:18px 0 6px; flex-wrap:wrap; }
+  .steps div { flex:1; min-width:150px; padding:8px 12px; border-radius:8px; background:#ebe9e1; color:var(--mute); font-size:14px; }
+  .steps div b { display:inline-flex; width:22px; height:22px; border-radius:50%; background:#cfcdc4; color:#fff; align-items:center; justify-content:center; margin-right:6px; font-size:13px; }
+  .steps div.on { background:var(--accent-soft); color:var(--ink); } .steps div.on b { background:var(--accent); }
+  .steps div.done b { background:var(--ok); }
+  main { padding:6px 22px 80px; }
+  section { margin:22px 0; }
+  h2 { font-size:22px; margin:0 0 4px; }
+  .sub { color:var(--mute); margin:0 0 14px; font-size:16px; }
+  .honest { background:var(--info-soft); border:1px solid #cfe0ef; border-radius:10px; padding:10px 14px; font-size:15px; margin-top:14px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(380px, 1fr)); gap:14px; }
+  @media (max-width:520px) { .cards { grid-template-columns:1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; gap:8px; }
+  .card h3 { margin:0; font-size:18px; }
+  .card p { margin:0; color:var(--mute); font-size:15px; }
+  .tagline { font-size:13px; color:var(--warn); }
+  button { font:inherit; padding:10px 18px; border-radius:9px; border:1px solid var(--line); background:#fff; cursor:pointer; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  button.link { border:0; background:none; color:var(--mute); text-decoration:underline; padding:4px 0; font-size:14px; }
+  .card button.primary { margin-top:auto; align-self:flex-start; }
+  .agent { background:var(--card); border:1px solid var(--line); border-left:6px solid var(--line); border-radius:10px; padding:12px 16px; margin:10px 0; }
+  .agent.running { border-left-color:var(--info); } .agent.done { border-left-color:var(--ok); }
+  .agent.rejected { border-left-color:var(--bad); } .agent.revised { border-left-color:var(--warn); } .agent.failed { border-left-color:var(--bad); background:var(--bad-soft); }
+  .agent .head { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .agent .name { font-weight:600; } .agent .job { color:var(--mute); font-size:15px; }
+  .status { margin-left:auto; font-size:13px; padding:1px 10px; border-radius:99px; border:1px solid var(--line); color:var(--mute); }
+  .running .status { color:var(--info); border-color:var(--info); } .done .status { color:var(--ok); border-color:var(--ok); }
+  .rejected .status, .failed .status { color:var(--bad); border-color:var(--bad); } .revised .status { color:var(--warn); border-color:var(--warn); }
+  .said { margin-top:8px; white-space:pre-wrap; font-size:16px; }
+  .said.clamp { max-height:4.7em; overflow:hidden; }
+  .ai-tag { font-size:12px; color:#fff; background:#5b3fa0; border-radius:99px; padding:1px 8px; }
+  .spinner { display:inline-block; width:12px; height:12px; border:2px solid var(--info); border-right-color:transparent; border-radius:50%; animation:spin .8s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .plans { display:grid; grid-template-columns:repeat(auto-fit, minmax(380px, 1fr)); gap:14px; }
+  .plan { position:relative; background:var(--card); border:2px solid var(--line); border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; gap:8px; }
+  .plan.rec { border-color:var(--ok); }
+  .plan.blocked { background:#faf8f6; border-style:dashed; }
+  .plan h3 { margin:0; font-size:18px; } .plan .sum { margin:0; color:var(--mute); font-size:15px; }
+  .ribbon { position:absolute; top:-12px; right:14px; background:var(--ok); color:#fff; font-size:13px; padding:2px 12px; border-radius:99px; }
+  .box { border-radius:8px; padding:8px 12px; font-size:15px; }
+  .box.bad { background:var(--bad-soft); color:var(--bad); } .box.warn { background:var(--warn-soft); color:var(--warn); } .box.ok { background:var(--ok-soft); color:var(--ok); }
+  ul.facts { list-style:none; margin:4px 0; padding:0; font-size:15px; }
+  ul.facts li { padding:3px 0; display:flex; gap:8px; } ul.facts .ic { width:18px; flex:none; font-weight:700; }
+  .good .ic { color:var(--ok); } .badf .ic { color:var(--bad); }
+  .verdict { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 16px; margin-bottom:16px; }
+  .result { background:var(--card); border:2px solid var(--ok); border-radius:12px; padding:18px 20px; }
+  .result.bad { border-color:var(--bad); }
+  .result h3 { margin:0 0 6px; font-size:20px; }
+  .result ul { margin:6px 0 10px 20px; padding:0; }
+  details { margin-top:8px; } summary { cursor:pointer; color:var(--mute); font-size:15px; }
+  table.tl { border-collapse:separate; border-spacing:2px; margin:6px 0; }
+  .tl th, .tl td { padding:0; width:20px; height:20px; text-align:center; font-size:10px; color:var(--mute); }
+  .tl td.name { width:auto; padding-right:8px; text-align:right; font-size:12px; color:var(--ink); white-space:nowrap; }
+  .tl td.cell { background:#eeede7; border-radius:3px; color:#fff; font-weight:600; }
+  pre { background:#1c1c1a; color:#e8e8e2; padding:10px; border-radius:6px; overflow:auto; max-height:260px; font-size:12px; }
+  .company { display:flex; flex-wrap:wrap; gap:8px; margin:6px 0; }
+  .chip { background:#fff; border:1px solid var(--line); border-radius:99px; padding:3px 12px; font-size:14px; }
+  footer { color:var(--mute); font-size:14px; margin-top:30px; }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <h1>CompanyTwin AI</h1>
+      <span id="passcode-wrap" hidden><label>Passcode <input id="passcode" type="password" size="10" autocomplete="off"></label></span>
+      <span id="health">checking...</span>
+    </div>
+    <p>Northstar Systems (a fictional company) just got a surprise. A team of AI agents works out what to do. You make the call.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="steps" id="steps">
+    <div data-n="1" class="on"><b>1</b>What happened</div>
+    <div data-n="2"><b>2</b>AI team investigates</div>
+    <div data-n="3"><b>3</b>You choose a plan</div>
+    <div data-n="4"><b>4</b>Result</div>
+  </div>
+
+  <section id="s1">
+    <h2>1. Pick something that just happened</h2>
+    <p class="sub">Each button starts the AI team on that situation. It takes about 10 to 20 seconds.</p>
+    <div class="cards" id="presets"></div>
+    <div class="honest"><b>What is real:</b> the words are written by a real AI model. Every number (days, costs, deadlines) is calculated by code and never by the AI. The company, people and systems are fictional.</div>
+    <details><summary>About the company</summary><div id="company" class="company"></div></details>
+  </section>
+
+  <section id="s2" hidden>
+    <h2>2. The AI team investigates</h2>
+    <p class="sub" id="s2-sub">Each specialist looks at the problem from its own side, then they hand over to the next.</p>
+    <div id="agents"></div>
+  </section>
+
+  <section id="s3" hidden>
+    <h2>3. Choose a plan</h2>
+    <div id="verdict" class="verdict"></div>
+    <div class="plans" id="plans"></div>
+  </section>
+
+  <section id="s4" hidden>
+    <h2>4. Result</h2>
+    <div id="result"></div>
+    <p style="margin-top:16px"><button id="again" class="primary">Try another situation</button></p>
+  </section>
+
+  <details><summary>For developers: raw events</summary><pre id="log"></pre></details>
+  <footer>Demo of an AI team that investigates, plans, double-checks and waits for a human to approve. All data is fabricated.</footer>
+</main>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const S = { data: null, presetId: null, plans: [], recommended: null, controller: null, passcodeRequired: false, running: false };
+const log = [];
+
+function el(tag, attrs, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) { if (k === "class") n.className = v; else if (k === "onclick") n.onclick = v; else n.setAttribute(k, v); }
+  for (const kid of kids.flat()) if (kid !== null && kid !== undefined && kid !== false) n.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  return n;
+}
+const clear = (n) => { while (n.firstChild) n.removeChild(n.firstChild); };
+const money = (n) => Number(n).toLocaleString("en-US") + " " + (S.data?.budget?.currency || "USD");
+function headers() { const h = { "Content-Type": "application/json" }; const p = $("passcode").value; if (p) h["X-Demo-Passcode"] = p; return h; }
+async function api(method, path, body) {
+  const res = await fetch(path, { method, headers: headers(), body: body ? JSON.stringify(body) : undefined });
+  const text = await res.text(); let json = null;
+  try { json = text ? JSON.parse(text) : null; } catch { json = null; }
+  return { status: res.status, json };
+}
+function setStep(n) {
+  document.querySelectorAll("#steps div").forEach((d) => { const k = Number(d.dataset.n); d.className = k < n ? "done" : k === n ? "on" : ""; });
+  $("s2").hidden = n < 2; $("s3").hidden = n < 3; $("s4").hidden = n < 4;
+}
+function say(text, kind) { $("s2-sub").textContent = text; $("s2-sub").style.color = kind === "bad" ? "var(--bad)" : ""; }
+
+/* ---- health and company ---- */
+async function loadHealth() {
+  const b = $("health");
+  try {
+    const h = (await api("GET", "/api/health")).json;
+    S.passcodeRequired = !!h.passcodeRequired; $("passcode-wrap").hidden = !S.passcodeRequired;
+    b.className = h.llm_configured ? "ok" : "bad";
+    b.textContent = h.llm_configured ? "Ready: real AI connected" : "AI not connected: runs will stop honestly";
+  } catch { b.className = "bad"; b.textContent = "Server unreachable"; }
+}
+const firstSentence = (t) => { const m = String(t || "").match(/^.*?[.?!](\s|$)/); return m ? m[0].trim() : String(t || ""); };
+function renderPresets() {
+  const box = $("presets"); clear(box);
+  for (const p of S.data.presets) {
+    const ask = p.event?.demand ? "A client wants " + p.event.demand.taskName + " in " + p.event.demand.days + " working days, worth " + p.event.demand.invoiceAmount + " " + p.event.demand.currency + "." : null;
+    box.append(el("div", { class: "card" },
+      el("h3", {}, p.label),
+      el("p", {}, ask || firstSentence(p.description)),
+      p.source ? el("div", { class: "tagline" }, "Arrives from: " + p.source.system.toUpperCase() + " (simulated)") : null,
+      el("button", { class: "primary", onclick: () => startRun(p.id) }, "See what the AI team recommends")));
+  }
+}
+function renderCompany() {
+  const d = S.data, box = $("company"); clear(box);
+  box.append(el("span", { class: "chip" }, d.company?.name || "Company"));
+  (d.people || []).forEach((p) => box.append(el("span", { class: "chip" }, p.name + (p.role ? " (" + p.role + ")" : ""))));
+  (d.milestones || []).forEach((m) => box.append(el("span", { class: "chip" }, (m.name || m.id) + " due day " + m.dueDay)));
+  (d.invoices || []).forEach((i) => box.append(el("span", { class: "chip" }, "Invoice " + money(i.amount))));
+}
+async function loadState() {
+  const r = await api("GET", "/api/state");
+  if (r.status === 200) { S.data = r.json; renderPresets(); renderCompany(); }
+  else $("presets").append(el("div", { class: "box bad" }, "Could not load the company (HTTP " + r.status + "). " + (r.status === 401 ? "Enter the passcode at the top." : "")));
+}
+
+/* ---- the AI team ---- */
+const NAMES = {
+  impact: ["Impact analyst", "What does this break?"],
+  hr_resource: ["People and capacity", "Who is free to help?"],
+  finance: ["Finance", "What will each option cost?"],
+  planner: ["Planner", "Puts the options on the table"],
+  verifier: ["Safety checker", "Is each plan safe? It can block plans."],
+};
+const ORDER = ["impact", "hr_resource", "finance", "planner", "verifier"];
+const rows = {}; let seq = {};
+function row(key, node, second) {
+  if (rows[key]) return rows[key];
+  const [name, job] = NAMES[node];
+  const status = el("span", { class: "status" }, "waiting");
+  const body = el("div", {});
+  const box = el("div", { class: "agent" }, el("div", { class: "head" }, el("span", { class: "name" }, name + (second ? " (again)" : "")), el("span", { class: "job" }, second && node === "planner" ? "Revises the plan the safety checker blocked" : second ? "Re-checks the revised plan" : job), status), body);
+  box._status = status; box._body = body; box._t0 = performance.now();
+  $("agents").append(box); rows[key] = box; return box;
+}
+function setRow(box, cls, label) { box.className = "agent " + cls; box._status.textContent = label; }
+function showSaid(box, text) {
+  clear(box._body);
+  const said = el("div", { class: "said clamp" }, text);
+  const tog = el("button", { class: "link", onclick: () => { const open = said.classList.toggle("clamp"); tog.textContent = open ? "Read more" : "Show less"; } }, "Read more");
+  box._body.append(el("span", { class: "ai-tag" }, "written by AI"), said, String(text).length > 160 ? tog : null);
+  if (String(text).length <= 160) said.classList.remove("clamp");
+}
+function handle(ev, d) {
+  log.push(ev + " " + JSON.stringify(d)); $("log").textContent = log.join("\n");
+  if (ev === "node_started") {
+    seq[d.node] = (seq[d.node] || 0) + 1;
+    const b = row(d.node + "#" + seq[d.node], d.node, seq[d.node] > 1);
+    setRow(b, "running", "working..."); clear(b._body); b._body.append(el("span", { class: "spinner" }));
+  } else if (ev === "node_completed") {
+    const b = row(d.node + "#" + (seq[d.node] || 1), d.node, (seq[d.node] || 1) > 1);
+    const secs = ((performance.now() - b._t0) / 1000).toFixed(1);
+    const st = d.status === "rejected" ? ["rejected", "blocked a plan (" + secs + " s)"] : d.status === "revised" ? ["revised", "revised (" + secs + " s)"] : ["done", "done (" + secs + " s)"];
+    setRow(b, st[0], st[1]); showSaid(b, d.output || "");
+  } else if (ev === "failed") {
+    const b = row("fail#1", d.node && NAMES[d.node] ? d.node : "impact", false);
+    setRow(b, "failed", "stopped"); clear(b._body);
+    b._body.append(el("div", { class: "said" }, "This step failed (" + (d.code || "error") + "): " + (d.message || "") + " Nothing was made up. Please try again."));
+    say("The run stopped because a step failed.", "bad");
+  } else if (ev === "done") {
+    S.plans = d.plans || []; S.recommended = d.recommendedPlanId || null;
+    renderPlans(d); setStep(3); $("s3").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+async function startRun(presetId) {
+  if (S.running) return;
+  S.presetId = presetId; S.running = true; S.plans = [];
+  clear($("agents")); for (const k of Object.keys(rows)) delete rows[k]; seq = {}; log.length = 0; $("log").textContent = "";
+  setStep(2); say("Each specialist looks at the problem from its own side, then they hand over to the next.");
+  ORDER.forEach((n) => { const b = row(n + "#1", n, false); setRow(b, "", "waiting"); });
+  $("s2").scrollIntoView({ behavior: "smooth", block: "start" });
+  S.controller = new AbortController();
+  try {
+    const res = await fetch("/api/run/stream", { method: "POST", headers: headers(), body: JSON.stringify({ presetId }), signal: S.controller.signal });
+    if (!res.ok || !res.body) { say("The server refused this run (HTTP " + res.status + "). " + (res.status === 401 ? "Enter the passcode at the top." : "Please try again."), "bad"); return; }
+    const reader = res.body.getReader(), dec = new TextDecoder(); let buf = "";
+    for (;;) {
+      const { value, done } = await reader.read(); if (done) break;
+      buf += dec.decode(value, { stream: true }); let i;
+      while ((i = buf.indexOf("\n\n")) >= 0) {
+        const frame = buf.slice(0, i); buf = buf.slice(i + 2); let ev = "message", data = "";
+        for (const line of frame.split("\n")) { if (line.startsWith("event:")) ev = line.slice(6).trim(); else if (line.startsWith("data:")) data += line.slice(5).trim(); }
+        if (data) { try { handle(ev, JSON.parse(data)); } catch (e) { log.push("parse_error " + e); } }
+      }
+    }
+  } catch (e) { if (e.name !== "AbortError") say("The connection was interrupted: " + e.message, "bad"); }
+  finally { S.running = false; }
+}
+
+/* ---- plans ---- */
+const COLORS = ["#8a4b1f", "#1f5a8a", "#5b3fa0", "#1b7f4b", "#a15c00"];
+const personName = (id) => (S.data?.people || []).find((p) => p.id === id)?.name || id;
+function schedule(plan) {
+  const horizon = Math.min(S.data?.horizonDays || 20, 20);
+  const ids = [...new Set(S.plans.flatMap((x) => (x.schedule || []).map((s) => s.taskId)))].sort();
+  const byPerson = {}; for (const s of plan.schedule || []) (byPerson[s.personId] ||= []).push(s);
+  const t = el("table", { class: "tl" }); const head = el("tr", {}, el("th", {}));
+  for (let d = 1; d <= horizon; d++) head.append(el("th", {}, d)); t.append(head);
+  for (const [pid, segs] of Object.entries(byPerson)) {
+    const r = el("tr", {}, el("td", { class: "name" }, personName(pid)));
+    for (let d = 1; d <= horizon; d++) {
+      const seg = segs.find((s) => d >= s.startDay && d <= s.endDay);
+      const c = el("td", { class: "cell", title: seg ? seg.taskId : "" }, seg ? seg.taskId.replace(/^T-/, "").slice(0, 3) : "");
+      if (seg) c.style.background = COLORS[ids.indexOf(seg.taskId) % COLORS.length]; r.append(c);
+    }
+    t.append(r);
+  }
+  return t;
+}
+const fact = (good, text) => el("li", { class: good ? "good" : "badf" }, el("span", { class: "ic" }, good ? "\u2713" : "\u2717"), el("span", {}, text));
+function planCard(p) {
+  const rec = p.id === S.recommended, blocked = p.status === "rejected";
+  const done = Object.entries(p.projectCompletion || {}).map(([k, v]) => v === null ? "Project " + k + ": not finished in time" : "Project " + k + " finished on day " + v);
+  const facts = el("ul", { class: "facts" },
+    done.map((t) => fact(!t.includes("not finished"), t)),
+    (p.deadlines || []).map((d) => fact(d.met, (d.name || "Deadline") + " (due day " + d.dueDay + "): " + (d.met ? "met" : "MISSED"))),
+    fact(p.budgetFit, "Extra cost " + money(p.incrementalCost) + (p.budgetFit ? ", within budget" : ", over budget")),
+    fact(p.invoiceEligible, p.invoiceEligible ? "Client invoices can be sent" : "Some client invoices stay blocked"));
+  return el("div", { class: "plan" + (rec ? " rec" : "") + (blocked ? " blocked" : "") },
+    rec ? el("div", { class: "ribbon" }, "AI recommends") : null,
+    el("h3", {}, p.name), el("p", { class: "sum" }, p.summary || ""),
+    blocked ? el("div", { class: "box bad" }, "Blocked by the safety check: " + ((p.violatedConstraints || []).join("; ") || "it has conflicts") + ".") : null,
+    p.status === "revised" ? el("div", { class: "box warn" }, "Revised after the safety checker blocked the first version.") : null,
+    facts,
+    el("details", {}, el("summary", {}, "Show who works when (by working day)"), schedule(p)),
+    blocked ? el("button", { class: "link", onclick: () => approve(p.id) }, "Try to approve it anyway (the system should refuse)")
+            : el("button", { class: "primary", onclick: () => approve(p.id) }, "Approve this plan"));
+}
+function renderPlans(done) {
+  const blocked = S.plans.filter((p) => p.status === "rejected");
+  const v = $("verdict"); clear(v);
+  v.append(el("b", {}, "Safety check: "), blocked.length
+    ? blocked.length + " plan(s) were blocked and cannot be approved. " + (done.verdict?.reason || "")
+    : "No conflicts found. " + (done.verdict?.reason || ""));
+  const box = $("plans"); clear(box);
+  [...S.plans].sort((a, b) => (b.id === S.recommended) - (a.id === S.recommended)).forEach((p) => box.append(planCard(p)));
+}
+
+/* ---- approve and result ---- */
+async function approve(planId) {
+  const plan = S.plans.find((p) => p.id === planId); const out = $("result"); clear(out);
+  const ex = await api("POST", "/api/execute", { presetId: S.presetId, approvedPlanId: planId });
+  setStep(4); $("s4").scrollIntoView({ behavior: "smooth", block: "start" });
+  if (ex.status !== 200) {
+    out.append(el("div", { class: "result bad" }, el("h3", {}, "The system refused to apply \"" + (plan?.name || planId) + "\""),
+      el("p", {}, ex.json?.error || "This plan did not pass the safety check."),
+      el("p", {}, "This is the approval gate working: a plan that fails the safety check can never be applied, even if someone clicks approve.")));
+    return;
+  }
+  const t = ex.json.twin;
+  const finished = Object.entries(t.projectCompletion).map(([k, d]) => el("li", {}, "Project " + k + (d === null ? " is not finished in time" : " finishes on working day " + d)));
+  const late = (t.milestones || []).filter((m) => !m.met);
+  out.append(el("div", { class: "result" }, el("h3", {}, "\u2713 Plan applied: " + (plan?.name || planId)),
+    el("ul", {}, finished,
+      el("li", {}, late.length ? late.length + " deadline(s) are still missed." : "Every client deadline is met."),
+      el("li", {}, "Extra cost: " + money(t.incrementalCost) + " (budget left: " + money(t.budgetRemaining) + ")."),
+      el("li", {}, t.invoiceEligible ? "All client invoices can now be sent." : "Some client invoices stay blocked."),
+      el("li", {}, (t.conflicts || []).length ? t.conflicts.length + " scheduling conflict(s) remain." : "No scheduling conflicts.")),
+    el("p", { id: "outcome" }, "Checking the real result against the plan...")));
+  const o = await api("POST", "/api/outcome", { presetId: S.presetId, approvedPlanId: planId, twin: t });
+  $("outcome").textContent = o.json?.match ? "\u2713 The system re-checked the result and it matches exactly what the plan promised." : "\u2717 The re-check found a difference between the promise and the result.";
+}
+
+$("again").onclick = () => { setStep(1); window.scrollTo({ top: 0, behavior: "smooth" }); };
+$("passcode").value = sessionStorage.getItem("ct-pass") || "";
+$("passcode").oninput = () => sessionStorage.setItem("ct-pass", $("passcode").value);
+loadHealth().then(loadState).then(() => {
+  const q = new URLSearchParams(location.search), want = q.get("preset");
+  if (want && S.data?.presets.some((p) => p.id === want) && q.has("autorun")) startRun(want);
+});
+</script>
+</body>
+</html>
