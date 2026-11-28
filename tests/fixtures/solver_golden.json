@@ -1,0 +1,3286 @@
+{
+  "client-meeting-loyalty": {
+    "applied": {
+      "plan-backup": {
+        "budgetRemaining": 2000,
+        "conflicts": [],
+        "incrementalCost": 0,
+        "invoiceEligible": true,
+        "milestones": [
+          {
+            "completionDay": 6,
+            "dueDay": 6,
+            "met": true,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 8,
+            "dueDay": 4,
+            "met": false,
+            "milestoneId": "M-B"
+          },
+          {
+            "completionDay": 6,
+            "dueDay": 8,
+            "met": true,
+            "milestoneId": "M-C"
+          }
+        ],
+        "planId": "plan-backup",
+        "presetId": "client-meeting-loyalty",
+        "projectCompletion": {
+          "A": 6,
+          "B": 8,
+          "C": 6
+        },
+        "schedule": [
+          {
+            "endDay": 4,
+            "personId": "PER-DEV1",
+            "startDay": 1,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 6,
+            "personId": "PER-QA",
+            "startDay": 5,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 8,
+            "personId": "PER-BACKUP",
+            "startDay": 7,
+            "taskId": "T-B-FIX"
+          },
+          {
+            "endDay": 6,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-C-LOY"
+          }
+        ]
+      },
+      "plan-backup-revised": {
+        "budgetRemaining": 2000,
+        "conflicts": [],
+        "incrementalCost": 0,
+        "invoiceEligible": true,
+        "milestones": [
+          {
+            "completionDay": 6,
+            "dueDay": 6,
+            "met": true,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 3,
+            "dueDay": 4,
+            "met": true,
+            "milestoneId": "M-B"
+          },
+          {
+            "completionDay": 8,
+            "dueDay": 8,
+            "met": true,
+            "milestoneId": "M-C"
+          }
+        ],
+        "planId": "plan-backup-revised",
+        "presetId": "client-meeting-loyalty",
+        "projectCompletion": {
+          "A": 6,
+          "B": 3,
+          "C": 8
+        },
+        "schedule": [
+          {
+            "endDay": 4,
+            "personId": "PER-DEV1",
+            "startDay": 1,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 6,
+            "personId": "PER-QA",
+            "startDay": 5,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          },
+          {
+            "endDay": 8,
+            "personId": "PER-BACKUP",
+            "startDay": 4,
+            "taskId": "T-C-LOY"
+          }
+        ]
+      },
+      "plan-contractor": {
+        "budgetRemaining": 500,
+        "conflicts": [],
+        "incrementalCost": 1500,
+        "invoiceEligible": true,
+        "milestones": [
+          {
+            "completionDay": 6,
+            "dueDay": 6,
+            "met": true,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 3,
+            "dueDay": 4,
+            "met": true,
+            "milestoneId": "M-B"
+          },
+          {
+            "completionDay": 5,
+            "dueDay": 8,
+            "met": true,
+            "milestoneId": "M-C"
+          }
+        ],
+        "planId": "plan-contractor",
+        "presetId": "client-meeting-loyalty",
+        "projectCompletion": {
+          "A": 6,
+          "B": 3,
+          "C": 5
+        },
+        "schedule": [
+          {
+            "endDay": 4,
+            "personId": "PER-DEV1",
+            "startDay": 1,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 6,
+            "personId": "PER-QA",
+            "startDay": 5,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          },
+          {
+            "endDay": 5,
+            "personId": "PER-CTR",
+            "startDay": 1,
+            "taskId": "T-C-LOY"
+          }
+        ]
+      },
+      "plan-wait": {
+        "budgetRemaining": 2000,
+        "conflicts": [],
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "milestones": [
+          {
+            "completionDay": 6,
+            "dueDay": 6,
+            "met": true,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 3,
+            "dueDay": 4,
+            "met": true,
+            "milestoneId": "M-B"
+          },
+          {
+            "completionDay": 9,
+            "dueDay": 8,
+            "met": false,
+            "milestoneId": "M-C"
+          }
+        ],
+        "planId": "plan-wait",
+        "presetId": "client-meeting-loyalty",
+        "projectCompletion": {
+          "A": 6,
+          "B": 3,
+          "C": 9
+        },
+        "schedule": [
+          {
+            "endDay": 4,
+            "personId": "PER-DEV1",
+            "startDay": 1,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 6,
+            "personId": "PER-QA",
+            "startDay": 5,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          },
+          {
+            "endDay": 9,
+            "personId": "PER-DEV1",
+            "startDay": 5,
+            "taskId": "T-C-LOY"
+          }
+        ]
+      }
+    },
+    "candidatePlans": [
+      {
+        "budgetFit": true,
+        "deadlines": [
+          {
+            "dueDay": 6,
+            "met": true,
+            "name": "Project A acceptance"
+          },
+          {
+            "dueDay": 4,
+            "met": true,
+            "name": "Project B delivery"
+          },
+          {
+            "dueDay": 8,
+            "met": false,
+            "name": "Project C delivery"
+          }
+        ],
+        "id": "plan-wait",
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "name": "Queue behind Dana Reyes's current work",
+        "projectCompletion": {
+          "A": 6,
+          "B": 3,
+          "C": 9
+        },
+        "revisesPlanId": null,
+        "schedule": [
+          {
+            "endDay": 4,
+            "personId": "PER-DEV1",
+            "startDay": 1,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 6,
+            "personId": "PER-QA",
+            "startDay": 5,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          },
+          {
+            "endDay": 9,
+            "personId": "PER-DEV1",
+            "startDay": 5,
+            "taskId": "T-C-LOY"
+          }
+        ],
+        "status": "proposed",
+        "summary": "Keep Loyalty API add-on with Dana Reyes and start as soon as their current work is done.",
+        "violatedConstraints": [
+          "Project C delivery (due day 8) is missed: finishes on day 9",
+          "Invoice INV-2 (6000 USD) is not eligible by day 8"
+        ]
+      },
+      {
+        "budgetFit": true,
+        "deadlines": [
+          {
+            "dueDay": 6,
+            "met": true,
+            "name": "Project A acceptance"
+          },
+          {
+            "dueDay": 4,
+            "met": false,
+            "name": "Project B delivery"
+          },
+          {
+            "dueDay": 8,
+            "met": true,
+            "name": "Project C delivery"
+          }
+        ],
+        "id": "plan-backup",
+        "incrementalCost": 0,
+        "invoiceEligible": true,
+        "name": "Reassign to Marcus Lee",
+        "projectCompletion": {
+          "A": 6,
+          "B": 8,
+          "C": 6
+        },
+        "revisesPlanId": null,
+        "schedule": [
+          {
+            "endDay": 4,
+            "personId": "PER-DEV1",
+            "startDay": 1,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 6,
+            "personId": "PER-QA",
+            "startDay": 5,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 8,
+            "personId": "PER-BACKUP",
+            "startDay": 7,
+            "taskId": "T-B-FIX"
+          },
+          {
+            "endDay": 6,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-C-LOY"
+          }
+        ],
+        "status": "proposed",
+        "summary": "Give Loyalty API add-on to Marcus Lee from their first free day, without regard to their existing bookings.",
+        "violatedConstraints": [
+          "Double-books Marcus Lee on day(s) 2-3: already assigned to Billing hotfix (Project B: Billing Hotfix), which then finishes on day 8 against its due day 4",
+          "Project B delivery (due day 4) is missed: finishes on day 8"
+        ]
+      },
+      {
+        "budgetFit": true,
+        "deadlines": [
+          {
+            "dueDay": 6,
+            "met": true,
+            "name": "Project A acceptance"
+          },
+          {
+            "dueDay": 4,
+            "met": true,
+            "name": "Project B delivery"
+          },
+          {
+            "dueDay": 8,
+            "met": true,
+            "name": "Project C delivery"
+          }
+        ],
+        "id": "plan-contractor",
+        "incrementalCost": 1500,
+        "invoiceEligible": true,
+        "name": "Bring in Priya Nair (contractor)",
+        "projectCompletion": {
+          "A": 6,
+          "B": 3,
+          "C": 5
+        },
+        "revisesPlanId": null,
+        "schedule": [
+          {
+            "endDay": 4,
+            "personId": "PER-DEV1",
+            "startDay": 1,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 6,
+            "personId": "PER-QA",
+            "startDay": 5,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          },
+          {
+            "endDay": 5,
+            "personId": "PER-CTR",
+            "startDay": 1,
+            "taskId": "T-C-LOY"
+          }
+        ],
+        "status": "proposed",
+        "summary": "Assign Loyalty API add-on to Priya Nair (contractor) from their first available day at a fixed incremental cost.",
+        "violatedConstraints": []
+      }
+    ],
+    "finance": {
+      "facts": [
+        {
+          "label": "Invoices gated by milestones",
+          "tag": "fact",
+          "value": "INV-1 8000 USD; INV-2 6000 USD (total 14000 USD)"
+        },
+        {
+          "label": "Recovery budget",
+          "tag": "fact",
+          "value": "2000 USD"
+        },
+        {
+          "label": "Queue behind Dana Reyes's current work: incremental cost",
+          "tag": "calculated",
+          "value": "0 USD (within budget)"
+        },
+        {
+          "label": "Queue behind Dana Reyes's current work: invoice eligible on time",
+          "tag": "calculated",
+          "value": "no (6000 USD at risk)"
+        },
+        {
+          "label": "Reassign to Marcus Lee: incremental cost",
+          "tag": "calculated",
+          "value": "0 USD (within budget)"
+        },
+        {
+          "label": "Reassign to Marcus Lee: invoice eligible on time",
+          "tag": "calculated",
+          "value": "yes"
+        },
+        {
+          "label": "Bring in Priya Nair (contractor): incremental cost",
+          "tag": "calculated",
+          "value": "1500 USD (within budget)"
+        },
+        {
+          "label": "Bring in Priya Nair (contractor): invoice eligible on time",
+          "tag": "calculated",
+          "value": "yes"
+        }
+      ],
+      "invoiceAmount": 14000,
+      "plans": [
+        {
+          "budgetFit": true,
+          "incrementalCost": 0,
+          "invoiceAtRisk": 6000,
+          "invoiceEligible": false,
+          "planId": "plan-wait"
+        },
+        {
+          "budgetFit": true,
+          "incrementalCost": 0,
+          "invoiceAtRisk": 0,
+          "invoiceEligible": true,
+          "planId": "plan-backup"
+        },
+        {
+          "budgetFit": true,
+          "incrementalCost": 1500,
+          "invoiceAtRisk": 0,
+          "invoiceEligible": true,
+          "planId": "plan-contractor"
+        }
+      ],
+      "presetId": "client-meeting-loyalty",
+      "recoveryBudget": 2000
+    },
+    "impact": {
+      "affectedTaskIds": [
+        "T-C-LOY"
+      ],
+      "chain": [
+        {
+          "id": "T-C-LOY",
+          "label": "Loyalty API add-on",
+          "type": "task"
+        },
+        {
+          "id": "M-C",
+          "label": "Project C delivery",
+          "type": "milestone"
+        },
+        {
+          "id": "CM-3",
+          "label": "Orbit Retail (fictional): Orbit Retail loyalty API add-on delivered by working day 8 (agreed in the client meeting)",
+          "type": "commitment"
+        },
+        {
+          "id": "INV-2",
+          "label": "INV-2: 6000 USD",
+          "type": "invoice"
+        }
+      ],
+      "commitmentsAtRisk": [
+        "CM-3"
+      ],
+      "contractorCost": 1500,
+      "facts": [
+        {
+          "label": "Client request",
+          "tag": "fact",
+          "value": "Orbit Retail loyalty API add-on delivered by working day 8 (agreed in the client meeting)"
+        },
+        {
+          "label": "New work to place",
+          "tag": "fact",
+          "value": "Loyalty API add-on: 5 working days, due day 8, default assignee Dana Reyes"
+        },
+        {
+          "label": "Quoted value",
+          "tag": "fact",
+          "value": "6000 USD"
+        },
+        {
+          "label": "Logged in the CRM by",
+          "tag": "fact",
+          "value": "Business Development (bd.lead@example.com)"
+        },
+        {
+          "label": "Shared with",
+          "tag": "fact",
+          "value": "sales, hr, finance"
+        },
+        {
+          "label": "Dependent work",
+          "tag": "calculated",
+          "value": "none"
+        },
+        {
+          "label": "Project A acceptance due",
+          "tag": "fact",
+          "value": "day 6"
+        },
+        {
+          "label": "Project A acceptance finish with no action",
+          "tag": "calculated",
+          "value": "day 6"
+        },
+        {
+          "label": "Project B delivery due",
+          "tag": "fact",
+          "value": "day 4"
+        },
+        {
+          "label": "Project B delivery finish with no action",
+          "tag": "calculated",
+          "value": "day 3"
+        },
+        {
+          "label": "Project C delivery due",
+          "tag": "fact",
+          "value": "day 8"
+        },
+        {
+          "label": "Project C delivery finish with no action",
+          "tag": "calculated",
+          "value": "day 9"
+        },
+        {
+          "label": "Invoice INV-1 eligible on time",
+          "tag": "calculated",
+          "value": "yes (8000 USD)"
+        },
+        {
+          "label": "Invoice INV-2 eligible on time",
+          "tag": "calculated",
+          "value": "no (6000 USD)"
+        },
+        {
+          "label": "Recovery budget",
+          "tag": "fact",
+          "value": "2000 USD"
+        }
+      ],
+      "invoiceAtRisk": 6000,
+      "invoices": [
+        {
+          "amount": 8000,
+          "currency": "USD",
+          "eligibleOnTime": true,
+          "invoiceId": "INV-1",
+          "milestoneId": "M-A"
+        },
+        {
+          "amount": 6000,
+          "currency": "USD",
+          "eligibleOnTime": false,
+          "invoiceId": "INV-2",
+          "milestoneId": "M-C"
+        }
+      ],
+      "presetId": "client-meeting-loyalty",
+      "recoveryBudget": 2000,
+      "slips": [
+        {
+          "baselineDay": 6,
+          "daysLate": 0,
+          "disruptedDay": 6,
+          "dueDay": 6,
+          "met": true,
+          "milestoneId": "M-A",
+          "name": "Project A acceptance"
+        },
+        {
+          "baselineDay": 3,
+          "daysLate": 0,
+          "disruptedDay": 3,
+          "dueDay": 4,
+          "met": true,
+          "milestoneId": "M-B",
+          "name": "Project B delivery"
+        },
+        {
+          "baselineDay": 9,
+          "daysLate": 1,
+          "disruptedDay": 9,
+          "dueDay": 8,
+          "met": false,
+          "milestoneId": "M-C",
+          "name": "Project C delivery"
+        }
+      ]
+    },
+    "outcome": {
+      "plan-backup": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": true,
+            "Project B delivery": false,
+            "Project C delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": true,
+          "projectCompletion": {
+            "A": 6,
+            "B": 8,
+            "C": 6
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": true,
+            "Project B delivery": false,
+            "Project C delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": true,
+          "projectCompletion": {
+            "A": 6,
+            "B": 8,
+            "C": 6
+          }
+        },
+        "match": true
+      },
+      "plan-backup-revised": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": true,
+            "Project B delivery": true,
+            "Project C delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": true,
+          "projectCompletion": {
+            "A": 6,
+            "B": 3,
+            "C": 8
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": true,
+            "Project B delivery": true,
+            "Project C delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": true,
+          "projectCompletion": {
+            "A": 6,
+            "B": 3,
+            "C": 8
+          }
+        },
+        "match": true
+      },
+      "plan-contractor": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": true,
+            "Project B delivery": true,
+            "Project C delivery": true
+          },
+          "incrementalCost": 1500,
+          "invoiceEligible": true,
+          "projectCompletion": {
+            "A": 6,
+            "B": 3,
+            "C": 5
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": true,
+            "Project B delivery": true,
+            "Project C delivery": true
+          },
+          "incrementalCost": 1500,
+          "invoiceEligible": true,
+          "projectCompletion": {
+            "A": 6,
+            "B": 3,
+            "C": 5
+          }
+        },
+        "match": true
+      },
+      "plan-wait": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": true,
+            "Project B delivery": true,
+            "Project C delivery": false
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 6,
+            "B": 3,
+            "C": 9
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": true,
+            "Project B delivery": true,
+            "Project C delivery": false
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 6,
+            "B": 3,
+            "C": 9
+          }
+        },
+        "match": true
+      }
+    },
+    "resources": {
+      "candidates": [
+        {
+          "bookedDays": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "freeDays": [
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "kind": "employee",
+          "name": "Dana Reyes",
+          "note": "free 5-10; booked 1-4; out none",
+          "personId": "PER-DEV1",
+          "unavailableDays": []
+        },
+        {
+          "bookedDays": [
+            2,
+            3
+          ],
+          "freeDays": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "kind": "employee",
+          "name": "Marcus Lee",
+          "note": "free 4-10; booked 2-3; out 1",
+          "personId": "PER-BACKUP",
+          "unavailableDays": [
+            1
+          ]
+        },
+        {
+          "bookedDays": [],
+          "freeDays": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "kind": "contractor",
+          "name": "Priya Nair (contractor)",
+          "note": "free 1-10; booked none; out none",
+          "personId": "PER-CTR",
+          "unavailableDays": []
+        }
+      ],
+      "facts": [
+        {
+          "label": "Dana Reyes free working days (1-10)",
+          "tag": "calculated",
+          "value": "5-10"
+        },
+        {
+          "label": "Dana Reyes existing bookings",
+          "tag": "calculated",
+          "value": "days 1-4 on Project A: Payment Integration"
+        },
+        {
+          "label": "Marcus Lee free working days (1-10)",
+          "tag": "calculated",
+          "value": "4-10"
+        },
+        {
+          "label": "Marcus Lee existing bookings",
+          "tag": "calculated",
+          "value": "days 2-3 on Project B: Billing Hotfix"
+        },
+        {
+          "label": "Priya Nair (contractor) free working days (1-10)",
+          "tag": "calculated",
+          "value": "1-10"
+        }
+      ],
+      "presetId": "client-meeting-loyalty",
+      "requiredSkill": "integration",
+      "windowEndDay": 10
+    },
+    "revisedPlan": {
+      "budgetFit": true,
+      "deadlines": [
+        {
+          "dueDay": 6,
+          "met": true,
+          "name": "Project A acceptance"
+        },
+        {
+          "dueDay": 4,
+          "met": true,
+          "name": "Project B delivery"
+        },
+        {
+          "dueDay": 8,
+          "met": true,
+          "name": "Project C delivery"
+        }
+      ],
+      "id": "plan-backup-revised",
+      "incrementalCost": 0,
+      "invoiceEligible": true,
+      "name": "Reassign to Marcus Lee, honoring existing bookings",
+      "projectCompletion": {
+        "A": 6,
+        "B": 3,
+        "C": 8
+      },
+      "revisesPlanId": "plan-backup",
+      "schedule": [
+        {
+          "endDay": 4,
+          "personId": "PER-DEV1",
+          "startDay": 1,
+          "taskId": "T-A-INT"
+        },
+        {
+          "endDay": 6,
+          "personId": "PER-QA",
+          "startDay": 5,
+          "taskId": "T-A-QA"
+        },
+        {
+          "endDay": 3,
+          "personId": "PER-BACKUP",
+          "startDay": 2,
+          "taskId": "T-B-FIX"
+        },
+        {
+          "endDay": 8,
+          "personId": "PER-BACKUP",
+          "startDay": 4,
+          "taskId": "T-C-LOY"
+        }
+      ],
+      "status": "revised",
+      "summary": "Give Loyalty API add-on to Marcus Lee only on days they are actually free, keeping their existing commitments intact.",
+      "violatedConstraints": []
+    }
+  },
+  "dev-out-1-3": {
+    "applied": {
+      "plan-backup": {
+        "budgetRemaining": 2000,
+        "conflicts": [],
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "milestones": [
+          {
+            "completionDay": 7,
+            "dueDay": 6,
+            "met": false,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 7,
+            "dueDay": 4,
+            "met": false,
+            "milestoneId": "M-B"
+          }
+        ],
+        "planId": "plan-backup",
+        "presetId": "dev-out-1-3",
+        "projectCompletion": {
+          "A": 7,
+          "B": 7
+        },
+        "schedule": [
+          {
+            "endDay": 5,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 7,
+            "personId": "PER-QA",
+            "startDay": 6,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 7,
+            "personId": "PER-BACKUP",
+            "startDay": 6,
+            "taskId": "T-B-FIX"
+          }
+        ]
+      },
+      "plan-backup-revised": {
+        "budgetRemaining": 2000,
+        "conflicts": [],
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "milestones": [
+          {
+            "completionDay": 9,
+            "dueDay": 6,
+            "met": false,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 3,
+            "dueDay": 4,
+            "met": true,
+            "milestoneId": "M-B"
+          }
+        ],
+        "planId": "plan-backup-revised",
+        "presetId": "dev-out-1-3",
+        "projectCompletion": {
+          "A": 9,
+          "B": 3
+        },
+        "schedule": [
+          {
+            "endDay": 7,
+            "personId": "PER-BACKUP",
+            "startDay": 4,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 9,
+            "personId": "PER-QA",
+            "startDay": 8,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ]
+      },
+      "plan-contractor": {
+        "budgetRemaining": 500,
+        "conflicts": [],
+        "incrementalCost": 1500,
+        "invoiceEligible": true,
+        "milestones": [
+          {
+            "completionDay": 6,
+            "dueDay": 6,
+            "met": true,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 3,
+            "dueDay": 4,
+            "met": true,
+            "milestoneId": "M-B"
+          }
+        ],
+        "planId": "plan-contractor",
+        "presetId": "dev-out-1-3",
+        "projectCompletion": {
+          "A": 6,
+          "B": 3
+        },
+        "schedule": [
+          {
+            "endDay": 4,
+            "personId": "PER-CTR",
+            "startDay": 1,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 6,
+            "personId": "PER-QA",
+            "startDay": 5,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ]
+      },
+      "plan-wait": {
+        "budgetRemaining": 2000,
+        "conflicts": [],
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "milestones": [
+          {
+            "completionDay": 9,
+            "dueDay": 6,
+            "met": false,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 3,
+            "dueDay": 4,
+            "met": true,
+            "milestoneId": "M-B"
+          }
+        ],
+        "planId": "plan-wait",
+        "presetId": "dev-out-1-3",
+        "projectCompletion": {
+          "A": 9,
+          "B": 3
+        },
+        "schedule": [
+          {
+            "endDay": 7,
+            "personId": "PER-DEV1",
+            "startDay": 4,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 9,
+            "personId": "PER-QA",
+            "startDay": 8,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ]
+      }
+    },
+    "candidatePlans": [
+      {
+        "budgetFit": true,
+        "deadlines": [
+          {
+            "dueDay": 6,
+            "met": false,
+            "name": "Project A acceptance"
+          },
+          {
+            "dueDay": 4,
+            "met": true,
+            "name": "Project B delivery"
+          }
+        ],
+        "id": "plan-wait",
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "name": "Wait for Dana Reyes",
+        "projectCompletion": {
+          "A": 9,
+          "B": 3
+        },
+        "revisesPlanId": null,
+        "schedule": [
+          {
+            "endDay": 7,
+            "personId": "PER-DEV1",
+            "startDay": 4,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 9,
+            "personId": "PER-QA",
+            "startDay": 8,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ],
+        "status": "proposed",
+        "summary": "Keep Payment gateway integration with Dana Reyes and start when they are available again.",
+        "violatedConstraints": [
+          "Project A acceptance (due day 6) is missed: finishes on day 9",
+          "Invoice INV-1 (8000 USD) is not eligible by day 6"
+        ]
+      },
+      {
+        "budgetFit": true,
+        "deadlines": [
+          {
+            "dueDay": 6,
+            "met": false,
+            "name": "Project A acceptance"
+          },
+          {
+            "dueDay": 4,
+            "met": false,
+            "name": "Project B delivery"
+          }
+        ],
+        "id": "plan-backup",
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "name": "Reassign to Marcus Lee",
+        "projectCompletion": {
+          "A": 7,
+          "B": 7
+        },
+        "revisesPlanId": null,
+        "schedule": [
+          {
+            "endDay": 5,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 7,
+            "personId": "PER-QA",
+            "startDay": 6,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 7,
+            "personId": "PER-BACKUP",
+            "startDay": 6,
+            "taskId": "T-B-FIX"
+          }
+        ],
+        "status": "proposed",
+        "summary": "Move Payment gateway integration to Marcus Lee from their first free day, without regard to their existing bookings.",
+        "violatedConstraints": [
+          "Double-books Marcus Lee on day(s) 2-3: already assigned to Billing hotfix (Project B: Billing Hotfix), which then finishes on day 7 against its due day 4",
+          "Project A acceptance (due day 6) is missed: finishes on day 7",
+          "Project B delivery (due day 4) is missed: finishes on day 7",
+          "Invoice INV-1 (8000 USD) is not eligible by day 6"
+        ]
+      },
+      {
+        "budgetFit": true,
+        "deadlines": [
+          {
+            "dueDay": 6,
+            "met": true,
+            "name": "Project A acceptance"
+          },
+          {
+            "dueDay": 4,
+            "met": true,
+            "name": "Project B delivery"
+          }
+        ],
+        "id": "plan-contractor",
+        "incrementalCost": 1500,
+        "invoiceEligible": true,
+        "name": "Bring in Priya Nair (contractor)",
+        "projectCompletion": {
+          "A": 6,
+          "B": 3
+        },
+        "revisesPlanId": null,
+        "schedule": [
+          {
+            "endDay": 4,
+            "personId": "PER-CTR",
+            "startDay": 1,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 6,
+            "personId": "PER-QA",
+            "startDay": 5,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ],
+        "status": "proposed",
+        "summary": "Assign Payment gateway integration to Priya Nair (contractor) from their first available day at a fixed incremental cost.",
+        "violatedConstraints": []
+      }
+    ],
+    "finance": {
+      "facts": [
+        {
+          "label": "Invoice gated by the milestone",
+          "tag": "fact",
+          "value": "8000 USD"
+        },
+        {
+          "label": "Recovery budget",
+          "tag": "fact",
+          "value": "2000 USD"
+        },
+        {
+          "label": "Wait for Dana Reyes: incremental cost",
+          "tag": "calculated",
+          "value": "0 USD (within budget)"
+        },
+        {
+          "label": "Wait for Dana Reyes: invoice eligible on time",
+          "tag": "calculated",
+          "value": "no (8000 USD at risk)"
+        },
+        {
+          "label": "Reassign to Marcus Lee: incremental cost",
+          "tag": "calculated",
+          "value": "0 USD (within budget)"
+        },
+        {
+          "label": "Reassign to Marcus Lee: invoice eligible on time",
+          "tag": "calculated",
+          "value": "no (8000 USD at risk)"
+        },
+        {
+          "label": "Bring in Priya Nair (contractor): incremental cost",
+          "tag": "calculated",
+          "value": "1500 USD (within budget)"
+        },
+        {
+          "label": "Bring in Priya Nair (contractor): invoice eligible on time",
+          "tag": "calculated",
+          "value": "yes"
+        }
+      ],
+      "invoiceAmount": 8000,
+      "plans": [
+        {
+          "budgetFit": true,
+          "incrementalCost": 0,
+          "invoiceAtRisk": 8000,
+          "invoiceEligible": false,
+          "planId": "plan-wait"
+        },
+        {
+          "budgetFit": true,
+          "incrementalCost": 0,
+          "invoiceAtRisk": 8000,
+          "invoiceEligible": false,
+          "planId": "plan-backup"
+        },
+        {
+          "budgetFit": true,
+          "incrementalCost": 1500,
+          "invoiceAtRisk": 0,
+          "invoiceEligible": true,
+          "planId": "plan-contractor"
+        }
+      ],
+      "presetId": "dev-out-1-3",
+      "recoveryBudget": 2000
+    },
+    "impact": {
+      "affectedTaskIds": [
+        "T-A-INT",
+        "T-A-QA"
+      ],
+      "chain": [
+        {
+          "id": "T-A-INT",
+          "label": "Payment gateway integration",
+          "type": "task"
+        },
+        {
+          "id": "T-A-QA",
+          "label": "Integration QA and acceptance testing",
+          "type": "task"
+        },
+        {
+          "id": "M-A",
+          "label": "Project A acceptance",
+          "type": "milestone"
+        },
+        {
+          "id": "CM-1",
+          "label": "Orbit Retail (fictional): Orbit Retail go-live of the payment integration by working day 6",
+          "type": "commitment"
+        },
+        {
+          "id": "INV-1",
+          "label": "INV-1: 8000 USD",
+          "type": "invoice"
+        }
+      ],
+      "commitmentsAtRisk": [
+        "CM-1"
+      ],
+      "contractorCost": 1500,
+      "facts": [
+        {
+          "label": "Disruption",
+          "tag": "fact",
+          "value": "Dana Reyes out days 1-3"
+        },
+        {
+          "label": "Directly affected task",
+          "tag": "calculated",
+          "value": "Payment gateway integration (assignee Dana Reyes)"
+        },
+        {
+          "label": "Dependent work",
+          "tag": "calculated",
+          "value": "Integration QA and acceptance testing"
+        },
+        {
+          "label": "Project A acceptance due",
+          "tag": "fact",
+          "value": "day 6"
+        },
+        {
+          "label": "Project A acceptance finish with no action",
+          "tag": "calculated",
+          "value": "day 9"
+        },
+        {
+          "label": "Project B delivery due",
+          "tag": "fact",
+          "value": "day 4"
+        },
+        {
+          "label": "Project B delivery finish with no action",
+          "tag": "calculated",
+          "value": "day 3"
+        },
+        {
+          "label": "Invoice INV-1 eligible on time",
+          "tag": "calculated",
+          "value": "no (8000 USD)"
+        },
+        {
+          "label": "Recovery budget",
+          "tag": "fact",
+          "value": "2000 USD"
+        }
+      ],
+      "invoiceAtRisk": 8000,
+      "invoices": [
+        {
+          "amount": 8000,
+          "currency": "USD",
+          "eligibleOnTime": false,
+          "invoiceId": "INV-1",
+          "milestoneId": "M-A"
+        }
+      ],
+      "presetId": "dev-out-1-3",
+      "recoveryBudget": 2000,
+      "slips": [
+        {
+          "baselineDay": 6,
+          "daysLate": 3,
+          "disruptedDay": 9,
+          "dueDay": 6,
+          "met": false,
+          "milestoneId": "M-A",
+          "name": "Project A acceptance"
+        },
+        {
+          "baselineDay": 3,
+          "daysLate": 0,
+          "disruptedDay": 3,
+          "dueDay": 4,
+          "met": true,
+          "milestoneId": "M-B",
+          "name": "Project B delivery"
+        }
+      ]
+    },
+    "outcome": {
+      "plan-backup": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": false
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 7,
+            "B": 7
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": false
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 7,
+            "B": 7
+          }
+        },
+        "match": true
+      },
+      "plan-backup-revised": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 9,
+            "B": 3
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 9,
+            "B": 3
+          }
+        },
+        "match": true
+      },
+      "plan-contractor": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": true,
+            "Project B delivery": true
+          },
+          "incrementalCost": 1500,
+          "invoiceEligible": true,
+          "projectCompletion": {
+            "A": 6,
+            "B": 3
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": true,
+            "Project B delivery": true
+          },
+          "incrementalCost": 1500,
+          "invoiceEligible": true,
+          "projectCompletion": {
+            "A": 6,
+            "B": 3
+          }
+        },
+        "match": true
+      },
+      "plan-wait": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 9,
+            "B": 3
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 9,
+            "B": 3
+          }
+        },
+        "match": true
+      }
+    },
+    "resources": {
+      "candidates": [
+        {
+          "bookedDays": [],
+          "freeDays": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "kind": "employee",
+          "name": "Dana Reyes",
+          "note": "free 4-10; booked none; out 1-3",
+          "personId": "PER-DEV1",
+          "unavailableDays": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "bookedDays": [
+            2,
+            3
+          ],
+          "freeDays": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "kind": "employee",
+          "name": "Marcus Lee",
+          "note": "free 4-10; booked 2-3; out 1",
+          "personId": "PER-BACKUP",
+          "unavailableDays": [
+            1
+          ]
+        },
+        {
+          "bookedDays": [],
+          "freeDays": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "kind": "contractor",
+          "name": "Priya Nair (contractor)",
+          "note": "free 1-10; booked none; out none",
+          "personId": "PER-CTR",
+          "unavailableDays": []
+        }
+      ],
+      "facts": [
+        {
+          "label": "Dana Reyes free working days (1-10)",
+          "tag": "calculated",
+          "value": "4-10"
+        },
+        {
+          "label": "Marcus Lee free working days (1-10)",
+          "tag": "calculated",
+          "value": "4-10"
+        },
+        {
+          "label": "Marcus Lee existing bookings",
+          "tag": "fact",
+          "value": "days 2-3 on Project B: Billing Hotfix"
+        },
+        {
+          "label": "Priya Nair (contractor) free working days (1-10)",
+          "tag": "calculated",
+          "value": "1-10"
+        }
+      ],
+      "presetId": "dev-out-1-3",
+      "requiredSkill": "integration",
+      "windowEndDay": 10
+    },
+    "revisedPlan": {
+      "budgetFit": true,
+      "deadlines": [
+        {
+          "dueDay": 6,
+          "met": false,
+          "name": "Project A acceptance"
+        },
+        {
+          "dueDay": 4,
+          "met": true,
+          "name": "Project B delivery"
+        }
+      ],
+      "id": "plan-backup-revised",
+      "incrementalCost": 0,
+      "invoiceEligible": false,
+      "name": "Reassign to Marcus Lee, honoring existing bookings",
+      "projectCompletion": {
+        "A": 9,
+        "B": 3
+      },
+      "revisesPlanId": "plan-backup",
+      "schedule": [
+        {
+          "endDay": 7,
+          "personId": "PER-BACKUP",
+          "startDay": 4,
+          "taskId": "T-A-INT"
+        },
+        {
+          "endDay": 9,
+          "personId": "PER-QA",
+          "startDay": 8,
+          "taskId": "T-A-QA"
+        },
+        {
+          "endDay": 3,
+          "personId": "PER-BACKUP",
+          "startDay": 2,
+          "taskId": "T-B-FIX"
+        }
+      ],
+      "status": "revised",
+      "summary": "Move Payment gateway integration to Marcus Lee only on days they are actually free, keeping their existing commitments intact.",
+      "violatedConstraints": [
+        "Project A acceptance (due day 6) is missed: finishes on day 9",
+        "Invoice INV-1 (8000 USD) is not eligible by day 6"
+      ]
+    }
+  },
+  "dev-out-1-5": {
+    "applied": {
+      "plan-backup": {
+        "budgetRemaining": 2000,
+        "conflicts": [],
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "milestones": [
+          {
+            "completionDay": 7,
+            "dueDay": 6,
+            "met": false,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 7,
+            "dueDay": 4,
+            "met": false,
+            "milestoneId": "M-B"
+          }
+        ],
+        "planId": "plan-backup",
+        "presetId": "dev-out-1-5",
+        "projectCompletion": {
+          "A": 7,
+          "B": 7
+        },
+        "schedule": [
+          {
+            "endDay": 5,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 7,
+            "personId": "PER-QA",
+            "startDay": 6,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 7,
+            "personId": "PER-BACKUP",
+            "startDay": 6,
+            "taskId": "T-B-FIX"
+          }
+        ]
+      },
+      "plan-backup-revised": {
+        "budgetRemaining": 2000,
+        "conflicts": [],
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "milestones": [
+          {
+            "completionDay": 9,
+            "dueDay": 6,
+            "met": false,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 3,
+            "dueDay": 4,
+            "met": true,
+            "milestoneId": "M-B"
+          }
+        ],
+        "planId": "plan-backup-revised",
+        "presetId": "dev-out-1-5",
+        "projectCompletion": {
+          "A": 9,
+          "B": 3
+        },
+        "schedule": [
+          {
+            "endDay": 7,
+            "personId": "PER-BACKUP",
+            "startDay": 4,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 9,
+            "personId": "PER-QA",
+            "startDay": 8,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ]
+      },
+      "plan-contractor": {
+        "budgetRemaining": 500,
+        "conflicts": [],
+        "incrementalCost": 1500,
+        "invoiceEligible": true,
+        "milestones": [
+          {
+            "completionDay": 6,
+            "dueDay": 6,
+            "met": true,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 3,
+            "dueDay": 4,
+            "met": true,
+            "milestoneId": "M-B"
+          }
+        ],
+        "planId": "plan-contractor",
+        "presetId": "dev-out-1-5",
+        "projectCompletion": {
+          "A": 6,
+          "B": 3
+        },
+        "schedule": [
+          {
+            "endDay": 4,
+            "personId": "PER-CTR",
+            "startDay": 1,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 6,
+            "personId": "PER-QA",
+            "startDay": 5,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ]
+      },
+      "plan-wait": {
+        "budgetRemaining": 2000,
+        "conflicts": [],
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "milestones": [
+          {
+            "completionDay": 11,
+            "dueDay": 6,
+            "met": false,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 3,
+            "dueDay": 4,
+            "met": true,
+            "milestoneId": "M-B"
+          }
+        ],
+        "planId": "plan-wait",
+        "presetId": "dev-out-1-5",
+        "projectCompletion": {
+          "A": 11,
+          "B": 3
+        },
+        "schedule": [
+          {
+            "endDay": 9,
+            "personId": "PER-DEV1",
+            "startDay": 6,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 11,
+            "personId": "PER-QA",
+            "startDay": 10,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ]
+      }
+    },
+    "candidatePlans": [
+      {
+        "budgetFit": true,
+        "deadlines": [
+          {
+            "dueDay": 6,
+            "met": false,
+            "name": "Project A acceptance"
+          },
+          {
+            "dueDay": 4,
+            "met": true,
+            "name": "Project B delivery"
+          }
+        ],
+        "id": "plan-wait",
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "name": "Wait for Dana Reyes",
+        "projectCompletion": {
+          "A": 11,
+          "B": 3
+        },
+        "revisesPlanId": null,
+        "schedule": [
+          {
+            "endDay": 9,
+            "personId": "PER-DEV1",
+            "startDay": 6,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 11,
+            "personId": "PER-QA",
+            "startDay": 10,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ],
+        "status": "proposed",
+        "summary": "Keep Payment gateway integration with Dana Reyes and start when they are available again.",
+        "violatedConstraints": [
+          "Project A acceptance (due day 6) is missed: finishes on day 11",
+          "Invoice INV-1 (8000 USD) is not eligible by day 6"
+        ]
+      },
+      {
+        "budgetFit": true,
+        "deadlines": [
+          {
+            "dueDay": 6,
+            "met": false,
+            "name": "Project A acceptance"
+          },
+          {
+            "dueDay": 4,
+            "met": false,
+            "name": "Project B delivery"
+          }
+        ],
+        "id": "plan-backup",
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "name": "Reassign to Marcus Lee",
+        "projectCompletion": {
+          "A": 7,
+          "B": 7
+        },
+        "revisesPlanId": null,
+        "schedule": [
+          {
+            "endDay": 5,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 7,
+            "personId": "PER-QA",
+            "startDay": 6,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 7,
+            "personId": "PER-BACKUP",
+            "startDay": 6,
+            "taskId": "T-B-FIX"
+          }
+        ],
+        "status": "proposed",
+        "summary": "Move Payment gateway integration to Marcus Lee from their first free day, without regard to their existing bookings.",
+        "violatedConstraints": [
+          "Double-books Marcus Lee on day(s) 2-3: already assigned to Billing hotfix (Project B: Billing Hotfix), which then finishes on day 7 against its due day 4",
+          "Project A acceptance (due day 6) is missed: finishes on day 7",
+          "Project B delivery (due day 4) is missed: finishes on day 7",
+          "Invoice INV-1 (8000 USD) is not eligible by day 6"
+        ]
+      },
+      {
+        "budgetFit": true,
+        "deadlines": [
+          {
+            "dueDay": 6,
+            "met": true,
+            "name": "Project A acceptance"
+          },
+          {
+            "dueDay": 4,
+            "met": true,
+            "name": "Project B delivery"
+          }
+        ],
+        "id": "plan-contractor",
+        "incrementalCost": 1500,
+        "invoiceEligible": true,
+        "name": "Bring in Priya Nair (contractor)",
+        "projectCompletion": {
+          "A": 6,
+          "B": 3
+        },
+        "revisesPlanId": null,
+        "schedule": [
+          {
+            "endDay": 4,
+            "personId": "PER-CTR",
+            "startDay": 1,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 6,
+            "personId": "PER-QA",
+            "startDay": 5,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ],
+        "status": "proposed",
+        "summary": "Assign Payment gateway integration to Priya Nair (contractor) from their first available day at a fixed incremental cost.",
+        "violatedConstraints": []
+      }
+    ],
+    "finance": {
+      "facts": [
+        {
+          "label": "Invoice gated by the milestone",
+          "tag": "fact",
+          "value": "8000 USD"
+        },
+        {
+          "label": "Recovery budget",
+          "tag": "fact",
+          "value": "2000 USD"
+        },
+        {
+          "label": "Wait for Dana Reyes: incremental cost",
+          "tag": "calculated",
+          "value": "0 USD (within budget)"
+        },
+        {
+          "label": "Wait for Dana Reyes: invoice eligible on time",
+          "tag": "calculated",
+          "value": "no (8000 USD at risk)"
+        },
+        {
+          "label": "Reassign to Marcus Lee: incremental cost",
+          "tag": "calculated",
+          "value": "0 USD (within budget)"
+        },
+        {
+          "label": "Reassign to Marcus Lee: invoice eligible on time",
+          "tag": "calculated",
+          "value": "no (8000 USD at risk)"
+        },
+        {
+          "label": "Bring in Priya Nair (contractor): incremental cost",
+          "tag": "calculated",
+          "value": "1500 USD (within budget)"
+        },
+        {
+          "label": "Bring in Priya Nair (contractor): invoice eligible on time",
+          "tag": "calculated",
+          "value": "yes"
+        }
+      ],
+      "invoiceAmount": 8000,
+      "plans": [
+        {
+          "budgetFit": true,
+          "incrementalCost": 0,
+          "invoiceAtRisk": 8000,
+          "invoiceEligible": false,
+          "planId": "plan-wait"
+        },
+        {
+          "budgetFit": true,
+          "incrementalCost": 0,
+          "invoiceAtRisk": 8000,
+          "invoiceEligible": false,
+          "planId": "plan-backup"
+        },
+        {
+          "budgetFit": true,
+          "incrementalCost": 1500,
+          "invoiceAtRisk": 0,
+          "invoiceEligible": true,
+          "planId": "plan-contractor"
+        }
+      ],
+      "presetId": "dev-out-1-5",
+      "recoveryBudget": 2000
+    },
+    "impact": {
+      "affectedTaskIds": [
+        "T-A-INT",
+        "T-A-QA"
+      ],
+      "chain": [
+        {
+          "id": "T-A-INT",
+          "label": "Payment gateway integration",
+          "type": "task"
+        },
+        {
+          "id": "T-A-QA",
+          "label": "Integration QA and acceptance testing",
+          "type": "task"
+        },
+        {
+          "id": "M-A",
+          "label": "Project A acceptance",
+          "type": "milestone"
+        },
+        {
+          "id": "CM-1",
+          "label": "Orbit Retail (fictional): Orbit Retail go-live of the payment integration by working day 6",
+          "type": "commitment"
+        },
+        {
+          "id": "INV-1",
+          "label": "INV-1: 8000 USD",
+          "type": "invoice"
+        }
+      ],
+      "commitmentsAtRisk": [
+        "CM-1"
+      ],
+      "contractorCost": 1500,
+      "facts": [
+        {
+          "label": "Disruption",
+          "tag": "fact",
+          "value": "Dana Reyes out days 1-5"
+        },
+        {
+          "label": "Directly affected task",
+          "tag": "calculated",
+          "value": "Payment gateway integration (assignee Dana Reyes)"
+        },
+        {
+          "label": "Dependent work",
+          "tag": "calculated",
+          "value": "Integration QA and acceptance testing"
+        },
+        {
+          "label": "Project A acceptance due",
+          "tag": "fact",
+          "value": "day 6"
+        },
+        {
+          "label": "Project A acceptance finish with no action",
+          "tag": "calculated",
+          "value": "day 11"
+        },
+        {
+          "label": "Project B delivery due",
+          "tag": "fact",
+          "value": "day 4"
+        },
+        {
+          "label": "Project B delivery finish with no action",
+          "tag": "calculated",
+          "value": "day 3"
+        },
+        {
+          "label": "Invoice INV-1 eligible on time",
+          "tag": "calculated",
+          "value": "no (8000 USD)"
+        },
+        {
+          "label": "Recovery budget",
+          "tag": "fact",
+          "value": "2000 USD"
+        }
+      ],
+      "invoiceAtRisk": 8000,
+      "invoices": [
+        {
+          "amount": 8000,
+          "currency": "USD",
+          "eligibleOnTime": false,
+          "invoiceId": "INV-1",
+          "milestoneId": "M-A"
+        }
+      ],
+      "presetId": "dev-out-1-5",
+      "recoveryBudget": 2000,
+      "slips": [
+        {
+          "baselineDay": 6,
+          "daysLate": 5,
+          "disruptedDay": 11,
+          "dueDay": 6,
+          "met": false,
+          "milestoneId": "M-A",
+          "name": "Project A acceptance"
+        },
+        {
+          "baselineDay": 3,
+          "daysLate": 0,
+          "disruptedDay": 3,
+          "dueDay": 4,
+          "met": true,
+          "milestoneId": "M-B",
+          "name": "Project B delivery"
+        }
+      ]
+    },
+    "outcome": {
+      "plan-backup": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": false
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 7,
+            "B": 7
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": false
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 7,
+            "B": 7
+          }
+        },
+        "match": true
+      },
+      "plan-backup-revised": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 9,
+            "B": 3
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 9,
+            "B": 3
+          }
+        },
+        "match": true
+      },
+      "plan-contractor": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": true,
+            "Project B delivery": true
+          },
+          "incrementalCost": 1500,
+          "invoiceEligible": true,
+          "projectCompletion": {
+            "A": 6,
+            "B": 3
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": true,
+            "Project B delivery": true
+          },
+          "incrementalCost": 1500,
+          "invoiceEligible": true,
+          "projectCompletion": {
+            "A": 6,
+            "B": 3
+          }
+        },
+        "match": true
+      },
+      "plan-wait": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 11,
+            "B": 3
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 11,
+            "B": 3
+          }
+        },
+        "match": true
+      }
+    },
+    "resources": {
+      "candidates": [
+        {
+          "bookedDays": [],
+          "freeDays": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "kind": "employee",
+          "name": "Dana Reyes",
+          "note": "free 6-10; booked none; out 1-5",
+          "personId": "PER-DEV1",
+          "unavailableDays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "bookedDays": [
+            2,
+            3
+          ],
+          "freeDays": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "kind": "employee",
+          "name": "Marcus Lee",
+          "note": "free 4-10; booked 2-3; out 1",
+          "personId": "PER-BACKUP",
+          "unavailableDays": [
+            1
+          ]
+        },
+        {
+          "bookedDays": [],
+          "freeDays": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "kind": "contractor",
+          "name": "Priya Nair (contractor)",
+          "note": "free 1-10; booked none; out none",
+          "personId": "PER-CTR",
+          "unavailableDays": []
+        }
+      ],
+      "facts": [
+        {
+          "label": "Dana Reyes free working days (1-10)",
+          "tag": "calculated",
+          "value": "6-10"
+        },
+        {
+          "label": "Marcus Lee free working days (1-10)",
+          "tag": "calculated",
+          "value": "4-10"
+        },
+        {
+          "label": "Marcus Lee existing bookings",
+          "tag": "fact",
+          "value": "days 2-3 on Project B: Billing Hotfix"
+        },
+        {
+          "label": "Priya Nair (contractor) free working days (1-10)",
+          "tag": "calculated",
+          "value": "1-10"
+        }
+      ],
+      "presetId": "dev-out-1-5",
+      "requiredSkill": "integration",
+      "windowEndDay": 10
+    },
+    "revisedPlan": {
+      "budgetFit": true,
+      "deadlines": [
+        {
+          "dueDay": 6,
+          "met": false,
+          "name": "Project A acceptance"
+        },
+        {
+          "dueDay": 4,
+          "met": true,
+          "name": "Project B delivery"
+        }
+      ],
+      "id": "plan-backup-revised",
+      "incrementalCost": 0,
+      "invoiceEligible": false,
+      "name": "Reassign to Marcus Lee, honoring existing bookings",
+      "projectCompletion": {
+        "A": 9,
+        "B": 3
+      },
+      "revisesPlanId": "plan-backup",
+      "schedule": [
+        {
+          "endDay": 7,
+          "personId": "PER-BACKUP",
+          "startDay": 4,
+          "taskId": "T-A-INT"
+        },
+        {
+          "endDay": 9,
+          "personId": "PER-QA",
+          "startDay": 8,
+          "taskId": "T-A-QA"
+        },
+        {
+          "endDay": 3,
+          "personId": "PER-BACKUP",
+          "startDay": 2,
+          "taskId": "T-B-FIX"
+        }
+      ],
+      "status": "revised",
+      "summary": "Move Payment gateway integration to Marcus Lee only on days they are actually free, keeping their existing commitments intact.",
+      "violatedConstraints": [
+        "Project A acceptance (due day 6) is missed: finishes on day 9",
+        "Invoice INV-1 (8000 USD) is not eligible by day 6"
+      ]
+    }
+  },
+  "dev-out-contractor-late": {
+    "applied": {
+      "plan-backup": {
+        "budgetRemaining": 2000,
+        "conflicts": [],
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "milestones": [
+          {
+            "completionDay": 7,
+            "dueDay": 6,
+            "met": false,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 7,
+            "dueDay": 4,
+            "met": false,
+            "milestoneId": "M-B"
+          }
+        ],
+        "planId": "plan-backup",
+        "presetId": "dev-out-contractor-late",
+        "projectCompletion": {
+          "A": 7,
+          "B": 7
+        },
+        "schedule": [
+          {
+            "endDay": 5,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 7,
+            "personId": "PER-QA",
+            "startDay": 6,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 7,
+            "personId": "PER-BACKUP",
+            "startDay": 6,
+            "taskId": "T-B-FIX"
+          }
+        ]
+      },
+      "plan-backup-revised": {
+        "budgetRemaining": 2000,
+        "conflicts": [],
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "milestones": [
+          {
+            "completionDay": 9,
+            "dueDay": 6,
+            "met": false,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 3,
+            "dueDay": 4,
+            "met": true,
+            "milestoneId": "M-B"
+          }
+        ],
+        "planId": "plan-backup-revised",
+        "presetId": "dev-out-contractor-late",
+        "projectCompletion": {
+          "A": 9,
+          "B": 3
+        },
+        "schedule": [
+          {
+            "endDay": 7,
+            "personId": "PER-BACKUP",
+            "startDay": 4,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 9,
+            "personId": "PER-QA",
+            "startDay": 8,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ]
+      },
+      "plan-contractor": {
+        "budgetRemaining": 500,
+        "conflicts": [],
+        "incrementalCost": 1500,
+        "invoiceEligible": false,
+        "milestones": [
+          {
+            "completionDay": 8,
+            "dueDay": 6,
+            "met": false,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 3,
+            "dueDay": 4,
+            "met": true,
+            "milestoneId": "M-B"
+          }
+        ],
+        "planId": "plan-contractor",
+        "presetId": "dev-out-contractor-late",
+        "projectCompletion": {
+          "A": 8,
+          "B": 3
+        },
+        "schedule": [
+          {
+            "endDay": 6,
+            "personId": "PER-CTR",
+            "startDay": 3,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 8,
+            "personId": "PER-QA",
+            "startDay": 7,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ]
+      },
+      "plan-wait": {
+        "budgetRemaining": 2000,
+        "conflicts": [],
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "milestones": [
+          {
+            "completionDay": 11,
+            "dueDay": 6,
+            "met": false,
+            "milestoneId": "M-A"
+          },
+          {
+            "completionDay": 3,
+            "dueDay": 4,
+            "met": true,
+            "milestoneId": "M-B"
+          }
+        ],
+        "planId": "plan-wait",
+        "presetId": "dev-out-contractor-late",
+        "projectCompletion": {
+          "A": 11,
+          "B": 3
+        },
+        "schedule": [
+          {
+            "endDay": 9,
+            "personId": "PER-DEV1",
+            "startDay": 6,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 11,
+            "personId": "PER-QA",
+            "startDay": 10,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ]
+      }
+    },
+    "candidatePlans": [
+      {
+        "budgetFit": true,
+        "deadlines": [
+          {
+            "dueDay": 6,
+            "met": false,
+            "name": "Project A acceptance"
+          },
+          {
+            "dueDay": 4,
+            "met": true,
+            "name": "Project B delivery"
+          }
+        ],
+        "id": "plan-wait",
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "name": "Wait for Dana Reyes",
+        "projectCompletion": {
+          "A": 11,
+          "B": 3
+        },
+        "revisesPlanId": null,
+        "schedule": [
+          {
+            "endDay": 9,
+            "personId": "PER-DEV1",
+            "startDay": 6,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 11,
+            "personId": "PER-QA",
+            "startDay": 10,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ],
+        "status": "proposed",
+        "summary": "Keep Payment gateway integration with Dana Reyes and start when they are available again.",
+        "violatedConstraints": [
+          "Project A acceptance (due day 6) is missed: finishes on day 11",
+          "Invoice INV-1 (8000 USD) is not eligible by day 6"
+        ]
+      },
+      {
+        "budgetFit": true,
+        "deadlines": [
+          {
+            "dueDay": 6,
+            "met": false,
+            "name": "Project A acceptance"
+          },
+          {
+            "dueDay": 4,
+            "met": false,
+            "name": "Project B delivery"
+          }
+        ],
+        "id": "plan-backup",
+        "incrementalCost": 0,
+        "invoiceEligible": false,
+        "name": "Reassign to Marcus Lee",
+        "projectCompletion": {
+          "A": 7,
+          "B": 7
+        },
+        "revisesPlanId": null,
+        "schedule": [
+          {
+            "endDay": 5,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 7,
+            "personId": "PER-QA",
+            "startDay": 6,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 7,
+            "personId": "PER-BACKUP",
+            "startDay": 6,
+            "taskId": "T-B-FIX"
+          }
+        ],
+        "status": "proposed",
+        "summary": "Move Payment gateway integration to Marcus Lee from their first free day, without regard to their existing bookings.",
+        "violatedConstraints": [
+          "Double-books Marcus Lee on day(s) 2-3: already assigned to Billing hotfix (Project B: Billing Hotfix), which then finishes on day 7 against its due day 4",
+          "Project A acceptance (due day 6) is missed: finishes on day 7",
+          "Project B delivery (due day 4) is missed: finishes on day 7",
+          "Invoice INV-1 (8000 USD) is not eligible by day 6"
+        ]
+      },
+      {
+        "budgetFit": true,
+        "deadlines": [
+          {
+            "dueDay": 6,
+            "met": false,
+            "name": "Project A acceptance"
+          },
+          {
+            "dueDay": 4,
+            "met": true,
+            "name": "Project B delivery"
+          }
+        ],
+        "id": "plan-contractor",
+        "incrementalCost": 1500,
+        "invoiceEligible": false,
+        "name": "Bring in Priya Nair (contractor)",
+        "projectCompletion": {
+          "A": 8,
+          "B": 3
+        },
+        "revisesPlanId": null,
+        "schedule": [
+          {
+            "endDay": 6,
+            "personId": "PER-CTR",
+            "startDay": 3,
+            "taskId": "T-A-INT"
+          },
+          {
+            "endDay": 8,
+            "personId": "PER-QA",
+            "startDay": 7,
+            "taskId": "T-A-QA"
+          },
+          {
+            "endDay": 3,
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "taskId": "T-B-FIX"
+          }
+        ],
+        "status": "proposed",
+        "summary": "Assign Payment gateway integration to Priya Nair (contractor) from their first available day at a fixed incremental cost.",
+        "violatedConstraints": [
+          "Project A acceptance (due day 6) is missed: finishes on day 8",
+          "Invoice INV-1 (8000 USD) is not eligible by day 6"
+        ]
+      }
+    ],
+    "finance": {
+      "facts": [
+        {
+          "label": "Invoice gated by the milestone",
+          "tag": "fact",
+          "value": "8000 USD"
+        },
+        {
+          "label": "Recovery budget",
+          "tag": "fact",
+          "value": "2000 USD"
+        },
+        {
+          "label": "Wait for Dana Reyes: incremental cost",
+          "tag": "calculated",
+          "value": "0 USD (within budget)"
+        },
+        {
+          "label": "Wait for Dana Reyes: invoice eligible on time",
+          "tag": "calculated",
+          "value": "no (8000 USD at risk)"
+        },
+        {
+          "label": "Reassign to Marcus Lee: incremental cost",
+          "tag": "calculated",
+          "value": "0 USD (within budget)"
+        },
+        {
+          "label": "Reassign to Marcus Lee: invoice eligible on time",
+          "tag": "calculated",
+          "value": "no (8000 USD at risk)"
+        },
+        {
+          "label": "Bring in Priya Nair (contractor): incremental cost",
+          "tag": "calculated",
+          "value": "1500 USD (within budget)"
+        },
+        {
+          "label": "Bring in Priya Nair (contractor): invoice eligible on time",
+          "tag": "calculated",
+          "value": "no (8000 USD at risk)"
+        }
+      ],
+      "invoiceAmount": 8000,
+      "plans": [
+        {
+          "budgetFit": true,
+          "incrementalCost": 0,
+          "invoiceAtRisk": 8000,
+          "invoiceEligible": false,
+          "planId": "plan-wait"
+        },
+        {
+          "budgetFit": true,
+          "incrementalCost": 0,
+          "invoiceAtRisk": 8000,
+          "invoiceEligible": false,
+          "planId": "plan-backup"
+        },
+        {
+          "budgetFit": true,
+          "incrementalCost": 1500,
+          "invoiceAtRisk": 8000,
+          "invoiceEligible": false,
+          "planId": "plan-contractor"
+        }
+      ],
+      "presetId": "dev-out-contractor-late",
+      "recoveryBudget": 2000
+    },
+    "impact": {
+      "affectedTaskIds": [
+        "T-A-INT",
+        "T-A-QA"
+      ],
+      "chain": [
+        {
+          "id": "T-A-INT",
+          "label": "Payment gateway integration",
+          "type": "task"
+        },
+        {
+          "id": "T-A-QA",
+          "label": "Integration QA and acceptance testing",
+          "type": "task"
+        },
+        {
+          "id": "M-A",
+          "label": "Project A acceptance",
+          "type": "milestone"
+        },
+        {
+          "id": "CM-1",
+          "label": "Orbit Retail (fictional): Orbit Retail go-live of the payment integration by working day 6",
+          "type": "commitment"
+        },
+        {
+          "id": "INV-1",
+          "label": "INV-1: 8000 USD",
+          "type": "invoice"
+        }
+      ],
+      "commitmentsAtRisk": [
+        "CM-1"
+      ],
+      "contractorCost": 1500,
+      "facts": [
+        {
+          "label": "Disruption",
+          "tag": "fact",
+          "value": "Dana Reyes out days 1-5; Priya Nair (contractor) out days 1-2"
+        },
+        {
+          "label": "Directly affected task",
+          "tag": "calculated",
+          "value": "Payment gateway integration (assignee Dana Reyes)"
+        },
+        {
+          "label": "Dependent work",
+          "tag": "calculated",
+          "value": "Integration QA and acceptance testing"
+        },
+        {
+          "label": "Project A acceptance due",
+          "tag": "fact",
+          "value": "day 6"
+        },
+        {
+          "label": "Project A acceptance finish with no action",
+          "tag": "calculated",
+          "value": "day 11"
+        },
+        {
+          "label": "Project B delivery due",
+          "tag": "fact",
+          "value": "day 4"
+        },
+        {
+          "label": "Project B delivery finish with no action",
+          "tag": "calculated",
+          "value": "day 3"
+        },
+        {
+          "label": "Invoice INV-1 eligible on time",
+          "tag": "calculated",
+          "value": "no (8000 USD)"
+        },
+        {
+          "label": "Recovery budget",
+          "tag": "fact",
+          "value": "2000 USD"
+        }
+      ],
+      "invoiceAtRisk": 8000,
+      "invoices": [
+        {
+          "amount": 8000,
+          "currency": "USD",
+          "eligibleOnTime": false,
+          "invoiceId": "INV-1",
+          "milestoneId": "M-A"
+        }
+      ],
+      "presetId": "dev-out-contractor-late",
+      "recoveryBudget": 2000,
+      "slips": [
+        {
+          "baselineDay": 6,
+          "daysLate": 5,
+          "disruptedDay": 11,
+          "dueDay": 6,
+          "met": false,
+          "milestoneId": "M-A",
+          "name": "Project A acceptance"
+        },
+        {
+          "baselineDay": 3,
+          "daysLate": 0,
+          "disruptedDay": 3,
+          "dueDay": 4,
+          "met": true,
+          "milestoneId": "M-B",
+          "name": "Project B delivery"
+        }
+      ]
+    },
+    "outcome": {
+      "plan-backup": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": false
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 7,
+            "B": 7
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": false
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 7,
+            "B": 7
+          }
+        },
+        "match": true
+      },
+      "plan-backup-revised": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 9,
+            "B": 3
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 9,
+            "B": 3
+          }
+        },
+        "match": true
+      },
+      "plan-contractor": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 1500,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 8,
+            "B": 3
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 1500,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 8,
+            "B": 3
+          }
+        },
+        "match": true
+      },
+      "plan-wait": {
+        "actual": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 11,
+            "B": 3
+          }
+        },
+        "deltas": [],
+        "expected": {
+          "deadlines": {
+            "Project A acceptance": false,
+            "Project B delivery": true
+          },
+          "incrementalCost": 0,
+          "invoiceEligible": false,
+          "projectCompletion": {
+            "A": 11,
+            "B": 3
+          }
+        },
+        "match": true
+      }
+    },
+    "resources": {
+      "candidates": [
+        {
+          "bookedDays": [],
+          "freeDays": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "kind": "employee",
+          "name": "Dana Reyes",
+          "note": "free 6-10; booked none; out 1-5",
+          "personId": "PER-DEV1",
+          "unavailableDays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "bookedDays": [
+            2,
+            3
+          ],
+          "freeDays": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "kind": "employee",
+          "name": "Marcus Lee",
+          "note": "free 4-10; booked 2-3; out 1",
+          "personId": "PER-BACKUP",
+          "unavailableDays": [
+            1
+          ]
+        },
+        {
+          "bookedDays": [],
+          "freeDays": [
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "kind": "contractor",
+          "name": "Priya Nair (contractor)",
+          "note": "free 3-10; booked none; out 1-2",
+          "personId": "PER-CTR",
+          "unavailableDays": [
+            1,
+            2
+          ]
+        }
+      ],
+      "facts": [
+        {
+          "label": "Dana Reyes free working days (1-10)",
+          "tag": "calculated",
+          "value": "6-10"
+        },
+        {
+          "label": "Marcus Lee free working days (1-10)",
+          "tag": "calculated",
+          "value": "4-10"
+        },
+        {
+          "label": "Marcus Lee existing bookings",
+          "tag": "fact",
+          "value": "days 2-3 on Project B: Billing Hotfix"
+        },
+        {
+          "label": "Priya Nair (contractor) free working days (1-10)",
+          "tag": "calculated",
+          "value": "3-10"
+        }
+      ],
+      "presetId": "dev-out-contractor-late",
+      "requiredSkill": "integration",
+      "windowEndDay": 10
+    },
+    "revisedPlan": {
+      "budgetFit": true,
+      "deadlines": [
+        {
+          "dueDay": 6,
+          "met": false,
+          "name": "Project A acceptance"
+        },
+        {
+          "dueDay": 4,
+          "met": true,
+          "name": "Project B delivery"
+        }
+      ],
+      "id": "plan-backup-revised",
+      "incrementalCost": 0,
+      "invoiceEligible": false,
+      "name": "Reassign to Marcus Lee, honoring existing bookings",
+      "projectCompletion": {
+        "A": 9,
+        "B": 3
+      },
+      "revisesPlanId": "plan-backup",
+      "schedule": [
+        {
+          "endDay": 7,
+          "personId": "PER-BACKUP",
+          "startDay": 4,
+          "taskId": "T-A-INT"
+        },
+        {
+          "endDay": 9,
+          "personId": "PER-QA",
+          "startDay": 8,
+          "taskId": "T-A-QA"
+        },
+        {
+          "endDay": 3,
+          "personId": "PER-BACKUP",
+          "startDay": 2,
+          "taskId": "T-B-FIX"
+        }
+      ],
+      "status": "revised",
+      "summary": "Move Payment gateway integration to Marcus Lee only on days they are actually free, keeping their existing commitments intact.",
+      "violatedConstraints": [
+        "Project A acceptance (due day 6) is missed: finishes on day 9",
+        "Invoice INV-1 (8000 USD) is not eligible by day 6"
+      ]
+    }
+  }
+}

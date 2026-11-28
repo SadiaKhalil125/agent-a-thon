@@ -2,10 +2,12 @@
 Project: CompanyTwin AI (organizational digital twin)
 Complexity: Standard
 Status: Draft
-Version: 0.2
+Version: 0.3
 Owner: Participant
 Last updated: 2026-11-28
-Based on: docs/PRD.md v0.1, docs/architecture.md v0.2, docs/design.md v0.1 (all Approved)
+Based on: docs/PRD.md v0.2, docs/architecture.md v0.3, docs/design.md v0.1
+
+> v0.3: adds **simulated-connector rules** (§3, §5, §7, §8) and the **two-person parallel working rules** (§9a). See `docs/BUILD_PLAN.md` v2.
 
 > v0.2: orchestration is **LangGraph** (architecture ADR-002/003 revised). Dependency and model-call rules updated below; everything else unchanged.
 
@@ -45,6 +47,13 @@ Based on: docs/PRD.md v0.1, docs/architecture.md v0.2, docs/design.md v0.1 (all 
 - **One model call per graph node** — never make an unbounded number of calls. The whole run is capped by a **node/call budget** enforced in the graph (NFR-OPS-001). Parallel specialist nodes (LangGraph fan-out) are allowed but each still counts one call against the budget.
 - **Orchestration is a LangGraph `StateGraph`** (`orchestration/graph.py`); the verifier→planner revision is a **conditional edge** capped at one revision. Nodes call `twin.solver` for numbers; the model is reached only through `agents/llm.py` (`ChatOpenAI` → LiteLLM).
 - **Stateless:** no reliance on server memory between requests; derive from seed + client `RunContext` (NFR-REL-001).
+- **Simulated connectors (`integrations/`, v0.3):**
+  - Dependency direction: `integrations → twin(read)` only; it must not import `agents`, `orchestration` or `api`. `api`, `orchestration` and `agents` may call it.
+  - **No outbound network, no real credentials, no persistence** in `integrations/`; no HTTP client library imported there. Calls from nodes are in-process; `/mock/*` is just the same handlers over HTTP.
+  - **No model calls and no number computation** in `integrations/`: read adapters are views over the seed; ActionBuilders format solver output and seed facts into artifacts. Every figure shown in an artifact comes from `twin/solver.py`.
+  - Every write/action carries an **idempotency key** (same key returns the same result) and every call/action produces an **audit** entry; every manifest has `mode:"simulated"`.
+  - A failed connector call yields a failed `integration_call` and **no fabricated data**.
+  - Use category names and neutral glyphs, never real vendor logos or claims of a real connection.
 
 ---
 
@@ -63,6 +72,7 @@ Based on: docs/PRD.md v0.1, docs/architecture.md v0.2, docs/design.md v0.1 (all 
 - **Fabricated/public data only** anywhere in repo, app, logs, tests, or fixtures (FR-SEC-002). No real client/customer/SSI data, ever, including for testing.
 - **Execution** mutates only the client's in-session working twin via the solver; **reset** restores the seed (FR-EXEC-004). Nothing is shared across users or requests.
 - No PII is collected from evaluators; no analytics in this release.
+- **Connector payloads** (emails, documents, spreadsheets, chat messages, e-sign envelopes) use fabricated Northstar data only; no real names, addresses, domains or account numbers (use reserved example domains such as `example.com`).
 
 ---
 
@@ -81,6 +91,8 @@ Based on: docs/PRD.md v0.1, docs/architecture.md v0.2, docs/design.md v0.1 (all 
 - **Server-side authorization of the one guarded action:** `/api/execute` must verify `approvedPlanId` was produced in the same run before applying changes (FR-EXEC-001). No identity auth by design.
 - **Input validation** at every external boundary (browser bodies, and defensive parsing of model output — model text is data, never executed).
 - **Budget/abuse:** enforce ≤1 model call per request and a fixed max steps per run; **recommended P2 hardening:** `DEMO_PASSCODE` or a lightweight per-IP throttle (NFR-OPS-001). Document the residual risk honestly.
+- **Inbound simulated webhooks** carry a demo HMAC signature verified server-side with a **non-secret demo key held in code/seed** (it protects nothing real); unverifiable payloads are rejected with `{error, code}`. Never reuse the LLM key or any real secret for this.
+- **Write scopes** shown in manifests are exercised only after `/api/execute` validated `approvedPlanId`; read-only before approval.
 - Security-test selection follows relevant OWASP input/secret/auth-gate cases (AT-SEC-*), not arbitrary compliance claims.
 
 ---
@@ -91,6 +103,7 @@ Based on: docs/PRD.md v0.1, docs/architecture.md v0.2, docs/design.md v0.1 (all 
 - **Required by tier (Standard):**
   - **Unit** — `twin.solver` math is mandatory and high-coverage (pure, deterministic): AT-TWIN-001-01, AT-IMP-001/002/003, AT-PLAN-001/002/004, AT-EXEC-002/003.
   - **Integration** — graph node execution + the conditional verifier→planner edge, budget cap, approval gate, honest node failure, deterministic re-run, no-external-call: AT-ORCH-002/003/004/005, AT-EVENT-001/002, AT-EXEC-001/004, AT-REL-001, AT-OPS-001, AT-PERF-001. Model boundary uses an **injected fake chat model** (LangChain fake/stub — asserts node invocation and routing; can simulate failure) — never a real paid call in unit/integration.
+  - **Connectors (P2)** — `tests/test_integrations.py`: manifests valid and `mode:"simulated"`, artifact shapes match `docs/contracts.md`, idempotent replay, audit ordering, bad-signature rejection, no outbound network, no persistence: AT-INT-001…006, AT-INT-sec-01.
   - **E2E/smoke** — happy path of Flow A: AT-UI-001-01 (+ manual usability pass).
   - **Security** — key/`sk-` scan + real-data review: AT-SEC-001/002.
 - **Evidence rule:** a passing test is an **observed run**, reported with the command and result. A written test is not a passed test. If a check cannot run (e.g. no gateway), report **`Not run`** — never invent a result (this is also §10 Forbidden).
@@ -105,6 +118,16 @@ Based on: docs/PRD.md v0.1, docs/architecture.md v0.2, docs/design.md v0.1 (all 
 - **Main:** auto-deploys to Vercel on push — so `main` must stay deployable; prefer PRs even as a solo dev, squash-merge.
 - **CI (confirm at scaffold):** a GitHub Actions workflow runs `ruff`, type check, and `pytest` on PR/push. A failing CI check blocks merge.
 - **Key hygiene in CI/history:** no secret in any commit; a pre-submit scan for `sk-` must come back empty (AT-SEC-001-01).
+
+---
+
+## 9a. Two-person parallel working rules (v0.3)
+
+- Two people work in parallel with separate Cursor agents; the split, file ownership and sync points are in `docs/BUILD_PLAN.md` v2 §4 and §9.
+- **Person A (engine)** owns `twin/ data/seed/ agents/ orchestration/ integrations/ api/ app.py config.py tests/ (not tests/ui/) pyproject requirements .github/` and the planning docs PRD/architecture/rules/phases. **Person B (experience)** owns `templates/ static/ branding.py FRONTEND.md docs/design.md tests/ui/`. Never edit the other person's files; message them instead.
+- **`docs/contracts.md` is the only coupling.** Additive optional fields: tell the other person. Breaking changes need both people (this is a §10 contract change).
+- `docs/memory.md`: each person edits only their own track section. `docs/phases.md`: status column only, one row at a time, rebase first.
+- Never work the same `TASK-*` at the same time; branches `feat/TASK-NNN-brief`; rebase on `main` at least every few hours; `main` must always boot.
 
 ---
 

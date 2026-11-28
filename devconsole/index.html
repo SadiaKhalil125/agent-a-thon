@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CompanyTwin engine test console</title>
+<style>
+  :root { --bg:#f4f3ef; --card:#fff; --ink:#1d1d1b; --mute:#66665f; --line:#dedcd4;
+          --ok:#1b7f4b; --bad:#b3261e; --warn:#a15c00; --accent:#8a4b1f; --info:#1f5a8a; --ai:#5b3fa0; --code:#1f5a8a; --sim:#a15c00; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 system-ui, "Segoe UI", sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:12px 22px; background:#1d1d1b; color:#fff; display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:17px; margin:0; font-weight:600; }
+  header small { color:#c4c4bc; }
+  main { max-width:1120px; margin:0 auto; padding:14px 22px 70px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:10px; margin:16px 0; padding:16px 18px; }
+  .step-title { display:flex; align-items:center; gap:10px; margin:0 0 4px; font-size:17px; }
+  .num { width:26px; height:26px; border-radius:50%; background:var(--accent); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; flex:none; }
+  .hint { color:var(--mute); margin:0 0 12px; }
+  button { font:inherit; padding:7px 14px; border:1px solid var(--line); border-radius:7px; background:#fff; cursor:pointer; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  input { font:inherit; padding:6px 8px; border:1px solid var(--line); border-radius:6px; }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .pill { display:inline-block; padding:1px 9px; border-radius:99px; font-size:12px; border:1px solid var(--line); background:#fff; white-space:nowrap; }
+  .pill.ok { color:var(--ok); border-color:var(--ok); } .pill.bad { color:var(--bad); border-color:var(--bad); }
+  .pill.warn { color:var(--warn); border-color:var(--warn); } .pill.info { color:var(--info); border-color:var(--info); }
+  .tag-ai { color:#fff; background:var(--ai); border-color:var(--ai); }
+  .tag-code { color:#fff; background:var(--code); border-color:var(--code); }
+  .tag-sim { color:#fff; background:var(--sim); border-color:var(--sim); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:12px; }
+  .box { border:1px solid var(--line); border-radius:8px; padding:10px 12px; background:#fbfaf7; }
+  .box h3 { margin:0 0 4px; font-size:14px; }
+  .legend { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px; }
+  .legend .box p { margin:4px 0 0; color:var(--mute); font-size:13px; }
+  .presets { display:grid; grid-template-columns:repeat(auto-fit, minmax(290px, 1fr)); gap:12px; }
+  .preset { border:2px solid var(--line); border-radius:8px; padding:10px 12px; cursor:pointer; background:#fff; }
+  .preset.sel { border-color:var(--accent); background:#fbf3ec; }
+  .preset .lbl { font-weight:600; }
+  .preset .d { color:var(--mute); font-size:13px; margin:4px 0; }
+  .agents { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 4px; align-items:center; }
+  .agent { padding:4px 12px; border-radius:99px; border:1px solid var(--line); background:#fff; font-size:13px; color:var(--mute); }
+  .agent.running { color:var(--info); border-color:var(--info); font-weight:600; }
+  .agent.done { color:var(--ok); border-color:var(--ok); } .agent.rejected { color:var(--bad); border-color:var(--bad); }
+  .agent.revised { color:var(--warn); border-color:var(--warn); } .agent.failed { color:#fff; background:var(--bad); border-color:var(--bad); }
+  .arrow { color:var(--mute); }
+  .node { border:1px solid var(--line); border-left:5px solid var(--line); border-radius:8px; padding:10px 12px; margin:10px 0; background:#fff; }
+  .node.running { border-left-color:var(--info); } .node.done { border-left-color:var(--ok); }
+  .node.rejected { border-left-color:var(--bad); } .node.revised { border-left-color:var(--warn); }
+  .node.failed { border-left-color:var(--bad); background:#fdf1f0; }
+  .node .head { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .node .role { color:var(--mute); font-size:13px; }
+  .node .text { white-space:pre-wrap; margin:8px 0 0; }
+  .node .what { color:var(--mute); font-size:13px; margin:2px 0 0; }
+  .facts { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .story { background:#fbf3ec; border:1px solid #ecd5c1; border-radius:8px; padding:10px 14px; margin:10px 0; }
+  .story ul { margin:4px 0 0 18px; padding:0; }
+  table { border-collapse:collapse; width:100%; font-size:14px; }
+  th, td { text-align:left; border-bottom:1px solid var(--line); padding:6px 8px; vertical-align:top; }
+  th { color:var(--mute); font-weight:600; font-size:13px; }
+  tr.rec td { background:#fbf3ec; }
+  .tl { border-collapse:separate; border-spacing:2px; width:auto; margin:6px 0; }
+  .tl th, .tl td { border:0; padding:0; width:22px; height:22px; text-align:center; font-size:10px; color:var(--mute); }
+  .tl td.name { width:auto; padding-right:8px; text-align:right; font-size:12px; color:var(--ink); white-space:nowrap; }
+  .tl td.cell { background:#eeede7; border-radius:3px; color:#fff; font-weight:600; }
+  pre { background:#1d1d1b; color:#e8e8e2; padding:10px; border-radius:6px; overflow:auto; max-height:320px; font-size:12px; margin:6px 0 0; }
+  .check { display:flex; gap:10px; align-items:baseline; padding:5px 0; border-bottom:1px dashed var(--line); }
+  .check .name { flex:2; } .check .detail { color:var(--mute); font-size:13px; flex:1; }
+  .muted { color:var(--mute); }
+  .bar { height:8px; background:#e7e5dd; border-radius:4px; overflow:hidden; width:120px; }
+  .bar > span { display:block; height:100%; background:var(--accent); width:0; transition:width .2s; }
+  details summary { cursor:pointer; color:var(--mute); }
+  .scope td:first-child { white-space:nowrap; font-weight:600; width:200px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>CompanyTwin engine test console</h1>
+  <small>Developer page. Not the product UI. All company data is fabricated (fictional "Northstar Systems").</small>
+  <span id="health" class="pill">checking...</span>
+  <span id="passcode-wrap" hidden><label>Passcode <input id="passcode" type="password" size="12" autocomplete="off"></label></span>
+</header>
+<main>
+
+<section>
+  <h2 class="step-title">What is real on this page?</h2>
+  <div class="legend">
+    <div class="box"><span class="pill tag-ai">AI wrote this</span><p>The words in each agent card (Impact, HR, Finance, Planner, Verifier) come from a <b>real LLM call</b> through the configured provider. A full run makes 7 calls. If the model is down, the step shows "failed" and nothing is invented.</p></div>
+    <div class="box"><span class="pill tag-code">Computed by code</span><p>Every number (completion day, cost, deadline met, conflicts) comes from the deterministic solver, <b>never from the AI</b>. The Verifier's approve or reject decision also comes from the solver; the AI only writes the reason.</p></div>
+    <div class="box"><span class="pill tag-sim">Simulated data</span><p>The company, people, projects, invoices and the HRIS / tracker / ERP / CRM / calendar connectors are <b>fabricated and in-process</b>. No real system is contacted.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2 class="step-title"><span class="num">1</span> Pick a scenario</h2>
+  <p class="hint">Each card is an event "arriving" from a connected system. Three are disruptions (someone is out); the CRM one is a <b>client meeting</b> where Business Development logs new work and Sales, HR and Finance read the same record. The same five agents handle both kinds.</p>
+  <div id="presets" class="presets"></div>
+  <div id="state-view" style="margin-top:14px"></div>
+  <div class="row" style="margin-top:8px"><button id="btn-state">Reload company</button><button id="btn-reset">Reset to initial state</button></div>
+</section>
+
+<section>
+  <h2 class="step-title"><span class="num">2</span> Run the AI agents</h2>
+  <p class="hint">Impact first, then HR and Finance in parallel, then the Planner proposes plans, then the Verifier checks them. If the Verifier rejects a plan, the Planner revises once.</p>
+  <div class="row">
+    <button id="btn-run" class="primary">Run the agents (real LLM)</button>
+    <button id="btn-stop" disabled>Stop</button>
+    <span class="muted">Model calls used</span><div class="bar"><span id="budget-bar"></span></div><span id="budget-text" class="muted">0 / 0</span>
+    <span id="elapsed" class="muted"></span>
+  </div>
+  <div id="agents" class="agents"></div>
+  <div id="story"></div>
+  <div id="trail"></div>
+</section>
+
+<section>
+  <h2 class="step-title"><span class="num">3</span> Compare the plans</h2>
+  <p class="hint">All numbers here are <span class="pill tag-code">Computed by code</span>. "verified" means the plan is <b>feasible</b> (no double-booking or other conflicts); it can still miss a deadline, so compare the Deadlines column. "rejected" means unsafe, so it cannot be approved. The coloured bars show who works on what, by working day.</p>
+  <div id="verdict"></div>
+  <div id="plans" class="muted">Run the agents to see plans.</div>
+</section>
+
+<section>
+  <h2 class="step-title"><span class="num">4</span> Approve and check the outcome</h2>
+  <p class="hint">Approving applies the plan to the twin (<code>/api/execute</code>), then the engine compares the result with what the plan promised (<code>/api/outcome</code>). Try approving the rejected plan: the engine must refuse.</p>
+  <div id="exec-view" class="muted">Run the agents, then press "Approve" on a plan.</div>
+</section>
+
+<section>
+  <h2 class="step-title"><span class="num">5</span> Automatic self-checks (no AI calls, free)</h2>
+  <p class="hint">Quick API checks against the rules in <code>docs/contracts.md</code>: approval gate (including the client-meeting scenario), tampering, size limits, security headers, passcode, simulated connectors.</p>
+  <div class="row"><button id="btn-checks" class="primary">Run all checks</button><span id="checks-summary" class="muted"></span></div>
+  <div id="checks"></div>
+</section>
+
+<section>
+  <h2 class="step-title">Scope: what works today and what does not</h2>
+  <table class="scope">
+    <tr><td>Scenarios</td><td>Four, defined in the seed. Three are disruptions (developer out days 1 to 5, out days 1 to 3, out and contractor late). The fourth is a client meeting: Business Development logs a new 5-day Loyalty API add-on in the CRM and the same agents decide whether Northstar can say yes. There is no form for a free-form event yet; the API refuses unknown scenario ids. The engine itself accepts other "person unavailable on days X to Y" windows (tested at engine level).</td></tr>
+    <tr><td>Company</td><td>One fabricated company, Northstar Systems: 4 people, 3 tasks, 2 projects, 1 invoice. The client-meeting scenario adds a third project, task, commitment and invoice inside that scenario only. No real or uploaded data.</td></tr>
+    <tr><td>Plan options</td><td>Always the same three strategies (wait or queue, reassign to the backup person, bring in the contractor) plus one revision of the backup, applied to the first task the event touches (or the new work). If nobody else is qualified the engine refuses honestly instead of guessing.</td></tr>
+    <tr><td>Departments</td><td>No separate Sales or BD agent. The meeting record (who logged it, what was asked, the quoted value, who it is shared with) is data the existing Impact, HR/Resource and Finance agents read.</td></tr>
+    <tr><td>AI</td><td>Real LLM for the five agent steps; the numbers and the verdict are code. In automated tests the model is replaced by a scripted fake, so tests never call a real model.</td></tr>
+    <tr><td>Connectors</td><td>Simulated (read-only). No webhooks, write actions, audit log or Action Center yet.</td></tr>
+    <tr><td>Deployment</td><td>Works locally. Not yet deployed to Vercel.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2 class="step-title">Raw data</h2>
+  <details><summary>Stream events (<span id="log-count">0</span>)</summary><pre id="log"></pre></details>
+  <details><summary>Last API response</summary><pre id="last">(none yet)</pre></details>
+</section>
+
+</main>
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const state = { data: null, plans: [], recommended: null, controller: null, passcodeRequired: false, presetId: null };
+
+function el(tag, attrs, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") n.className = v; else if (k === "onclick") n.onclick = v; else n.setAttribute(k, v);
+  }
+  for (const kid of kids.flat()) if (kid !== null && kid !== undefined) n.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  return n;
+}
+const pill = (text, kind) => el("span", { class: "pill " + (kind || "") }, text);
+const clear = (n) => { while (n.firstChild) n.removeChild(n.firstChild); };
+
+function headers() {
+  const h = { "Content-Type": "application/json" };
+  const pass = $("passcode").value;
+  if (pass) h["X-Demo-Passcode"] = pass;
+  return h;
+}
+async function api(method, path, body, rawBody) {
+  const res = await fetch(path, { method, headers: headers(), body: rawBody ?? (body ? JSON.stringify(body) : undefined) });
+  let json = null; const text = await res.text();
+  try { json = text ? JSON.parse(text) : null; } catch { json = { _nonJson: text.slice(0, 200) }; }
+  $("last").textContent = method + " " + path + " -> " + res.status + "\n" + JSON.stringify(json, null, 2);
+  return { status: res.status, json, headers: res.headers };
+}
+
+/* ---- health ---- */
+async function loadHealth() {
+  try {
+    const h = (await api("GET", "/api/health")).json;
+    state.passcodeRequired = !!h.passcodeRequired;
+    $("passcode-wrap").hidden = !state.passcodeRequired;
+    const b = $("health"); b.className = "pill " + (h.llm_configured ? "ok" : "warn");
+    b.textContent = h.llm_configured ? "Server up. Real AI connected." : "Server up. AI NOT configured: runs will fail honestly.";
+  } catch { const b = $("health"); b.className = "pill bad"; b.textContent = "Server unreachable"; }
+}
+
+/* ---- state / presets ---- */
+const personName = (id) => (state.data?.people || []).find((p) => p.id === id)?.name || id;
+const taskName = (id) => id;
+
+function renderPresets() {
+  const box = $("presets"); clear(box);
+  for (const p of state.data.presets) {
+    const card = el("div", { class: "preset" + (p.id === state.presetId ? " sel" : ""), onclick: () => { state.presetId = p.id; renderPresets(); } },
+      el("div", { class: "lbl" }, p.label),
+      el("div", { class: "d" }, p.description),
+      p.event?.demand ? el("div", { class: "d" }, el("b", {}, "The ask: "), p.event.demand.taskName + ", " + p.event.demand.days + " working days, due day " + p.event.demand.dueDay + ", quoted " + p.event.demand.invoiceAmount + " " + p.event.demand.currency + ". Shared with: " + ((p.source?.payload?.sharedWith || []).join(", ") || "n/a") + ".") : null,
+      p.source ? pill("arrives from " + p.source.system + " (" + p.source.eventType + ")", "tag-sim") : null);
+    box.append(card);
+  }
+}
+function renderState() {
+  const d = state.data; if (!d) return;
+  if (!state.presetId || !d.presets.some((p) => p.id === state.presetId)) state.presetId = d.presets[0]?.id;
+  renderPresets();
+  const v = $("state-view"); clear(v);
+  const g = el("div", { class: "grid" });
+  g.append(el("div", { class: "box" }, el("h3", {}, d.company?.name || "Company"), el("div", { class: "muted" }, "Recovery budget: " + d.budget?.recoveryBudget + " " + d.budget?.currency),
+    el("div", { class: "muted" }, "Contractor (fixed cost): " + d.contractor?.fixedCost + " " + d.contractor?.currency),
+    el("div", { class: "muted" }, "Planning horizon: " + d.horizonDays + " working days")));
+  g.append(el("div", { class: "box" }, el("h3", {}, "What depends on what"), (d.chain || []).map((c, i) => el("div", {}, (i ? "then " : "") + c.label))));
+  g.append(el("div", { class: "box" }, el("h3", {}, "People"), (d.people || []).map((p) => el("div", {}, el("b", {}, p.name), " ", el("span", { class: "muted" }, (p.skills || []).join(", ") + (p.assignments?.length ? " (already booked on " + p.assignments.length + " item(s))" : "")))))); 
+  g.append(el("div", { class: "box" }, el("h3", {}, "Deadlines and money at stake"),
+    (d.milestones || []).map((m) => el("div", {}, (m.name || m.id) + ": due working day " + m.dueDay)),
+    (d.invoices || []).map((i) => el("div", {}, "Invoice " + i.id + ": " + i.amount + " " + i.currency + " (paid when the milestone is met)"))));
+  v.append(g);
+}
+async function loadState() {
+  const r = await api("GET", "/api/state");
+  if (r.status === 200) { state.data = r.json; renderState(); } else { $("state-view").textContent = "State failed: HTTP " + r.status; }
+}
+
+/* ---- agents run ---- */
+const ORDER = ["impact", "hr_resource", "finance", "planner", "verifier"];
+const LABEL = { impact: "Impact", hr_resource: "HR / Resource", finance: "Finance", planner: "Planner", verifier: "Verifier" };
+const WHAT = {
+  impact: "Works out what the disruption breaks: which tasks slip, which deadlines and invoices are at risk.",
+  hr_resource: "Looks at who is free, who is already booked, and who could cover.",
+  finance: "Looks at the cost of each option, the recovery budget, and the milestone-gated invoice.",
+  planner: "Proposes the recovery plans (from the solver's options) and recommends one.",
+  verifier: "Independently re-checks every plan for conflicts. The decision is computed; the AI only explains it.",
+};
+const nodeBoxes = {}; const log = []; let seq = {}; const agentState = {};
+function addLog(ev, data) { log.push(ev + " " + JSON.stringify(data)); $("log").textContent = log.join("\n"); $("log-count").textContent = log.length; }
+function setBudget(b) { if (!b) return; $("budget-text").textContent = b.used + " / " + b.max; $("budget-bar").style.width = (b.max ? Math.min(100, (b.used / b.max) * 100) : 0) + "%"; }
+function renderAgents() {
+  const box = $("agents"); clear(box);
+  ORDER.forEach((n, i) => {
+    if (i) box.append(el("span", { class: "arrow" }, n === "finance" ? "+" : "\u2192"));
+    box.append(el("span", { class: "agent " + (agentState[n] || "") }, LABEL[n]));
+  });
+}
+function nodeBox(key, node, role) {
+  if (nodeBoxes[key]) return nodeBoxes[key];
+  const second = key.endsWith("#2");
+  const head = el("div", { class: "head" },
+    el("strong", {}, LABEL[node] + (second ? " (second pass)" : "")),
+    el("span", { class: "role" }, role || ""),
+    el("span", { class: "pill info", "data-st": "1" }, "running"));
+  const body = el("div", {});
+  const box = el("div", { class: "node running" }, head, el("div", { class: "what" }, WHAT[node] + (second && node === "planner" ? " This time it revises the plan the Verifier rejected." : "")), body);
+  box._t0 = performance.now(); box._head = head; box._body = body;
+  $("trail").append(box); nodeBoxes[key] = box; return box;
+}
+const FACT_KIND = { fact: "tag-sim", calculated: "tag-code", estimate: "warn" };
+const FACT_NAME = { fact: "from data", calculated: "computed", estimate: "estimate" };
+function handleEvent(ev, d) {
+  addLog(ev, d);
+  if (ev === "run_started") setBudget(d.budget);
+  else if (ev === "budget") setBudget(d);
+  else if (ev === "node_started") {
+    seq[d.node] = (seq[d.node] || 0) + 1; agentState[d.node] = "running"; renderAgents();
+    nodeBox(d.node + "#" + seq[d.node], d.node, d.role);
+  } else if (ev === "node_completed") {
+    const box = nodeBox(d.node + "#" + (seq[d.node] || 1), d.node, d.role);
+    const ms = Math.round(performance.now() - box._t0);
+    box.className = "node " + (d.status || "done"); agentState[d.node] = d.status || "done"; renderAgents();
+    const st = box._head.querySelector("[data-st]"); st.className = "pill " + (d.status === "rejected" ? "bad" : d.status === "revised" ? "warn" : "ok");
+    st.textContent = d.status + " in " + (ms / 1000).toFixed(1) + " s";
+    box._head.append(pill("AI wrote this", "tag-ai"));
+    clear(box._body);
+    box._body.append(el("div", { class: "text" }, String(d.output || "")));
+    if ((d.derivedFacts || []).length) {
+      box._body.append(el("details", { style: "margin-top:8px" },
+        el("summary", {}, "Facts this step used (" + d.derivedFacts.length + "): numbers come from data or code, not from the AI"),
+        el("div", { class: "facts" }, d.derivedFacts.map((f) => el("span", { class: "pill " + (FACT_KIND[f.tag] || "") }, FACT_NAME[f.tag] + " | " + f.label + ": " + f.value)))));
+    }
+    if ((d.evidenceUsed || []).length) box._body.append(el("div", { class: "facts" }, d.evidenceUsed.map((e) => pill("evidence: " + (e.label || e.ref) + (e.source ? " [" + e.source + "]" : ""), ""))));
+    if (d.budget) setBudget(d.budget);
+  } else if (ev === "failed") {
+    const key = d.node + "#" + (seq[d.node] || 1);
+    const box = nodeBox(d.node === "run" ? "run#1" : key, d.node === "run" ? "impact" : d.node, "");
+    box.className = "node failed"; agentState[d.node] = "failed"; renderAgents();
+    const st = box._head.querySelector("[data-st]"); st.className = "pill bad"; st.textContent = "failed (" + (d.code || "?") + ")";
+    clear(box._body); box._body.append(el("div", { class: "text" }, d.message || ""), el("div", { class: "muted" }, "Nothing was made up: the run stops here."));
+  } else if (ev === "done") {
+    state.plans = d.plans || []; state.recommended = d.recommendedPlanId || null;
+    renderPlans(d); renderStory(d);
+  }
+}
+function planName(id) { return state.plans.find((p) => p.id === id)?.name || id; }
+function renderStory(done) {
+  const s = $("story"); clear(s);
+  const rej = state.plans.filter((p) => p.status === "rejected");
+  const rev = state.plans.filter((p) => p.status === "revised");
+  const items = [];
+  items.push("The Planner put " + state.plans.length + " options on the table.");
+  rej.forEach((p) => items.push("The Verifier rejected \"" + p.name + "\": " + (p.violatedConstraints?.length ? p.violatedConstraints.join("; ") : "it has conflicts") + "."));
+  rev.forEach((p) => items.push("The Planner revised it into \"" + p.name + "\", which passed the second check."));
+  items.push("Recommended: \"" + planName(state.recommended) + "\". Final verdict: " + (done.verdict?.decision || "?") + ".");
+  s.append(el("div", { class: "story" }, el("b", {}, "What happened"), el("ul", {}, items.map((t) => el("li", {}, t)))));
+}
+
+async function runAgents() {
+  const presetId = state.presetId; if (!presetId) return;
+  clear($("trail")); clear($("story")); for (const k of Object.keys(nodeBoxes)) delete nodeBoxes[k]; for (const k of Object.keys(agentState)) delete agentState[k];
+  seq = {}; log.length = 0; $("log").textContent = ""; renderAgents();
+  $("plans").textContent = "Running..."; clear($("verdict")); $("exec-view").textContent = "Approve a plan after the run.";
+  $("btn-run").disabled = true; $("btn-stop").disabled = false; setBudget({ used: 0, max: 0 });
+  state.controller = new AbortController();
+  const t0 = performance.now();
+  const timer = setInterval(() => { $("elapsed").textContent = ((performance.now() - t0) / 1000).toFixed(1) + " s"; }, 200);
+  try {
+    const res = await fetch("/api/run/stream", { method: "POST", headers: headers(), body: JSON.stringify({ presetId }), signal: state.controller.signal });
+    if (!res.ok || !res.body) {
+      const t = await res.text(); $("plans").textContent = "Run refused.";
+      $("trail").append(el("div", { class: "node failed" }, "HTTP " + res.status + " " + t.slice(0, 300)));
+      return;
+    }
+    const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = "";
+    for (;;) {
+      const { value, done } = await reader.read(); if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let i;
+      while ((i = buf.indexOf("\n\n")) >= 0) {
+        const frame = buf.slice(0, i); buf = buf.slice(i + 2);
+        let ev = "message", data = "";
+        for (const line of frame.split("\n")) { if (line.startsWith("event:")) ev = line.slice(6).trim(); else if (line.startsWith("data:")) data += line.slice(5).trim(); }
+        if (data) { try { handleEvent(ev, JSON.parse(data)); } catch (e) { addLog("parse_error", { message: String(e) }); } }
+      }
+    }
+    if (!state.plans.length) $("plans").textContent = "No plans were produced (see the failed step above).";
+  } catch (e) {
+    if (e.name !== "AbortError") $("trail").append(el("div", { class: "node failed" }, "Stream error: " + e.message));
+  } finally {
+    clearInterval(timer); $("btn-run").disabled = false; $("btn-stop").disabled = true;
+  }
+}
+
+/* ---- plans ---- */
+const COLORS = ["#8a4b1f", "#1f5a8a", "#5b3fa0", "#1b7f4b", "#a15c00"];
+function timeline(plan) {
+  const horizon = Math.min(state.data?.horizonDays || 20, 24);
+  const taskColor = {};
+  [...new Set(state.plans.flatMap((x) => (x.schedule || []).map((s) => s.taskId)))].sort().forEach((id, i) => { taskColor[id] = COLORS[i % COLORS.length]; });
+  const byPerson = {};
+  for (const s of plan.schedule || []) (byPerson[s.personId] ||= []).push(s);
+  const t = el("table", { class: "tl" });
+  const head = el("tr", {}, el("th", {}));
+  for (let d = 1; d <= horizon; d++) head.append(el("th", {}, d));
+  t.append(head);
+  for (const [pid, segs] of Object.entries(byPerson)) {
+    const row = el("tr", {}, el("td", { class: "name" }, personName(pid)));
+    for (let d = 1; d <= horizon; d++) {
+      const seg = segs.find((s) => d >= s.startDay && d <= s.endDay);
+      const c = el("td", { class: "cell", title: seg ? seg.taskId + " day " + d : "" }, seg ? seg.taskId.replace(/^T-/, "").slice(0, 3) : "");
+      if (seg) c.style.background = taskColor[seg.taskId] || "#555";
+      row.append(c);
+    }
+    t.append(row);
+  }
+  return t;
+}
+function renderPlans(done) {
+  const v = $("verdict"); clear(v);
+  if (done.verdict) v.append(el("p", {}, pill("Final verdict: " + done.verdict.decision, done.verdict.decision === "approved" ? "ok" : "bad"), " ", done.verdict.reason || ""));
+  const box = $("plans"); clear(box);
+  const table = el("table", {}, el("tr", {}, ["Plan", "Status", "Projects done (working day)", "Extra cost", "Invoices", "Budget", "Deadlines", ""].map((h) => el("th", {}, h))));
+  for (const p of state.plans) {
+    const pc = p.projectCompletion || {};
+    const kind = p.status === "rejected" ? "bad" : p.status === "revised" ? "warn" : "ok";
+    const row = el("tr", { class: p.id === state.recommended ? "rec" : "" },
+      el("td", {}, el("b", {}, p.name), p.id === state.recommended ? el("span", {}, " ", pill("recommended", "info")) : null, el("div", { class: "muted" }, p.summary || "")),
+      el("td", {}, pill(p.status, kind)),
+      el("td", {}, Object.entries(pc).map(([k, v]) => el("div", {}, "Project " + k + ": " + (v === null ? "not within horizon" : "day " + v)))),
+      el("td", {}, String(p.incrementalCost)),
+      el("td", {}, pill(p.invoiceEligible ? "all can be invoiced" : "some blocked", p.invoiceEligible ? "ok" : "bad")),
+      el("td", {}, pill(p.budgetFit ? "fits" : "over", p.budgetFit ? "ok" : "bad")),
+      el("td", {}, (p.deadlines || []).map((d) => el("div", {}, pill((d.name || "deadline") + " day " + d.dueDay + ": " + (d.met ? "met" : "missed"), d.met ? "ok" : "bad")))),
+      el("td", {}, el("button", { class: "primary", onclick: () => approve(p.id) }, "Approve")));
+    table.append(row);
+  }
+  box.append(table);
+  box.append(el("h3", { style: "margin:16px 0 4px" }, "Who works when"));
+  for (const p of state.plans) {
+    box.append(el("div", { style: "margin-top:8px" }, el("b", {}, p.name), " ", pill(p.status, p.status === "rejected" ? "bad" : p.status === "revised" ? "warn" : "ok"),
+      (p.violatedConstraints || []).length ? el("div", { class: "muted" }, "Problems: " + p.violatedConstraints.join("; ")) : null, timeline(p)));
+  }
+}
+
+/* ---- execute / outcome ---- */
+async function approve(planId) {
+  const presetId = state.presetId; const v = $("exec-view"); clear(v);
+  const ex = await api("POST", "/api/execute", { presetId, approvedPlanId: planId });
+  v.append(el("h3", {}, "Approve \"" + planName(planId) + "\": ", pill(ex.status === 200 ? "applied" : "refused by the engine (HTTP " + ex.status + (ex.json?.code ? ", " + ex.json.code : "") + ")", ex.status === 200 ? "ok" : "bad")));
+  if (ex.status !== 200) { v.append(el("p", {}, ex.json?.error || "", " This is the approval gate working as designed.")); return; }
+  const t = ex.json.twin;
+  const done = Object.entries(t.projectCompletion).map(([k, d]) => "project " + k + " done day " + d).join(", ");
+  v.append(el("p", {}, "After applying: " + done + ". Invoices " + (t.invoiceEligible ? "can all be raised" : "partly blocked") + ". Extra cost " + t.incrementalCost + ", budget left " + t.budgetRemaining + ". Conflicts: " + t.conflicts.length + "."));
+  const out = await api("POST", "/api/outcome", { presetId, approvedPlanId: planId, twin: t });
+  v.append(el("h3", {}, "Did reality match the plan? ", pill(out.json?.match ? "yes, identical" : "NO, mismatch", out.json?.match ? "ok" : "bad")));
+  if ((out.json?.deltas || []).length) v.append(el("table", {}, out.json.deltas.map((d) => el("tr", {}, el("td", {}, d.field), el("td", {}, "expected " + d.expected), el("td", {}, "actual " + d.actual)))));
+}
+
+/* ---- checks ---- */
+function checkRow(name, ok, detail) {
+  $("checks").append(el("div", { class: "check" }, pill(ok === null ? "skipped" : ok ? "PASS" : "FAIL", ok === null ? "warn" : ok ? "ok" : "bad"), el("span", { class: "name" }, name), el("span", { class: "detail" }, detail)));
+  return ok;
+}
+async function runChecks() {
+  clear($("checks")); $("btn-checks").disabled = true;
+  const results = [];
+  const preset = state.data?.presets?.[0]?.id; const note = (ok) => results.push(ok);
+  try {
+    let r = await api("GET", "/api/health");
+    note(checkRow("Server health answers", r.status === 200 && r.json.ok === true, "HTTP " + r.status));
+    r = await api("GET", "/api/state");
+    note(checkRow("Company state loads (presets and tasks present)", r.status === 200 && r.json.presets?.length > 0 && r.json.tasks?.length > 0, "presets " + (r.json.presets?.length ?? 0) + ", tasks " + (r.json.tasks?.length ?? 0)));
+    if (!preset) { checkRow("Remaining checks need a preset", false, "state not loaded"); return; }
+    r = await api("POST", "/api/run/stream", { presetId: "does-not-exist" });
+    note(checkRow("Unknown disruption is refused", r.status === 400 && r.json.code === "ValidationError", "HTTP " + r.status));
+    r = await api("POST", "/api/execute", { presetId: preset, approvedPlanId: "plan-backup" });
+    note(checkRow("Approval gate refuses the unsafe backup plan (409)", r.status === 409 && r.json.code === "PlanRejected", "HTTP " + r.status));
+    r = await api("POST", "/api/execute", { presetId: preset, approvedPlanId: "plan-nope" });
+    note(checkRow("Approval gate refuses an unknown plan (400)", r.status === 400, "HTTP " + r.status));
+    r = await api("POST", "/api/execute", { presetId: preset, approvedPlanId: "plan-contractor" });
+    const okExec = r.status === 200 && r.json.applied === true;
+    note(checkRow("A safe plan (contractor) can be approved", okExec, "HTTP " + r.status));
+    const a = await api("POST", "/api/execute", { presetId: preset, approvedPlanId: "plan-contractor" });
+    note(checkRow("Approving twice gives the same result (stateless)", okExec && JSON.stringify(a.json.twin) === JSON.stringify(r.json.twin), "identical"));
+    const meeting = state.data.presets.find((p) => p.event?.demand);
+    if (meeting) {
+      const due = meeting.event.demand.dueDay;
+      let m = await api("POST", "/api/execute", { presetId: meeting.id, approvedPlanId: "plan-backup" });
+      note(checkRow("Client meeting: reassigning without regard to bookings is refused (409)", m.status === 409 && m.json.code === "PlanRejected", "HTTP " + m.status));
+      m = await api("POST", "/api/execute", { presetId: meeting.id, approvedPlanId: "plan-contractor" });
+      const c = m.json?.twin?.projectCompletion?.C;
+      note(checkRow("Client meeting: the contractor plan delivers the new work by its due day", m.status === 200 && c !== null && c <= due && m.json.twin.milestones.every((x) => x.met), "Project C done day " + c + ", due day " + due));
+      m = await api("GET", "/mock/crm/meetings");
+      note(checkRow("The CRM exposes the meeting record shared with other departments", m.status === 200 && Array.isArray(m.json) && m.json.length >= 1 && (m.json[0].sharedWith || []).length >= 2, "shared with " + ((m.json?.[0]?.sharedWith || []).join(", "))));
+    }
+    if (okExec) {
+      const clean = await api("POST", "/api/outcome", { presetId: preset, approvedPlanId: "plan-contractor", twin: r.json.twin });
+      note(checkRow("Untouched result matches the plan", clean.status === 200 && clean.json.match === true, "match " + clean.json?.match));
+      const bad = JSON.parse(JSON.stringify(r.json.twin)); bad.schedule[0].endDay += 1;
+      const t = await api("POST", "/api/outcome", { presetId: preset, approvedPlanId: "plan-contractor", twin: bad });
+      note(checkRow("A tampered schedule is caught", (t.status === 200 && t.json.match === false) || t.status === 400, "HTTP " + t.status + ", match " + t.json?.match));
+    }
+    r = await api("POST", "/api/reset");
+    note(checkRow("Reset returns the initial company", r.status === 200 && r.json.presets?.length > 0, "HTTP " + r.status));
+    r = await api("POST", "/api/execute", null, JSON.stringify({ presetId: "x".repeat(70000), approvedPlanId: "y" }));
+    note(checkRow("Oversize request is refused (413)", r.status === 413, "HTTP " + r.status));
+    r = await api("POST", "/api/execute", null, "not json");
+    note(checkRow("Malformed request gets a safe error and is not echoed", r.status >= 400 && r.status < 500 && !JSON.stringify(r.json).includes("not json"), "HTTP " + r.status));
+    r = await api("GET", "/api/integrations");
+    note(checkRow("5 connectors are listed and marked simulated", r.status === 200 && (r.json.integrations || r.json).length === 5 && JSON.stringify(r.json).includes('"simulated"'), "HTTP " + r.status));
+    r = await api("GET", "/mock/hris/employees");
+    note(checkRow("Mock HRIS answers and says it is simulated", r.status === 200 && r.headers.get("x-simulated") === "true", "X-Simulated=" + r.headers.get("x-simulated")));
+    r = await api("GET", "/api/health");
+    note(checkRow("Security headers are set", r.headers.get("x-content-type-options") === "nosniff" && r.headers.get("x-frame-options") === "DENY", "nosniff=" + r.headers.get("x-content-type-options")));
+    if (state.passcodeRequired) {
+      const saved = $("passcode").value; $("passcode").value = "wrong-passcode";
+      r = await api("POST", "/api/run/stream", { presetId: preset }); $("passcode").value = saved;
+      note(checkRow("A wrong passcode is refused (401)", r.status === 401 && r.json.code === "Unauthorized", "HTTP " + r.status));
+    } else { checkRow("Passcode check", null, "no DEMO_PASSCODE set on this server"); }
+  } catch (e) { checkRow("Checks aborted", false, e.message); }
+  finally {
+    const pass = results.filter(Boolean).length;
+    $("checks-summary").textContent = pass + " of " + results.length + " passed";
+    $("btn-checks").disabled = false;
+  }
+}
+
+/* ---- wire up ---- */
+$("btn-state").onclick = loadState;
+$("btn-reset").onclick = async () => { const r = await api("POST", "/api/reset"); if (r.status === 200) { state.data = r.json; renderState(); } };
+$("btn-run").onclick = runAgents;
+$("btn-stop").onclick = () => state.controller && state.controller.abort();
+$("btn-checks").onclick = runChecks;
+$("passcode").value = sessionStorage.getItem("ct-pass") || "";
+$("passcode").oninput = () => sessionStorage.setItem("ct-pass", $("passcode").value);
+renderAgents();
+// Optional: /dev?preset=<id> picks a scenario; ?autorun=1 starts a run on load; ?checks=1 runs the self-checks.
+loadHealth().then(loadState).then(() => {
+  const q = new URLSearchParams(location.search);
+  const wanted = q.get("preset");
+  if (wanted && state.data?.presets.some((p) => p.id === wanted)) { state.presetId = wanted; renderPresets(); }
+  if (q.has("checks")) runChecks();
+  if (q.has("autorun")) runAgents();
+});
+</script>
+</body>
+</html>

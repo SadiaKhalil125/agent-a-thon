@@ -1,0 +1,248 @@
+{
+  "company": {
+    "id": "northstar",
+    "name": "Northstar Systems",
+    "description": "Fictional mid-size software services company. All names, figures and customers are fabricated for the SSI Agent-A-Thon demo."
+  },
+  "horizonDays": 30,
+  "customers": [
+    { "id": "CUST-1", "name": "Orbit Retail (fictional)", "source": { "system": "crm", "externalId": "ACC-1001" } },
+    { "id": "CUST-2", "name": "Harbor Logistics (fictional)", "source": { "system": "crm", "externalId": "ACC-1002" } }
+  ],
+  "projects": [
+    { "id": "P-A", "name": "Project A: Payment Integration", "customerId": "CUST-1" },
+    { "id": "P-B", "name": "Project B: Billing Hotfix", "customerId": "CUST-2" }
+  ],
+  "people": [
+    {
+      "id": "PER-DEV1", "source": { "system": "hris", "externalId": "HR-1001" },
+      "name": "Dana Reyes",
+      "role": "Senior Developer",
+      "kind": "employee",
+      "skills": ["integration", "backend"],
+      "availability": [{ "startDay": 1, "endDay": 30 }]
+    },
+    {
+      "id": "PER-BACKUP", "source": { "system": "hris", "externalId": "HR-1002" },
+      "name": "Marcus Lee",
+      "role": "Developer",
+      "kind": "employee",
+      "skills": ["integration", "backend"],
+      "availability": [{ "startDay": 2, "endDay": 30 }]
+    },
+    {
+      "id": "PER-QA", "source": { "system": "hris", "externalId": "HR-1003" },
+      "name": "Quinn Okafor",
+      "role": "QA Engineer",
+      "kind": "employee",
+      "skills": ["qa"],
+      "availability": [{ "startDay": 1, "endDay": 30 }]
+    },
+    {
+      "id": "PER-CTR", "source": { "system": "hris", "externalId": "HR-1004" },
+      "name": "Priya Nair (contractor)",
+      "role": "Contract Developer",
+      "kind": "contractor",
+      "skills": ["integration", "backend"],
+      "availability": [{ "startDay": 1, "endDay": 30 }]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T-A-INT", "source": { "system": "tracker", "externalId": "NS-142" },
+      "projectId": "P-A",
+      "name": "Payment gateway integration",
+      "type": "integration",
+      "days": 4,
+      "dependsOn": [],
+      "requiredSkill": "integration",
+      "defaultAssigneeId": "PER-DEV1"
+    },
+    {
+      "id": "T-A-QA", "source": { "system": "tracker", "externalId": "NS-143" },
+      "projectId": "P-A",
+      "name": "Integration QA and acceptance testing",
+      "type": "qa",
+      "days": 2,
+      "dependsOn": ["T-A-INT"],
+      "requiredSkill": "qa",
+      "defaultAssigneeId": "PER-QA"
+    },
+    {
+      "id": "T-B-FIX", "source": { "system": "tracker", "externalId": "NS-150" },
+      "projectId": "P-B",
+      "name": "Billing hotfix",
+      "type": "integration",
+      "days": 2,
+      "dependsOn": [],
+      "requiredSkill": "integration",
+      "defaultAssigneeId": "PER-BACKUP"
+    }
+  ],
+  "assignments": [
+    { "taskId": "T-B-FIX", "personId": "PER-BACKUP", "startDay": 2, "endDay": 3 }
+  ],
+  "milestones": [
+    {
+      "id": "M-A",
+      "projectId": "P-A",
+      "name": "Project A acceptance",
+      "dueDay": 6,
+      "gatedByTaskIds": ["T-A-QA"]
+    },
+    {
+      "id": "M-B",
+      "projectId": "P-B",
+      "name": "Project B delivery",
+      "dueDay": 4,
+      "gatedByTaskIds": ["T-B-FIX"]
+    }
+  ],
+  "commitments": [
+    {
+      "id": "CM-1", "source": { "system": "crm", "externalId": "COM-5001" },
+      "customerId": "CUST-1",
+      "milestoneId": "M-A",
+      "description": "Orbit Retail go-live of the payment integration by working day 6"
+    },
+    {
+      "id": "CM-2", "source": { "system": "crm", "externalId": "COM-5002" },
+      "customerId": "CUST-2",
+      "milestoneId": "M-B",
+      "description": "Harbor Logistics billing hotfix delivered by working day 4"
+    }
+  ],
+  "invoices": [
+    {
+      "id": "INV-1", "source": { "system": "erp", "externalId": "ERP-INV-90001" },
+      "milestoneId": "M-A",
+      "amount": 8000,
+      "currency": "USD",
+      "description": "Project A acceptance invoice, eligible once milestone M-A is accepted"
+    }
+  ],
+  "budget": { "recoveryBudget": 2000, "currency": "USD" },
+  "contractor": { "personId": "PER-CTR", "fixedCost": 1500, "currency": "USD" },
+  "presets": [
+    {
+      "id": "dev-out-1-5",
+      "label": "Primary developer out, working days 1 to 5",
+      "description": "HR approves leave for the primary developer. The integration task slips and Project A's milestone and invoice are at risk.",
+      "event": {
+        "unavailable": [{ "personId": "PER-DEV1", "startDay": 1, "endDay": 5 }]
+      },
+      "source": {
+        "system": "hris",
+        "eventType": "leave.approved",
+        "payload": {
+          "employeeId": "HR-1001",
+          "employeeName": "Dana Reyes",
+          "leaveType": "medical",
+          "startDay": 1,
+          "endDay": 5,
+          "approvedBy": "hr.ops@example.com"
+        }
+      }
+    },
+    {
+      "id": "dev-out-1-3",
+      "label": "Primary developer out, working days 1 to 3",
+      "description": "A shorter absence arrives as a calendar out-of-office event. Fewer days are lost, but the milestone is still tight.",
+      "event": {
+        "unavailable": [{ "personId": "PER-DEV1", "startDay": 1, "endDay": 3 }]
+      },
+      "source": {
+        "system": "calendar",
+        "eventType": "out_of_office.created",
+        "payload": {
+          "calendarOwner": "dana.reyes@example.com",
+          "title": "Out of office",
+          "startDay": 1,
+          "endDay": 3
+        }
+      }
+    },
+    {
+      "id": "dev-out-contractor-late",
+      "label": "Developer out days 1 to 5 and contractor starts late",
+      "description": "The tracker flags the assignee as unavailable and the contractor cannot start before day 3. No option may meet every commitment.",
+      "event": {
+        "unavailable": [
+          { "personId": "PER-DEV1", "startDay": 1, "endDay": 5 },
+          { "personId": "PER-CTR", "startDay": 1, "endDay": 2 }
+        ]
+      },
+      "source": {
+        "system": "tracker",
+        "eventType": "assignee.unavailable",
+        "payload": {
+          "issueKey": "NS-142",
+          "assignee": "Dana Reyes",
+          "unavailableFromDay": 1,
+          "unavailableToDay": 5,
+          "note": "Contractor onboarding slipped; earliest start is working day 3."
+        }
+      }
+    },
+    {
+      "id": "client-meeting-loyalty",
+      "label": "Client meeting: Orbit Retail asks for a loyalty add-on",
+      "description": "Business Development meets Orbit Retail and logs the outcome in the CRM: a new 5-day Loyalty API add-on due by working day 8, quoted at 6000 USD. Sales, HR and Finance read the same record. Can Northstar say yes without breaking its other commitments?",
+      "event": {
+        "unavailable": [],
+        "demand": {
+          "project": { "id": "P-C", "name": "Project C: Loyalty API Add-on", "customerId": "CUST-1" },
+          "task": {
+            "id": "T-C-LOY", "source": { "system": "tracker", "externalId": "NS-151" },
+            "projectId": "P-C",
+            "name": "Loyalty API add-on",
+            "type": "integration",
+            "days": 5,
+            "dependsOn": [],
+            "requiredSkill": "integration",
+            "defaultAssigneeId": "PER-DEV1"
+          },
+          "milestone": {
+            "id": "M-C",
+            "projectId": "P-C",
+            "name": "Project C delivery",
+            "dueDay": 8,
+            "gatedByTaskIds": ["T-C-LOY"]
+          },
+          "commitment": {
+            "id": "CM-3", "source": { "system": "crm", "externalId": "COM-5003" },
+            "customerId": "CUST-1",
+            "milestoneId": "M-C",
+            "description": "Orbit Retail loyalty API add-on delivered by working day 8 (agreed in the client meeting)"
+          },
+          "invoice": {
+            "id": "INV-2", "source": { "system": "erp", "externalId": "ERP-INV-90002" },
+            "milestoneId": "M-C",
+            "amount": 6000,
+            "currency": "USD",
+            "description": "Loyalty add-on invoice, eligible once milestone M-C is accepted"
+          }
+        }
+      },
+      "source": {
+        "system": "crm",
+        "eventType": "meeting.notes.logged",
+        "payload": {
+          "meetingId": "MTG-3001",
+          "accountId": "ACC-1001",
+          "account": "Orbit Retail (fictional)",
+          "title": "Quarterly review and roadmap",
+          "clientContact": "Sam Whitaker (fictional)",
+          "loggedBy": "bd.lead@example.com",
+          "loggedByRole": "Business Development",
+          "request": "Loyalty API add-on for the new payment integration",
+          "estimateDays": 5,
+          "requestedDueDay": 8,
+          "quotedValue": 6000,
+          "currency": "USD",
+          "sharedWith": ["sales", "hr", "finance"]
+        }
+      }
+    }
+  ]
+}

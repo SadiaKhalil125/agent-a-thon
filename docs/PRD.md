@@ -2,10 +2,12 @@
 Project: CompanyTwin AI (organizational digital twin)
 Complexity: Standard
 Status: Draft
-Version: 0.1
+Version: 0.2
 Owner: Participant — product/engineering accountable
-Last updated: 2026-11-27
+Last updated: 2026-11-28
 Based on: CLAUDE.md context brief (project owner); HACKATHON.md (SSI Agent-A-Thon rules & rubric)
+
+> **Change record (v0.1 → v0.2, owner-approved 2026-11-28):** adds **simulated enterprise connectors** to scope (new domain **INT**, FR-INT-001…006, AC/AT-INT, all **P2**). §4.3 now excludes only **real** integrations; simulated, in-process connectors with dummy endpoints are in scope. No existing FR/NFR/AC/AT ID or meaning changes. Build plan: `docs/BUILD_PLAN.md` v2 §6.
 
 ---
 
@@ -38,6 +40,7 @@ Based on: CLAUDE.md context brief (project owner); HACKATHON.md (SSI Agent-A-Tho
 |---|---|---|
 | **CompanyTwin state** | Internal data source | The fictional company model (Northstar Systems): the authoritative operational state the agents read and (on approval) change. |
 | **Agent roster** | Internal AI actors | Observer/Memory, Impact Investigator, Delivery Specialist, HR/Resource Specialist, Finance Specialist, Sales/Customer Specialist, Planner/Simulation, Skeptic/Verifier, Execution — coordinated by an Orchestrator. Roles may be combined in implementation; genuine multi-agent collaboration must remain. |
+| **Simulated connectors** (v0.2) | Internal, fabricated | Dummy, in-process stand-ins for enterprise systems (HRIS, tracker, ERP/accounting, CRM, calendar; messaging, email, docs, sheets, scheduling, e-sign). Supply evidence and events, and receive simulated actions after approval. Never external. |
 | **LiteLLM gateway** | External system (organizer-provided) | The only model access path. Called server-side with the participant's capped key. |
 
 > Note: Role-based visibility between departments (e.g. sales seeing a delivery estimate but not salaries) is a **commercial-vision** feature, not in this release. See FR-SEC and Exclusions.
@@ -67,6 +70,7 @@ Based on: CLAUDE.md context brief (project owner); HACKATHON.md (SSI Agent-A-Tho
 - A **Verifier** step that can reject an infeasible/unsupported plan, with its objection shown, causing a revised plan.
 - Human **plan selection + approval**, then **execution** that updates the twin, then **outcome verification** against the selected plan.
 - Visible agent-activity trail throughout; key server-side; fabricated data only.
+- **(P2, v0.2) Simulated enterprise connectors:** the twin visibly reads evidence from, receives events from, and after approval acts on the kinds of systems a company already runs (HR, tracker, ERP/accounting, CRM, calendar, messaging, email, docs, sheets, scheduling, e-signature) through **dummy, in-process endpoints**, clearly labeled "Simulated". Detailed in Domain INT (§6).
 
 ### 4.2 Optional / later (only if MVP is solid)
 - A second disruption type (e.g. new sales opportunity vs. capacity; supplier delay).
@@ -77,7 +81,7 @@ Based on: CLAUDE.md context brief (project owner); HACKATHON.md (SSI Agent-A-Tho
 ### 4.3 Explicit exclusions (not in this release)
 - Real client/customer/SSI data of any kind (rules forbid it).
 - Authentication, user accounts, multi-tenant isolation, role-based data permissions.
-- Live integrations (CRM/ERP/HR/PM/meeting tools), webhooks or live monitoring of external systems.
+- **Real** integrations (live CRM/ERP/HR/PM/meeting/messaging/email tools with real credentials or outbound network calls), real inbound webhooks, or live monitoring of external systems. *(v0.2: **simulated** in-process connectors with dummy endpoints are in scope — see Domain INT; they make no outbound call and use no real credentials.)*
 - Persistent server-side database; durable cross-user state.
 - Meeting transcription/recording as a product (meetings are only a possible context source, not the product).
 - Personalized financial/investment advice; any real money movement.
@@ -162,6 +166,15 @@ Agents produce a correspondingly different investigation/plan from the same dete
 - **FR-EXEC-003 (P1): Outcome verification.** After execution, the system re-evaluates the new state against the selected plan and reports match / mismatch.
 - **FR-EXEC-004 (P1): Fabricated-only, reversible.** Execution affects only the fictional in-session state; it never touches real clients, accounts or external services, and the demo can be reset.
 
+### Domain INT — Simulated enterprise connectors (v0.2, all P2)
+> Everything in this domain is **simulated**: in-process adapters over the fabricated seed, no outbound network, no real credentials, no persistence. Numbers still come only from the deterministic solver; connectors supply records, events and artifacts, never calculations.
+- **FR-INT-001 (P2): Connector catalog and endpoints.** The system exposes simulated enterprise systems — read connectors (HR software, Jira-style tracker, ERP/accounting, CRM, calendar) and action sinks (messaging, email, docs, sheets, scheduling, e-signature) — through dummy endpoints under `/mock/*` (OpenAPI-visible) and a connector manifest listing each system's category, capabilities, auth mode, scopes and rate limit.
+- **FR-INT-002 (P2): Source-cited evidence.** Agent steps that use connector data show a visible integration call (system, method, path, status, duration, request id) and cite the source record in the evidence they list.
+- **FR-INT-003 (P2): Inbound events from different systems.** Disruption presets arrive as simulated signed webhooks from different systems (for example HR leave approved, calendar out-of-office, tracker assignee unavailable); the signature is verified server-side (demo).
+- **FR-INT-004 (P2): Action Center.** Before approval the UI shows a dry-run of the simulated actions the approved plan would trigger; after approval the system produces those actions as artifacts (chat message, email draft, document, spreadsheet, calendar/scheduling invite, e-sign envelope, ticket update, purchase order, CRM note, calendar block) and the outcome step re-reads the systems to confirm.
+- **FR-INT-005 (P2): Idempotency and audit.** Every simulated write carries an idempotency key (replaying it returns the same result) and every connector call, the human approval and every action is recorded in an audit trail returned to the client.
+- **FR-INT-006 (P2): Honest labeling.** Every connector, payload and action is labeled "Simulated" in the UI; no real vendor is implied to be connected, and a failed connector call is shown as failed with no fabricated data.
+
 ### Domain UI — Presentation
 - **FR-UI-001 (P1): Guided demo journey.** The UI leads the evaluator through state → event → investigation → plans → verification → approval → outcome without a presenter.
 - **FR-UI-002 (P1): Plan comparison view.** Alternatives are shown side by side with their trade-offs.
@@ -199,6 +212,12 @@ Agents produce a correspondingly different investigation/plan from the same dete
 - **AC-EXEC-002-01:** After approval, the twin reflects the approved plan's assignment/schedule changes.
 - **AC-EXEC-003-01:** The outcome check reports whether the new state matches the selected plan, including any mismatch.
 - **AC-EXEC-004-01:** A reset returns the app to the seeded initial state; no external system is contacted during execution.
+- **AC-INT-001-01:** The integrations list shows every simulated system with category, capabilities, auth mode, scopes and rate limit; each `/mock/*` endpoint returns fabricated data derived from the seed and appears in the OpenAPI docs.
+- **AC-INT-002-01:** For the primary preset, at least one agent step displays an integration call and cites a source record from a connector.
+- **AC-INT-003-01:** At least three presets exist and at least two arrive from different source systems, each showing a webhook payload whose signature verifies; a payload with a bad signature is rejected.
+- **AC-INT-004-01:** Before approval a dry-run list of planned actions is shown; after approval each action appears with its artifact; the outcome step reports a re-read result per system.
+- **AC-INT-005-01:** Replaying an action with the same idempotency key returns an identical result, and the audit trail lists each agent read, the approval and each action in order.
+- **AC-INT-006-01:** Every connector and action is visibly labeled "Simulated"; an injected connector failure shows a failed call with no fabricated data.
 - **AC-UI-001-01:** An evaluator with no briefing can complete Flow A end to end using only on-screen guidance.
 - **AC-SEC-001-01:** No LiteLLM key appears in client-delivered assets, network responses to the browser, or the repository.
 - **AC-SEC-002-01:** A repository/app scan surfaces no real personal/customer/SSI data.
@@ -269,6 +288,27 @@ Relates to: FR-EXEC-003; AC-EXEC-003-01 · Type: Integration · Expected: post-e
 #### AT-EXEC-004-01: Reset & no external calls
 Relates to: FR-EXEC-004; AC-EXEC-004-01 · Type: Integration · Expected: reset restores seed; no outbound call except LiteLLM gateway during a run. · Execution: automated (network assertion).
 
+#### AT-INT-001-01: Connector catalog
+Relates to: FR-INT-001; AC-INT-001-01 · Type: Integration · Steps: `GET /api/integrations`, call each listed `/mock/*` read endpoint · Expected: manifests valid (auth mode, scopes, rate limit, capabilities); responses fabricated and consistent with the seed; endpoints present in OpenAPI. · Execution: automated.
+
+#### AT-INT-002-01: Source-cited evidence
+Relates to: FR-INT-002; AC-INT-002-01 · Type: Integration · Steps: run the primary preset · Expected: stream contains `integration_call` events with `requestId`, and at least one `evidenceUsed[].source` references a connector record. · Execution: automated with the fake chat model.
+
+#### AT-INT-003-01: Signed inbound events
+Relates to: FR-INT-003; AC-INT-003-01 · Type: Integration / security · Steps: start a run from each preset; submit a payload with a tampered signature · Expected: valid payloads accepted; tampered payload rejected with `{error, code}`; ≥3 presets from ≥2 systems. · Execution: automated.
+
+#### AT-INT-004-01: Action Center
+Relates to: FR-INT-004; AC-INT-004-01 · Type: Integration · Steps: complete a run, read `plannedActions`, approve, read `actions` and outcome `reread` · Expected: planned and executed actions correspond one to one; every artifact kind matches the contract; `reread` has one entry per system touched; no model call is made to build artifacts. · Execution: automated.
+
+#### AT-INT-005-01: Idempotency and audit
+Relates to: FR-INT-005; AC-INT-005-01 · Type: Integration · Steps: execute twice with the same idempotency key; inspect `audit[]` · Expected: identical action results; audit ordered with agent reads, approval, actions. · Execution: automated.
+
+#### AT-INT-006-01: Simulated labeling and honest failure
+Relates to: FR-INT-006; AC-INT-006-01 · Type: Integration + manual · Steps: assert `mode:"simulated"` on every manifest entry; inject a connector failure; review UI labels · Expected: no connector claims to be real; failure shows a failed call and no invented data. · Execution: automated + manual UI check.
+
+#### AT-INT-sec-01: No outbound network from connectors
+Relates to: FR-INT-001, FR-EXEC-004; · Type: Security / integration · Steps: run a full flow with network access blocked except the LLM gateway double · Expected: connectors and actions work; no outbound request is attempted. · Execution: automated (network assertion).
+
 #### AT-UI-001-01: Unassisted end-to-end
 Relates to: FR-UI-001; AC-UI-001-01 · Type: Manual/E2E · Expected: a fresh evaluator completes Flow A using on-screen guidance only. · Execution: manual usability pass + automated smoke of the happy path.
 
@@ -313,6 +353,7 @@ Relates to: FR-SEC-002; AC-SEC-002-01 · Type: Security/manual · Expected: no r
 |---|---|
 | **LLM gateway (OpenAI-compatible)** | Only external dependency. Server-side calls to any OpenAI-compatible gateway, configured in the environment; the organizer **LiteLLM gateway for submission** (capped spend). Config: `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` (legacy `LITELLM_*` accepted). Provider is config, not code. |
 | **Company seed data** | Fabricated Northstar Systems model in committed files (e.g. JSON). Owned by the app; no external source. Fields: projects, tasks (effort, type: integration/QA, deps), people, skills, availability windows, milestones (due working-day, acceptance), customer commitments, invoices (amount, gated-by milestone), recovery budget, contractor option (rate, availability). |
+| **Simulated enterprise connectors (v0.2)** | In-process adapters over the seed, also mounted at `/mock/*` and described by a manifest (`GET /api/integrations`). Read systems: HR software, Jira-style tracker, ERP/accounting, CRM, calendar. Action sinks: messaging, email, docs, sheets, scheduling, e-signature. Stretch: vendor management, spreadsheet read, meeting transcript, outage simulation. Fabricated data, no outbound network, no credentials, no persistence; every item labeled "Simulated". |
 | **Data ownership & retention** | All data is fabricated and ephemeral; execution changes live only in session state and reset on demand. No persistent store, no PII, no retention obligation. |
 | **Secrets** | Only the LiteLLM key; stored in env vars, never in repo/knowledge/docs. |
 | **Privacy** | No personal data collected from evaluators; no analytics requirement in this release. |
@@ -333,6 +374,8 @@ Relates to: FR-SEC-002; AC-SEC-002-01 · Type: Security/manual · Expected: no r
 | R6 | Assumption | Single demo workspace, no auth, fabricated data. | No | Documented exclusion; escalate tier only if real data/auth added. |
 | R7 | Open | Submission deadline discrepancy (Nov 29 vs Nov 30 2:00 PM PKT). | No | Treat Nov 30 2:00 PM PKT (HACKATHON.md) as working deadline; confirm with organizers. |
 | R8 | Open | Stack choice (FastAPI vs Next.js) not yet fixed. | No | Decided at architecture stage; current repo is FastAPI. |
+| R9 | Risk | Simulated connectors read as "real integrations" and mislead evaluators. | No | FR-INT-006: persistent "Simulated" labels, category names not vendor logos, `mode:"simulated"` in the contract; pitch wording "designed to plug in", never "integrated with" a named vendor. |
+| R10 | Risk | Integration breadth competes with the core Flow A for time. | No | Domain INT is P2; scheduled after the Day-1 milestone; defined cut lines in `docs/BUILD_PLAN.md` §6; core Flow A must not slip. |
 
 No blocking unknowns prevent a responsible architecture stage.
 
@@ -362,4 +405,4 @@ Optional (P2/P3) items do not gate acceptance and are only pursued once P1 is so
 ---
 
 ### Traceability note
-Every P1 FR has ≥1 AC and ≥1 AT above. NFRs carry their own AC/AT. Full FR/NFR → AC → AT → TASK matrix will be completed in `phases.md` (Stage 5); no delivery tickets are defined at PRD stage.
+Every P1 FR has ≥1 AC and ≥1 AT above; the P2 INT domain (v0.2) also has an AC and AT per FR. NFRs carry their own AC/AT. Full FR/NFR → AC → AT → TASK matrix will be completed in `phases.md` (Stage 5); no delivery tickets are defined at PRD stage.
