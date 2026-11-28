@@ -10,6 +10,7 @@ This file points to the approved plan; it does not duplicate it.
 4. `docs/rules.md` — enforceable engineering & AI guardrails. **Obey these.**
 5. `docs/phases.md` — build order and `TASK-*` tickets with traceability.
 6. `docs/memory.md` — current *verified* implementation state. Read before acting; trust Git/tests over it.
+7. `docs/BUILD_PLAN.md` (v2: two-person parallel plan, file ownership, timeline) and `docs/contracts.md` (frozen API contract between the two tracks).
 
 ## How to work
 - Work **one approved `TASK-*` at a time**, within its scope. The active ticket is in `docs/memory.md`.

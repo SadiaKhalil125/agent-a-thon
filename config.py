@@ -35,6 +35,50 @@ class LLMSettings:
     model: str
 
 
+DEFAULT_MAX_CALLS_PER_RUN = 8  # impact, hr, finance, planner, verifier, revised planner + headroom
+
+
+def max_calls_per_run() -> int:
+    """Model-call budget for one run (`MAX_CALLS_PER_RUN`, default 8; invalid values fall back)."""
+    raw = os.environ.get("MAX_CALLS_PER_RUN")
+    if raw is None:
+        return DEFAULT_MAX_CALLS_PER_RUN
+    try:
+        value = int(raw)
+    except ValueError:
+        return DEFAULT_MAX_CALLS_PER_RUN
+    return value if 0 <= value <= 50 else DEFAULT_MAX_CALLS_PER_RUN
+
+
+DEFAULT_RUN_TIMEOUT_SECONDS = 240.0  # under Vercel's ~5-minute ceiling (NFR-PERF-001)
+
+
+def run_timeout_seconds() -> float:
+    """Overall wall-clock limit for one streamed run (`RUN_TIMEOUT_SECONDS`, 1 to 290)."""
+    raw = os.environ.get("RUN_TIMEOUT_SECONDS")
+    if raw is None:
+        return DEFAULT_RUN_TIMEOUT_SECONDS
+    try:
+        value = float(raw)
+    except ValueError:
+        return DEFAULT_RUN_TIMEOUT_SECONDS
+    return value if 1.0 <= value <= 290.0 else DEFAULT_RUN_TIMEOUT_SECONDS
+
+
+def demo_passcode() -> str | None:
+    """Optional gate for the costly endpoints (`DEMO_PASSCODE`); unset or blank means open."""
+    value = os.environ.get("DEMO_PASSCODE", "").strip()
+    return value or None
+
+
+def dev_console_enabled() -> bool:
+    """The `/dev` test console: on locally, off on Vercel unless `DEV_CONSOLE=1`."""
+    flag = os.environ.get("DEV_CONSOLE", "").strip()
+    if flag:
+        return flag == "1"
+    return not os.environ.get("VERCEL")
+
+
 def llm_configured() -> bool:
     """True when base URL, API key and model are all resolvable."""
     return all(_first(group) for group in (_BASE_URL_VARS, _API_KEY_VARS, _MODEL_VARS))

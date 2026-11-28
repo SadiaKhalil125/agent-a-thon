@@ -1,0 +1,1604 @@
+{
+  "_note": "Real engine output captured locally (fabricated Northstar data; real model prose). Use as the shape reference for static/mock fixtures. Refresh by re-running the capture.",
+  "presetId": "dev-out-1-5",
+  "state": {
+    "company": {
+      "id": "northstar",
+      "name": "Northstar Systems",
+      "description": "Fictional mid-size software services company. All names, figures and customers are fabricated for the SSI Agent-A-Thon demo."
+    },
+    "horizonDays": 30,
+    "customers": [
+      {
+        "id": "CUST-1",
+        "name": "Orbit Retail (fictional)"
+      },
+      {
+        "id": "CUST-2",
+        "name": "Harbor Logistics (fictional)"
+      }
+    ],
+    "projects": [
+      {
+        "id": "P-A",
+        "name": "Project A: Payment Integration",
+        "customerId": "CUST-1"
+      },
+      {
+        "id": "P-B",
+        "name": "Project B: Billing Hotfix",
+        "customerId": "CUST-2"
+      }
+    ],
+    "tasks": [
+      {
+        "id": "T-A-INT",
+        "projectId": "P-A",
+        "name": "Payment gateway integration",
+        "type": "integration",
+        "days": 4,
+        "dependsOn": [],
+        "requiredSkill": "integration"
+      },
+      {
+        "id": "T-A-QA",
+        "projectId": "P-A",
+        "name": "Integration QA and acceptance testing",
+        "type": "qa",
+        "days": 2,
+        "dependsOn": [
+          "T-A-INT"
+        ],
+        "requiredSkill": "qa"
+      },
+      {
+        "id": "T-B-FIX",
+        "projectId": "P-B",
+        "name": "Billing hotfix",
+        "type": "integration",
+        "days": 2,
+        "dependsOn": [],
+        "requiredSkill": "integration"
+      }
+    ],
+    "people": [
+      {
+        "id": "PER-DEV1",
+        "name": "Dana Reyes",
+        "role": "Senior Developer",
+        "kind": "employee",
+        "skills": [
+          "integration",
+          "backend"
+        ],
+        "availability": [
+          {
+            "startDay": 1,
+            "endDay": 30
+          }
+        ],
+        "assignments": []
+      },
+      {
+        "id": "PER-BACKUP",
+        "name": "Marcus Lee",
+        "role": "Developer",
+        "kind": "employee",
+        "skills": [
+          "integration",
+          "backend"
+        ],
+        "availability": [
+          {
+            "startDay": 2,
+            "endDay": 30
+          }
+        ],
+        "assignments": [
+          {
+            "taskId": "T-B-FIX",
+            "startDay": 2,
+            "endDay": 3
+          }
+        ]
+      },
+      {
+        "id": "PER-QA",
+        "name": "Quinn Okafor",
+        "role": "QA Engineer",
+        "kind": "employee",
+        "skills": [
+          "qa"
+        ],
+        "availability": [
+          {
+            "startDay": 1,
+            "endDay": 30
+          }
+        ],
+        "assignments": []
+      },
+      {
+        "id": "PER-CTR",
+        "name": "Priya Nair (contractor)",
+        "role": "Contract Developer",
+        "kind": "contractor",
+        "skills": [
+          "integration",
+          "backend"
+        ],
+        "availability": [
+          {
+            "startDay": 1,
+            "endDay": 30
+          }
+        ],
+        "assignments": []
+      }
+    ],
+    "milestones": [
+      {
+        "id": "M-A",
+        "projectId": "P-A",
+        "name": "Project A acceptance",
+        "dueDay": 6,
+        "gatedByTaskIds": [
+          "T-A-QA"
+        ]
+      },
+      {
+        "id": "M-B",
+        "projectId": "P-B",
+        "name": "Project B delivery",
+        "dueDay": 4,
+        "gatedByTaskIds": [
+          "T-B-FIX"
+        ]
+      }
+    ],
+    "commitments": [
+      {
+        "id": "CM-1",
+        "customerId": "CUST-1",
+        "milestoneId": "M-A",
+        "description": "Orbit Retail go-live of the payment integration by working day 6",
+        "source": {
+          "system": "crm",
+          "externalId": "COM-5001"
+        }
+      },
+      {
+        "id": "CM-2",
+        "customerId": "CUST-2",
+        "milestoneId": "M-B",
+        "description": "Harbor Logistics billing hotfix delivered by working day 4",
+        "source": {
+          "system": "crm",
+          "externalId": "COM-5002"
+        }
+      }
+    ],
+    "invoices": [
+      {
+        "id": "INV-1",
+        "milestoneId": "M-A",
+        "amount": 8000,
+        "currency": "USD",
+        "description": "Project A acceptance invoice, eligible once milestone M-A is accepted",
+        "source": {
+          "system": "erp",
+          "externalId": "ERP-INV-90001"
+        }
+      }
+    ],
+    "budget": {
+      "recoveryBudget": 2000,
+      "currency": "USD"
+    },
+    "contractor": {
+      "personId": "PER-CTR",
+      "fixedCost": 1500,
+      "currency": "USD"
+    },
+    "chain": [
+      {
+        "id": "T-A-INT",
+        "type": "task",
+        "label": "Payment gateway integration"
+      },
+      {
+        "id": "T-A-QA",
+        "type": "task",
+        "label": "Integration QA and acceptance testing"
+      },
+      {
+        "id": "M-A",
+        "type": "milestone",
+        "label": "Project A acceptance"
+      },
+      {
+        "id": "CM-1",
+        "type": "commitment",
+        "label": "Orbit Retail (fictional): Orbit Retail go-live of the payment integration by working day 6"
+      },
+      {
+        "id": "INV-1",
+        "type": "invoice",
+        "label": "INV-1: 8000 USD"
+      }
+    ],
+    "presets": [
+      {
+        "id": "dev-out-1-5",
+        "label": "Primary developer out, working days 1 to 5",
+        "description": "HR approves leave for the primary developer. The integration task slips and Project A's milestone and invoice are at risk.",
+        "event": {
+          "unavailable": [
+            {
+              "personId": "PER-DEV1",
+              "startDay": 1,
+              "endDay": 5
+            }
+          ]
+        },
+        "source": {
+          "system": "hris",
+          "eventType": "leave.approved",
+          "payload": {
+            "employeeId": "HR-1001",
+            "employeeName": "Dana Reyes",
+            "leaveType": "medical",
+            "startDay": 1,
+            "endDay": 5,
+            "approvedBy": "hr.ops@example.com"
+          }
+        }
+      },
+      {
+        "id": "dev-out-1-3",
+        "label": "Primary developer out, working days 1 to 3",
+        "description": "A shorter absence arrives as a calendar out-of-office event. Fewer days are lost, but the milestone is still tight.",
+        "event": {
+          "unavailable": [
+            {
+              "personId": "PER-DEV1",
+              "startDay": 1,
+              "endDay": 3
+            }
+          ]
+        },
+        "source": {
+          "system": "calendar",
+          "eventType": "out_of_office.created",
+          "payload": {
+            "calendarOwner": "dana.reyes@example.com",
+            "title": "Out of office",
+            "startDay": 1,
+            "endDay": 3
+          }
+        }
+      },
+      {
+        "id": "dev-out-contractor-late",
+        "label": "Developer out days 1 to 5 and contractor starts late",
+        "description": "The tracker flags the assignee as unavailable and the contractor cannot start before day 3. No option may meet every commitment.",
+        "event": {
+          "unavailable": [
+            {
+              "personId": "PER-DEV1",
+              "startDay": 1,
+              "endDay": 5
+            },
+            {
+              "personId": "PER-CTR",
+              "startDay": 1,
+              "endDay": 2
+            }
+          ]
+        },
+        "source": {
+          "system": "tracker",
+          "eventType": "assignee.unavailable",
+          "payload": {
+            "issueKey": "NS-142",
+            "assignee": "Dana Reyes",
+            "unavailableFromDay": 1,
+            "unavailableToDay": 5,
+            "note": "Contractor onboarding slipped; earliest start is working day 3."
+          }
+        }
+      }
+    ]
+  },
+  "runStreamEvents": [
+    {
+      "event": "run_started",
+      "data": {
+        "runId": "c307793a47e5",
+        "presetId": "dev-out-1-5",
+        "event": {
+          "unavailable": [
+            {
+              "personId": "PER-DEV1",
+              "startDay": 1,
+              "endDay": 5
+            }
+          ]
+        },
+        "budget": {
+          "max": 8,
+          "used": 0
+        }
+      }
+    },
+    {
+      "event": "node_started",
+      "data": {
+        "node": "impact",
+        "role": "Impact Investigator"
+      }
+    },
+    {
+      "event": "budget",
+      "data": {
+        "max": 8,
+        "used": 1
+      }
+    },
+    {
+      "event": "node_completed",
+      "data": {
+        "node": "impact",
+        "role": "Impact Investigator",
+        "status": "done",
+        "evidenceUsed": [
+          {
+            "ref": "preset:dev-out-1-5",
+            "label": "Primary developer out, working days 1 to 5",
+            "source": "hris"
+          },
+          {
+            "ref": "task:T-A-INT",
+            "label": "Payment gateway integration",
+            "source": "twin"
+          },
+          {
+            "ref": "task:T-A-QA",
+            "label": "Integration QA and acceptance testing",
+            "source": "twin"
+          },
+          {
+            "ref": "milestone:M-A",
+            "label": "Project A acceptance",
+            "source": "twin"
+          },
+          {
+            "ref": "commitment:CM-1",
+            "label": "Orbit Retail (fictional): Orbit Retail go-live of the payment integration by working day 6",
+            "source": "twin"
+          },
+          {
+            "ref": "invoice:INV-1",
+            "label": "INV-1: 8000 USD",
+            "source": "twin"
+          }
+        ],
+        "output": "Dana Reyes being out on working days 1 to 5 directly affects the Payment gateway integration task, which she is assigned to. That delay propagates to the dependent Integration QA and acceptance testing, and onward to the Project A acceptance milestone, which is due on day 6 but has a finish with no action of day 11. This puts at risk the Orbit Retail commitment of go-live of the payment integration by working day 6, and the invoice INV-1 of 8000 USD is calculated as not eligible on time. The recovery budget available is 2000 USD.",
+        "derivedFacts": [
+          {
+            "label": "Disruption",
+            "value": "Dana Reyes out days 1-5",
+            "tag": "fact"
+          },
+          {
+            "label": "Directly affected task",
+            "value": "Payment gateway integration (assignee Dana Reyes)",
+            "tag": "calculated"
+          },
+          {
+            "label": "Dependent work",
+            "value": "Integration QA and acceptance testing",
+            "tag": "calculated"
+          },
+          {
+            "label": "Project A acceptance due",
+            "value": "day 6",
+            "tag": "fact"
+          },
+          {
+            "label": "Project A acceptance finish with no action",
+            "value": "day 11",
+            "tag": "calculated"
+          },
+          {
+            "label": "Project B delivery due",
+            "value": "day 4",
+            "tag": "fact"
+          },
+          {
+            "label": "Project B delivery finish with no action",
+            "value": "day 3",
+            "tag": "calculated"
+          },
+          {
+            "label": "Invoice INV-1 eligible on time",
+            "value": "no (8000 USD)",
+            "tag": "calculated"
+          },
+          {
+            "label": "Recovery budget",
+            "value": "2000 USD",
+            "tag": "fact"
+          }
+        ],
+        "budget": {
+          "max": 8,
+          "used": 1
+        }
+      }
+    },
+    {
+      "event": "node_started",
+      "data": {
+        "node": "finance",
+        "role": "Finance Analyst"
+      }
+    },
+    {
+      "event": "budget",
+      "data": {
+        "max": 8,
+        "used": 2
+      }
+    },
+    {
+      "event": "node_started",
+      "data": {
+        "node": "hr_resource",
+        "role": "HR and Resource Analyst"
+      }
+    },
+    {
+      "event": "budget",
+      "data": {
+        "max": 8,
+        "used": 3
+      }
+    },
+    {
+      "event": "node_completed",
+      "data": {
+        "node": "finance",
+        "role": "Finance Analyst",
+        "status": "done",
+        "evidenceUsed": [
+          {
+            "ref": "budget:recovery",
+            "label": "Delivery recovery budget",
+            "source": "erp"
+          },
+          {
+            "ref": "invoice:INV-1",
+            "label": "INV-1: 8000 USD",
+            "source": "erp"
+          },
+          {
+            "ref": "plan:plan-wait",
+            "label": "Wait for Dana Reyes",
+            "source": "solver"
+          },
+          {
+            "ref": "plan:plan-backup",
+            "label": "Reassign to Marcus Lee",
+            "source": "solver"
+          },
+          {
+            "ref": "plan:plan-contractor",
+            "label": "Bring in Priya Nair (contractor)",
+            "source": "solver"
+          }
+        ],
+        "output": "The invoice exposure is 8000 USD, because the invoice is gated by the milestone. The recovery budget is 2000 USD. Waiting for Dana Reyes would cost 0 USD against that budget and is within budget, but the invoice would not be eligible on time, leaving 8000 USD at risk. Reassigning to Marcus Lee would also cost 0 USD, is within budget, and also leaves the invoice not eligible on time with 8000 USD at risk. Bringing in Priya Nair as a contractor would cost 1500 USD, is within budget, and keeps the invoice eligible on time.",
+        "derivedFacts": [
+          {
+            "label": "Invoice gated by the milestone",
+            "value": "8000 USD",
+            "tag": "fact"
+          },
+          {
+            "label": "Recovery budget",
+            "value": "2000 USD",
+            "tag": "fact"
+          },
+          {
+            "label": "Wait for Dana Reyes: incremental cost",
+            "value": "0 USD (within budget)",
+            "tag": "calculated"
+          },
+          {
+            "label": "Wait for Dana Reyes: invoice eligible on time",
+            "value": "no (8000 USD at risk)",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee: incremental cost",
+            "value": "0 USD (within budget)",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee: invoice eligible on time",
+            "value": "no (8000 USD at risk)",
+            "tag": "calculated"
+          },
+          {
+            "label": "Bring in Priya Nair (contractor): incremental cost",
+            "value": "1500 USD (within budget)",
+            "tag": "calculated"
+          },
+          {
+            "label": "Bring in Priya Nair (contractor): invoice eligible on time",
+            "value": "yes",
+            "tag": "calculated"
+          }
+        ],
+        "budget": {
+          "max": 8,
+          "used": 3
+        }
+      }
+    },
+    {
+      "event": "node_completed",
+      "data": {
+        "node": "hr_resource",
+        "role": "HR and Resource Analyst",
+        "status": "done",
+        "evidenceUsed": [
+          {
+            "ref": "preset:dev-out-1-5",
+            "label": "Primary developer out, working days 1 to 5",
+            "source": "hris"
+          },
+          {
+            "ref": "person:PER-DEV1",
+            "label": "Dana Reyes",
+            "source": "hris"
+          },
+          {
+            "ref": "person:PER-BACKUP",
+            "label": "Marcus Lee",
+            "source": "hris"
+          },
+          {
+            "ref": "person:PER-CTR",
+            "label": "Priya Nair (contractor)",
+            "source": "hris"
+          }
+        ],
+        "output": "Priya Nair (contractor) is free on working days 1-10 and has no bookings, so she is available across the entire disruption window of working days 1 to 5. Marcus Lee is free on working days 4-10 but is out on day 1 and has existing bookings on days 2-3 on Project B: Billing Hotfix, so he is only actually free on days 4 and 5 within the disruption window, and those bookings on days 2-3 conflict with work already committed. Dana Reyes is free on working days 6-10 but is out on working days 1-5, so she is not available during the disruption at all. The only person with no conflict against the disrupted work is Priya Nair (contractor), while Marcus Lee's days 2-3 booking on Project B: Billing Hotfix is a conflict with work already committed.",
+        "derivedFacts": [
+          {
+            "label": "Dana Reyes free working days (1-10)",
+            "value": "6-10",
+            "tag": "calculated"
+          },
+          {
+            "label": "Marcus Lee free working days (1-10)",
+            "value": "4-10",
+            "tag": "calculated"
+          },
+          {
+            "label": "Marcus Lee existing bookings",
+            "value": "days 2-3 on Project B: Billing Hotfix",
+            "tag": "fact"
+          },
+          {
+            "label": "Priya Nair (contractor) free working days (1-10)",
+            "value": "1-10",
+            "tag": "calculated"
+          }
+        ],
+        "budget": {
+          "max": 8,
+          "used": 3
+        }
+      }
+    },
+    {
+      "event": "node_started",
+      "data": {
+        "node": "planner",
+        "role": "Planner"
+      }
+    },
+    {
+      "event": "budget",
+      "data": {
+        "max": 8,
+        "used": 4
+      }
+    },
+    {
+      "event": "node_completed",
+      "data": {
+        "node": "planner",
+        "role": "Planner",
+        "status": "done",
+        "evidenceUsed": [
+          {
+            "ref": "plan:plan-wait",
+            "label": "Wait for Dana Reyes",
+            "source": "solver"
+          },
+          {
+            "ref": "plan:plan-backup",
+            "label": "Reassign to Marcus Lee",
+            "source": "solver"
+          },
+          {
+            "ref": "plan:plan-contractor",
+            "label": "Bring in Priya Nair (contractor)",
+            "source": "solver"
+          }
+        ],
+        "output": "plan-contractor is the only candidate that meets every commitment: Project A acceptance due day 6 is met (Project A done day 6), Project B delivery due day 4 is met (Project B done day 3), and invoice INV-1 of 8000 USD is eligible on time, with no violated constraints. It costs 1500 USD, which is within the 2000 USD recovery budget. By contrast, plan-wait costs 0 USD and is within budget but misses Project A acceptance (finishes day 11) and leaves the 8000 USD invoice not eligible on time. plan-backup also costs 0 USD but double-books Marcus Lee on days 2-3 against Project B: Billing Hotfix, misses both Project A acceptance (finishes day 7) and Project B delivery (finishes day 7), and leaves the invoice not eligible on time. The 1500 USD spend is justified because it protects the 8000 USD invoice exposure while staying inside the 2000 USD budget.",
+        "derivedFacts": [
+          {
+            "label": "Wait for Dana Reyes: completion",
+            "value": "Project A day 11, Project B day 3",
+            "tag": "calculated"
+          },
+          {
+            "label": "Wait for Dana Reyes: incremental cost",
+            "value": "0 USD",
+            "tag": "calculated"
+          },
+          {
+            "label": "Wait for Dana Reyes: violated",
+            "value": "Project A acceptance (due day 6) is missed: finishes on day 11",
+            "tag": "calculated"
+          },
+          {
+            "label": "Wait for Dana Reyes: violated",
+            "value": "Invoice INV-1 (8000 USD) is not eligible by day 6",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee: completion",
+            "value": "Project A day 7, Project B day 7",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee: incremental cost",
+            "value": "0 USD",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee: violated",
+            "value": "Double-books Marcus Lee on day(s) 2-3: already assigned to Billing hotfix (Project B: Billing Hotfix), which then finishes on day 7 against its due day 4",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee: violated",
+            "value": "Project A acceptance (due day 6) is missed: finishes on day 7",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee: violated",
+            "value": "Project B delivery (due day 4) is missed: finishes on day 7",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee: violated",
+            "value": "Invoice INV-1 (8000 USD) is not eligible by day 6",
+            "tag": "calculated"
+          },
+          {
+            "label": "Bring in Priya Nair (contractor): completion",
+            "value": "Project A day 6, Project B day 3",
+            "tag": "calculated"
+          },
+          {
+            "label": "Bring in Priya Nair (contractor): incremental cost",
+            "value": "1500 USD",
+            "tag": "calculated"
+          }
+        ],
+        "recommendedPlanId": "plan-contractor",
+        "plans": [
+          {
+            "id": "plan-wait",
+            "name": "Wait for Dana Reyes",
+            "summary": "Keep Payment gateway integration with Dana Reyes and start when they are available again.",
+            "status": "proposed",
+            "revisesPlanId": null,
+            "projectCompletion": {
+              "A": 11,
+              "B": 3
+            },
+            "deadlines": [
+              {
+                "name": "Project A acceptance",
+                "dueDay": 6,
+                "met": false
+              },
+              {
+                "name": "Project B delivery",
+                "dueDay": 4,
+                "met": true
+              }
+            ],
+            "incrementalCost": 0,
+            "budgetFit": true,
+            "invoiceEligible": false,
+            "violatedConstraints": [
+              "Project A acceptance (due day 6) is missed: finishes on day 11",
+              "Invoice INV-1 (8000 USD) is not eligible by day 6"
+            ],
+            "schedule": [
+              {
+                "taskId": "T-A-INT",
+                "personId": "PER-DEV1",
+                "startDay": 6,
+                "endDay": 9
+              },
+              {
+                "taskId": "T-A-QA",
+                "personId": "PER-QA",
+                "startDay": 10,
+                "endDay": 11
+              },
+              {
+                "taskId": "T-B-FIX",
+                "personId": "PER-BACKUP",
+                "startDay": 2,
+                "endDay": 3
+              }
+            ]
+          },
+          {
+            "id": "plan-backup",
+            "name": "Reassign to Marcus Lee",
+            "summary": "Move Payment gateway integration to Marcus Lee from their first free day, without regard to their existing bookings.",
+            "status": "proposed",
+            "revisesPlanId": null,
+            "projectCompletion": {
+              "A": 7,
+              "B": 7
+            },
+            "deadlines": [
+              {
+                "name": "Project A acceptance",
+                "dueDay": 6,
+                "met": false
+              },
+              {
+                "name": "Project B delivery",
+                "dueDay": 4,
+                "met": false
+              }
+            ],
+            "incrementalCost": 0,
+            "budgetFit": true,
+            "invoiceEligible": false,
+            "violatedConstraints": [
+              "Double-books Marcus Lee on day(s) 2-3: already assigned to Billing hotfix (Project B: Billing Hotfix), which then finishes on day 7 against its due day 4",
+              "Project A acceptance (due day 6) is missed: finishes on day 7",
+              "Project B delivery (due day 4) is missed: finishes on day 7",
+              "Invoice INV-1 (8000 USD) is not eligible by day 6"
+            ],
+            "schedule": [
+              {
+                "taskId": "T-A-INT",
+                "personId": "PER-BACKUP",
+                "startDay": 2,
+                "endDay": 5
+              },
+              {
+                "taskId": "T-A-QA",
+                "personId": "PER-QA",
+                "startDay": 6,
+                "endDay": 7
+              },
+              {
+                "taskId": "T-B-FIX",
+                "personId": "PER-BACKUP",
+                "startDay": 6,
+                "endDay": 7
+              }
+            ]
+          },
+          {
+            "id": "plan-contractor",
+            "name": "Bring in Priya Nair (contractor)",
+            "summary": "Assign Payment gateway integration to Priya Nair (contractor) from their first available day at a fixed incremental cost.",
+            "status": "proposed",
+            "revisesPlanId": null,
+            "projectCompletion": {
+              "A": 6,
+              "B": 3
+            },
+            "deadlines": [
+              {
+                "name": "Project A acceptance",
+                "dueDay": 6,
+                "met": true
+              },
+              {
+                "name": "Project B delivery",
+                "dueDay": 4,
+                "met": true
+              }
+            ],
+            "incrementalCost": 1500,
+            "budgetFit": true,
+            "invoiceEligible": true,
+            "violatedConstraints": [],
+            "schedule": [
+              {
+                "taskId": "T-A-INT",
+                "personId": "PER-CTR",
+                "startDay": 1,
+                "endDay": 4
+              },
+              {
+                "taskId": "T-A-QA",
+                "personId": "PER-QA",
+                "startDay": 5,
+                "endDay": 6
+              },
+              {
+                "taskId": "T-B-FIX",
+                "personId": "PER-BACKUP",
+                "startDay": 2,
+                "endDay": 3
+              }
+            ]
+          }
+        ],
+        "budget": {
+          "max": 8,
+          "used": 4
+        }
+      }
+    },
+    {
+      "event": "node_started",
+      "data": {
+        "node": "verifier",
+        "role": "Verifier"
+      }
+    },
+    {
+      "event": "budget",
+      "data": {
+        "max": 8,
+        "used": 5
+      }
+    },
+    {
+      "event": "node_completed",
+      "data": {
+        "node": "verifier",
+        "role": "Verifier",
+        "status": "rejected",
+        "evidenceUsed": [
+          {
+            "ref": "plan:plan-wait",
+            "label": "Wait for Dana Reyes",
+            "source": "solver"
+          },
+          {
+            "ref": "plan:plan-backup",
+            "label": "Reassign to Marcus Lee",
+            "source": "solver"
+          },
+          {
+            "ref": "plan:plan-contractor",
+            "label": "Bring in Priya Nair (contractor)",
+            "source": "solver"
+          }
+        ],
+        "output": "plan-backup is rejected because it displaces Marcus Lee's existing booking on Billing hotfix (Project B: Billing Hotfix) on days 2-3, moving that work to days 6-7, and it also misses Project A acceptance (finishes day 7 against due day 6) and Project B delivery (finishes day 7 against due day 4) while leaving the 8000 USD invoice INV-1 not eligible on time. A revised plan must not double-book Marcus Lee on days 2-3 and must meet Project A acceptance by day 6 and Project B delivery by day 4. I confirmed that plan-wait and plan-contractor are both feasible, and plan-contractor meets Project A acceptance on day 6, Project B delivery on day 3, and makes the 8000 USD invoice eligible on time at 1500 USD, within the 2000 USD recovery budget. The remaining trade-off is that plan-wait, though feasible and at 0 USD, still misses Project A acceptance (finishes day 11 against due day 6) and leaves the 8000 USD invoice not eligible on time.",
+        "derivedFacts": [
+          {
+            "label": "Wait for Dana Reyes: feasibility",
+            "value": "feasible",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee: feasibility",
+            "value": "Displaces Marcus Lee's existing booking on Billing hotfix (Project B: Billing Hotfix), day(s) 2-3: the plan moves that work to day(s) 6-7",
+            "tag": "calculated"
+          },
+          {
+            "label": "Bring in Priya Nair (contractor): feasibility",
+            "value": "feasible",
+            "tag": "calculated"
+          }
+        ],
+        "verdict": {
+          "planId": "plan-backup",
+          "decision": "rejected",
+          "reason": "plan-backup is rejected because it displaces Marcus Lee's existing booking on Billing hotfix (Project B: Billing Hotfix) on days 2-3, moving that work to days 6-7, and it also misses Project A acceptance (finishes day 7 against due day 6) and Project B delivery (finishes day 7 against due day 4) while leaving the 8000 USD invoice INV-1 not eligible on time. A revised plan must not double-book Marcus Lee on days 2-3 and must meet Project A acceptance by day 6 and Project B delivery by day 4. I confirmed that plan-wait and plan-contractor are both feasible, and plan-contractor meets Project A acceptance on day 6, Project B delivery on day 3, and makes the 8000 USD invoice eligible on time at 1500 USD, within the 2000 USD recovery budget. The remaining trade-off is that plan-wait, though feasible and at 0 USD, still misses Project A acceptance (finishes day 11 against due day 6) and leaves the 8000 USD invoice not eligible on time."
+        },
+        "budget": {
+          "max": 8,
+          "used": 5
+        }
+      }
+    },
+    {
+      "event": "node_started",
+      "data": {
+        "node": "planner",
+        "role": "Planner"
+      }
+    },
+    {
+      "event": "budget",
+      "data": {
+        "max": 8,
+        "used": 6
+      }
+    },
+    {
+      "event": "node_completed",
+      "data": {
+        "node": "planner",
+        "role": "Planner",
+        "status": "revised",
+        "evidenceUsed": [
+          {
+            "ref": "plan:plan-wait",
+            "label": "Wait for Dana Reyes",
+            "source": "solver"
+          },
+          {
+            "ref": "plan:plan-contractor",
+            "label": "Bring in Priya Nair (contractor)",
+            "source": "solver"
+          },
+          {
+            "ref": "plan:plan-backup-revised",
+            "label": "Reassign to Marcus Lee, honoring existing bookings",
+            "source": "solver"
+          }
+        ],
+        "output": "plan-contractor is the only candidate that meets every commitment: Project A acceptance due day 6 is met with Project A done day 6, Project B delivery due day 4 is met with Project B done day 3, and the 8000 USD invoice INV-1 is eligible on time. It costs 1500 USD, which is within the 2000 USD recovery budget, whereas plan-wait and plan-backup-revised both cost 0 USD but miss Project A acceptance (finishing day 11 and day 9 respectively) and leave the 8000 USD invoice not eligible on time. The Verifier objection is answered because plan-contractor does not double-book Marcus Lee on days 2-3, meets Project A acceptance by day 6 and Project B delivery by day 4, and keeps the 8000 USD invoice eligible on time at 1500 USD within the 2000 USD budget. The extra 1500 USD is justified against the 8000 USD exposure that the two 0 USD plans leave at risk.",
+        "derivedFacts": [
+          {
+            "label": "Wait for Dana Reyes: completion",
+            "value": "Project A day 11, Project B day 3",
+            "tag": "calculated"
+          },
+          {
+            "label": "Wait for Dana Reyes: incremental cost",
+            "value": "0 USD",
+            "tag": "calculated"
+          },
+          {
+            "label": "Wait for Dana Reyes: violated",
+            "value": "Project A acceptance (due day 6) is missed: finishes on day 11",
+            "tag": "calculated"
+          },
+          {
+            "label": "Wait for Dana Reyes: violated",
+            "value": "Invoice INV-1 (8000 USD) is not eligible by day 6",
+            "tag": "calculated"
+          },
+          {
+            "label": "Bring in Priya Nair (contractor): completion",
+            "value": "Project A day 6, Project B day 3",
+            "tag": "calculated"
+          },
+          {
+            "label": "Bring in Priya Nair (contractor): incremental cost",
+            "value": "1500 USD",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee, honoring existing bookings: completion",
+            "value": "Project A day 9, Project B day 3",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee, honoring existing bookings: incremental cost",
+            "value": "0 USD",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee, honoring existing bookings: violated",
+            "value": "Project A acceptance (due day 6) is missed: finishes on day 9",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee, honoring existing bookings: violated",
+            "value": "Invoice INV-1 (8000 USD) is not eligible by day 6",
+            "tag": "calculated"
+          }
+        ],
+        "recommendedPlanId": "plan-contractor",
+        "plans": [
+          {
+            "id": "plan-wait",
+            "name": "Wait for Dana Reyes",
+            "summary": "Keep Payment gateway integration with Dana Reyes and start when they are available again.",
+            "status": "proposed",
+            "revisesPlanId": null,
+            "projectCompletion": {
+              "A": 11,
+              "B": 3
+            },
+            "deadlines": [
+              {
+                "name": "Project A acceptance",
+                "dueDay": 6,
+                "met": false
+              },
+              {
+                "name": "Project B delivery",
+                "dueDay": 4,
+                "met": true
+              }
+            ],
+            "incrementalCost": 0,
+            "budgetFit": true,
+            "invoiceEligible": false,
+            "violatedConstraints": [
+              "Project A acceptance (due day 6) is missed: finishes on day 11",
+              "Invoice INV-1 (8000 USD) is not eligible by day 6"
+            ],
+            "schedule": [
+              {
+                "taskId": "T-A-INT",
+                "personId": "PER-DEV1",
+                "startDay": 6,
+                "endDay": 9
+              },
+              {
+                "taskId": "T-A-QA",
+                "personId": "PER-QA",
+                "startDay": 10,
+                "endDay": 11
+              },
+              {
+                "taskId": "T-B-FIX",
+                "personId": "PER-BACKUP",
+                "startDay": 2,
+                "endDay": 3
+              }
+            ]
+          },
+          {
+            "id": "plan-backup",
+            "name": "Reassign to Marcus Lee",
+            "summary": "Move Payment gateway integration to Marcus Lee from their first free day, without regard to their existing bookings.",
+            "status": "rejected",
+            "revisesPlanId": null,
+            "projectCompletion": {
+              "A": 7,
+              "B": 7
+            },
+            "deadlines": [
+              {
+                "name": "Project A acceptance",
+                "dueDay": 6,
+                "met": false
+              },
+              {
+                "name": "Project B delivery",
+                "dueDay": 4,
+                "met": false
+              }
+            ],
+            "incrementalCost": 0,
+            "budgetFit": true,
+            "invoiceEligible": false,
+            "violatedConstraints": [
+              "Double-books Marcus Lee on day(s) 2-3: already assigned to Billing hotfix (Project B: Billing Hotfix), which then finishes on day 7 against its due day 4",
+              "Project A acceptance (due day 6) is missed: finishes on day 7",
+              "Project B delivery (due day 4) is missed: finishes on day 7",
+              "Invoice INV-1 (8000 USD) is not eligible by day 6"
+            ],
+            "schedule": [
+              {
+                "taskId": "T-A-INT",
+                "personId": "PER-BACKUP",
+                "startDay": 2,
+                "endDay": 5
+              },
+              {
+                "taskId": "T-A-QA",
+                "personId": "PER-QA",
+                "startDay": 6,
+                "endDay": 7
+              },
+              {
+                "taskId": "T-B-FIX",
+                "personId": "PER-BACKUP",
+                "startDay": 6,
+                "endDay": 7
+              }
+            ]
+          },
+          {
+            "id": "plan-contractor",
+            "name": "Bring in Priya Nair (contractor)",
+            "summary": "Assign Payment gateway integration to Priya Nair (contractor) from their first available day at a fixed incremental cost.",
+            "status": "proposed",
+            "revisesPlanId": null,
+            "projectCompletion": {
+              "A": 6,
+              "B": 3
+            },
+            "deadlines": [
+              {
+                "name": "Project A acceptance",
+                "dueDay": 6,
+                "met": true
+              },
+              {
+                "name": "Project B delivery",
+                "dueDay": 4,
+                "met": true
+              }
+            ],
+            "incrementalCost": 1500,
+            "budgetFit": true,
+            "invoiceEligible": true,
+            "violatedConstraints": [],
+            "schedule": [
+              {
+                "taskId": "T-A-INT",
+                "personId": "PER-CTR",
+                "startDay": 1,
+                "endDay": 4
+              },
+              {
+                "taskId": "T-A-QA",
+                "personId": "PER-QA",
+                "startDay": 5,
+                "endDay": 6
+              },
+              {
+                "taskId": "T-B-FIX",
+                "personId": "PER-BACKUP",
+                "startDay": 2,
+                "endDay": 3
+              }
+            ]
+          },
+          {
+            "id": "plan-backup-revised",
+            "name": "Reassign to Marcus Lee, honoring existing bookings",
+            "summary": "Move Payment gateway integration to Marcus Lee only on days they are actually free, keeping their existing commitments intact.",
+            "status": "revised",
+            "revisesPlanId": "plan-backup",
+            "projectCompletion": {
+              "A": 9,
+              "B": 3
+            },
+            "deadlines": [
+              {
+                "name": "Project A acceptance",
+                "dueDay": 6,
+                "met": false
+              },
+              {
+                "name": "Project B delivery",
+                "dueDay": 4,
+                "met": true
+              }
+            ],
+            "incrementalCost": 0,
+            "budgetFit": true,
+            "invoiceEligible": false,
+            "violatedConstraints": [
+              "Project A acceptance (due day 6) is missed: finishes on day 9",
+              "Invoice INV-1 (8000 USD) is not eligible by day 6"
+            ],
+            "schedule": [
+              {
+                "taskId": "T-A-INT",
+                "personId": "PER-BACKUP",
+                "startDay": 4,
+                "endDay": 7
+              },
+              {
+                "taskId": "T-A-QA",
+                "personId": "PER-QA",
+                "startDay": 8,
+                "endDay": 9
+              },
+              {
+                "taskId": "T-B-FIX",
+                "personId": "PER-BACKUP",
+                "startDay": 2,
+                "endDay": 3
+              }
+            ]
+          }
+        ],
+        "budget": {
+          "max": 8,
+          "used": 6
+        }
+      }
+    },
+    {
+      "event": "node_started",
+      "data": {
+        "node": "verifier",
+        "role": "Verifier"
+      }
+    },
+    {
+      "event": "budget",
+      "data": {
+        "max": 8,
+        "used": 7
+      }
+    },
+    {
+      "event": "node_completed",
+      "data": {
+        "node": "verifier",
+        "role": "Verifier",
+        "status": "done",
+        "evidenceUsed": [
+          {
+            "ref": "plan:plan-wait",
+            "label": "Wait for Dana Reyes",
+            "source": "solver"
+          },
+          {
+            "ref": "plan:plan-contractor",
+            "label": "Bring in Priya Nair (contractor)",
+            "source": "solver"
+          },
+          {
+            "ref": "plan:plan-backup-revised",
+            "label": "Reassign to Marcus Lee, honoring existing bookings",
+            "source": "solver"
+          }
+        ],
+        "output": "The engine's final re-check finds all three plans feasible, so no plan is rejected on scheduling grounds. I confirmed that plan-contractor meets Project A acceptance due day 6 with Project A done day 6, meets Project B delivery due day 4 with Project B done day 3, keeps the 8000 USD invoice INV-1 eligible on time, and costs 1500 USD within the 2000 USD recovery budget. The remaining trade-off is honest and unavoidable: plan-wait and plan-backup-revised both cost 0 USD but miss Project A acceptance due day 6, finishing day 11 and day 9 respectively, and leave the 8000 USD invoice not eligible on time, so the 1500 USD in plan-contractor is the price of meeting every commitment.",
+        "derivedFacts": [
+          {
+            "label": "Wait for Dana Reyes: feasibility",
+            "value": "feasible",
+            "tag": "calculated"
+          },
+          {
+            "label": "Bring in Priya Nair (contractor): feasibility",
+            "value": "feasible",
+            "tag": "calculated"
+          },
+          {
+            "label": "Reassign to Marcus Lee, honoring existing bookings: feasibility",
+            "value": "feasible",
+            "tag": "calculated"
+          }
+        ],
+        "verdict": {
+          "planId": "plan-contractor",
+          "decision": "approved",
+          "reason": "The engine's final re-check finds all three plans feasible, so no plan is rejected on scheduling grounds. I confirmed that plan-contractor meets Project A acceptance due day 6 with Project A done day 6, meets Project B delivery due day 4 with Project B done day 3, keeps the 8000 USD invoice INV-1 eligible on time, and costs 1500 USD within the 2000 USD recovery budget. The remaining trade-off is honest and unavoidable: plan-wait and plan-backup-revised both cost 0 USD but miss Project A acceptance due day 6, finishing day 11 and day 9 respectively, and leave the 8000 USD invoice not eligible on time, so the 1500 USD in plan-contractor is the price of meeting every commitment."
+        },
+        "budget": {
+          "max": 8,
+          "used": 7
+        }
+      }
+    },
+    {
+      "event": "done",
+      "data": {
+        "plans": [
+          {
+            "id": "plan-wait",
+            "name": "Wait for Dana Reyes",
+            "summary": "Keep Payment gateway integration with Dana Reyes and start when they are available again.",
+            "status": "verified",
+            "revisesPlanId": null,
+            "projectCompletion": {
+              "A": 11,
+              "B": 3
+            },
+            "deadlines": [
+              {
+                "name": "Project A acceptance",
+                "dueDay": 6,
+                "met": false
+              },
+              {
+                "name": "Project B delivery",
+                "dueDay": 4,
+                "met": true
+              }
+            ],
+            "incrementalCost": 0,
+            "budgetFit": true,
+            "invoiceEligible": false,
+            "violatedConstraints": [
+              "Project A acceptance (due day 6) is missed: finishes on day 11",
+              "Invoice INV-1 (8000 USD) is not eligible by day 6"
+            ],
+            "schedule": [
+              {
+                "taskId": "T-A-INT",
+                "personId": "PER-DEV1",
+                "startDay": 6,
+                "endDay": 9
+              },
+              {
+                "taskId": "T-A-QA",
+                "personId": "PER-QA",
+                "startDay": 10,
+                "endDay": 11
+              },
+              {
+                "taskId": "T-B-FIX",
+                "personId": "PER-BACKUP",
+                "startDay": 2,
+                "endDay": 3
+              }
+            ]
+          },
+          {
+            "id": "plan-backup",
+            "name": "Reassign to Marcus Lee",
+            "summary": "Move Payment gateway integration to Marcus Lee from their first free day, without regard to their existing bookings.",
+            "status": "rejected",
+            "revisesPlanId": null,
+            "projectCompletion": {
+              "A": 7,
+              "B": 7
+            },
+            "deadlines": [
+              {
+                "name": "Project A acceptance",
+                "dueDay": 6,
+                "met": false
+              },
+              {
+                "name": "Project B delivery",
+                "dueDay": 4,
+                "met": false
+              }
+            ],
+            "incrementalCost": 0,
+            "budgetFit": true,
+            "invoiceEligible": false,
+            "violatedConstraints": [
+              "Double-books Marcus Lee on day(s) 2-3: already assigned to Billing hotfix (Project B: Billing Hotfix), which then finishes on day 7 against its due day 4",
+              "Project A acceptance (due day 6) is missed: finishes on day 7",
+              "Project B delivery (due day 4) is missed: finishes on day 7",
+              "Invoice INV-1 (8000 USD) is not eligible by day 6"
+            ],
+            "schedule": [
+              {
+                "taskId": "T-A-INT",
+                "personId": "PER-BACKUP",
+                "startDay": 2,
+                "endDay": 5
+              },
+              {
+                "taskId": "T-A-QA",
+                "personId": "PER-QA",
+                "startDay": 6,
+                "endDay": 7
+              },
+              {
+                "taskId": "T-B-FIX",
+                "personId": "PER-BACKUP",
+                "startDay": 6,
+                "endDay": 7
+              }
+            ]
+          },
+          {
+            "id": "plan-contractor",
+            "name": "Bring in Priya Nair (contractor)",
+            "summary": "Assign Payment gateway integration to Priya Nair (contractor) from their first available day at a fixed incremental cost.",
+            "status": "verified",
+            "revisesPlanId": null,
+            "projectCompletion": {
+              "A": 6,
+              "B": 3
+            },
+            "deadlines": [
+              {
+                "name": "Project A acceptance",
+                "dueDay": 6,
+                "met": true
+              },
+              {
+                "name": "Project B delivery",
+                "dueDay": 4,
+                "met": true
+              }
+            ],
+            "incrementalCost": 1500,
+            "budgetFit": true,
+            "invoiceEligible": true,
+            "violatedConstraints": [],
+            "schedule": [
+              {
+                "taskId": "T-A-INT",
+                "personId": "PER-CTR",
+                "startDay": 1,
+                "endDay": 4
+              },
+              {
+                "taskId": "T-A-QA",
+                "personId": "PER-QA",
+                "startDay": 5,
+                "endDay": 6
+              },
+              {
+                "taskId": "T-B-FIX",
+                "personId": "PER-BACKUP",
+                "startDay": 2,
+                "endDay": 3
+              }
+            ]
+          },
+          {
+            "id": "plan-backup-revised",
+            "name": "Reassign to Marcus Lee, honoring existing bookings",
+            "summary": "Move Payment gateway integration to Marcus Lee only on days they are actually free, keeping their existing commitments intact.",
+            "status": "revised",
+            "revisesPlanId": "plan-backup",
+            "projectCompletion": {
+              "A": 9,
+              "B": 3
+            },
+            "deadlines": [
+              {
+                "name": "Project A acceptance",
+                "dueDay": 6,
+                "met": false
+              },
+              {
+                "name": "Project B delivery",
+                "dueDay": 4,
+                "met": true
+              }
+            ],
+            "incrementalCost": 0,
+            "budgetFit": true,
+            "invoiceEligible": false,
+            "violatedConstraints": [
+              "Project A acceptance (due day 6) is missed: finishes on day 9",
+              "Invoice INV-1 (8000 USD) is not eligible by day 6"
+            ],
+            "schedule": [
+              {
+                "taskId": "T-A-INT",
+                "personId": "PER-BACKUP",
+                "startDay": 4,
+                "endDay": 7
+              },
+              {
+                "taskId": "T-A-QA",
+                "personId": "PER-QA",
+                "startDay": 8,
+                "endDay": 9
+              },
+              {
+                "taskId": "T-B-FIX",
+                "personId": "PER-BACKUP",
+                "startDay": 2,
+                "endDay": 3
+              }
+            ]
+          }
+        ],
+        "verdict": {
+          "planId": "plan-contractor",
+          "decision": "approved",
+          "reason": "The engine's final re-check finds all three plans feasible, so no plan is rejected on scheduling grounds. I confirmed that plan-contractor meets Project A acceptance due day 6 with Project A done day 6, meets Project B delivery due day 4 with Project B done day 3, keeps the 8000 USD invoice INV-1 eligible on time, and costs 1500 USD within the 2000 USD recovery budget. The remaining trade-off is honest and unavoidable: plan-wait and plan-backup-revised both cost 0 USD but miss Project A acceptance due day 6, finishing day 11 and day 9 respectively, and leave the 8000 USD invoice not eligible on time, so the 1500 USD in plan-contractor is the price of meeting every commitment."
+        },
+        "recommendedPlanId": "plan-contractor",
+        "budget": {
+          "max": 8,
+          "used": 7
+        }
+      }
+    }
+  ],
+  "execute": {
+    "request": {
+      "presetId": "dev-out-1-5",
+      "approvedPlanId": "plan-contractor"
+    },
+    "response": {
+      "applied": true,
+      "twin": {
+        "presetId": "dev-out-1-5",
+        "planId": "plan-contractor",
+        "schedule": [
+          {
+            "taskId": "T-A-INT",
+            "personId": "PER-CTR",
+            "startDay": 1,
+            "endDay": 4
+          },
+          {
+            "taskId": "T-A-QA",
+            "personId": "PER-QA",
+            "startDay": 5,
+            "endDay": 6
+          },
+          {
+            "taskId": "T-B-FIX",
+            "personId": "PER-BACKUP",
+            "startDay": 2,
+            "endDay": 3
+          }
+        ],
+        "projectCompletion": {
+          "A": 6,
+          "B": 3
+        },
+        "milestones": [
+          {
+            "milestoneId": "M-A",
+            "dueDay": 6,
+            "completionDay": 6,
+            "met": true
+          },
+          {
+            "milestoneId": "M-B",
+            "dueDay": 4,
+            "completionDay": 3,
+            "met": true
+          }
+        ],
+        "invoiceEligible": true,
+        "incrementalCost": 1500,
+        "budgetRemaining": 500,
+        "conflicts": []
+      }
+    }
+  },
+  "outcome": {
+    "response": {
+      "match": true,
+      "expected": {
+        "projectCompletion": {
+          "A": 6,
+          "B": 3
+        },
+        "deadlines": {
+          "Project A acceptance": true,
+          "Project B delivery": true
+        },
+        "incrementalCost": 1500,
+        "invoiceEligible": true
+      },
+      "actual": {
+        "projectCompletion": {
+          "A": 6,
+          "B": 3
+        },
+        "deadlines": {
+          "Project A acceptance": true,
+          "Project B delivery": true
+        },
+        "incrementalCost": 1500,
+        "invoiceEligible": true
+      },
+      "deltas": []
+    }
+  },
+  "refusedExecute": {
+    "status": 409,
+    "body": {
+      "error": "This plan was rejected by the verifier and cannot be approved.",
+      "code": "PlanRejected"
+    }
+  }
+}

@@ -2,14 +2,21 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from openai import OpenAI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 import branding
 import config
+from api.devconsole import router as devconsole_router
+from api.errors import register_error_handlers
+from api.execute import router as execute_router
+from api.integrations import router as integrations_router
+from api.run import router as run_router
+from api.security import SecurityMiddleware, require_passcode
+from api.state import router as state_router
 
 ROOT = Path(__file__).resolve().parent
 INDEX_PATH = ROOT / "templates" / "index.html"
@@ -32,10 +39,17 @@ if os.path.isfile(".env.local"):
     load_dotenv(".env.local")  # on Vercel, values come from project Environment Variables
 
 app = FastAPI()
+register_error_handlers(app)
+app.add_middleware(SecurityMiddleware)
+app.include_router(state_router)
+app.include_router(run_router)
+app.include_router(execute_router)
+app.include_router(integrations_router)
+app.include_router(devconsole_router)
 
 
 class ChatRequest(BaseModel):
-    message: str
+    message: str = Field(min_length=1, max_length=2000)
 
 
 @app.get("/api/health")
@@ -43,10 +57,11 @@ def health():
     return {
         "ok": True,
         "llm_configured": config.llm_configured(),
+        "passcodeRequired": config.demo_passcode() is not None,
     }
 
 
-@app.post("/api/chat")
+@app.post("/api/chat", deprecated=True, dependencies=[Depends(require_passcode)])
 def chat(req: ChatRequest):
     if not config.llm_configured():
         return JSONResponse(
