@@ -18,10 +18,11 @@ This file points to the approved plan; it does not duplicate it.
 - Verify Git status and files before editing; reconcile any discrepancy with `docs/memory.md`.
 
 ## Hard rules (from rules.md — non-negotiable)
-- LiteLLM key is **server-side only** (`LITELLM_BASE_URL/API_KEY/MODEL` from env; `.env.local` gitignored). Never commit, log, or expose it to the browser.
+- The LLM key is **server-side only**, resolved in `config.py` from `LLM_BASE_URL/API_KEY/MODEL` (legacy `LITELLM_*` accepted); `.env.local` gitignored. The provider is chosen in the environment only (LiteLLM gateway for submission) — a change of values, not code. Never commit, log, or expose the key to the browser.
 - **Fabricated/public data only** — no real client/customer/SSI data anywhere, including tests.
-- `twin/solver.py` computes **all numbers** and makes **no** model calls; `agents/*` never compute numbers; `api/*` never calls LiteLLM directly.
-- **One model call per `/api/run/step`**; respect the run budget. On model failure, produce a `failed` step with **no fabricated content**.
+- Orchestration is a **LangGraph `StateGraph`** (`orchestration/graph.py`); the verifier→planner revision is a conditional edge (capped once). Agents are graph nodes; the model is reached only via `agents/llm.py` (`ChatOpenAI` → LiteLLM).
+- `twin/solver.py` computes **all numbers** and makes **no** model calls; `agents/*` (nodes) never compute numbers; `api/*` never calls the model directly.
+- **One model call per graph node**; respect the run budget. On model failure, produce a `failed` node event with **no fabricated content**.
 - Changes to contracts, security boundaries, dependencies, or the Vercel production project require **owner approval**.
 
 ## Boundaries
@@ -33,4 +34,4 @@ This file points to the approved plan; it does not duplicate it.
 `ruff check . && ruff format --check . && <typecheck> && pytest -q`
 
 ## Stack
-Python 3.12 · FastAPI · `openai` SDK → LiteLLM gateway · vanilla HTML/JS UI · Vercel Hobby · no database.
+Python 3.11+ · FastAPI · **LangGraph** orchestration · LangChain `ChatOpenAI` → LiteLLM gateway · vanilla HTML/JS UI (SSE) · Vercel Hobby · no database.

@@ -6,7 +6,7 @@ Based on the [official Vercel quickstart](https://ssi-ai-hackathon.vercel.app/gu
 
 - Python 3.12+
 - Git
-- LiteLLM values from organizers: `LITELLM_BASE_URL`, `LITELLM_API_KEY`, `LITELLM_MODEL`
+- LLM gateway values. The app reads provider-neutral `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` (legacy `LITELLM_*` also accepted) from the environment — any OpenAI-compatible gateway. For submission, use the organizer LiteLLM values.
 
 ## Local setup
 
@@ -82,9 +82,9 @@ Confirm `.env.local` is **not** on GitHub. Search the repo for `sk-` — it must
 2. **Add New → Project** → import this repository.
 3. **Framework Preset** should be **FastAPI**. Root directory: `./`.
 4. **Environment Variables** — add the same three keys as in `.env.local`:
-   - `LITELLM_BASE_URL`
-   - `LITELLM_API_KEY`
-   - `LITELLM_MODEL`
+   - `LLM_BASE_URL` (or legacy `LITELLM_BASE_URL`)
+   - `LLM_API_KEY` (or legacy `LITELLM_API_KEY`)
+   - `LLM_MODEL` (or legacy `LITELLM_MODEL`)
 5. Click **Deploy**. Production URL: `https://<project-name>.vercel.app`.
 
 After the first deploy, every `git push` to `main` redeploys automatically.

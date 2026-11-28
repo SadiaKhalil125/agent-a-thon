@@ -311,7 +311,7 @@ Relates to: FR-SEC-002; AC-SEC-002-01 · Type: Security/manual · Expected: no r
 
 | Item | Detail |
 |---|---|
-| **LiteLLM gateway** | Only external dependency. Server-side `openai`-compatible calls. Config: `LITELLM_BASE_URL`, `LITELLM_API_KEY`, `LITELLM_MODEL` (values **TBD**, organizer-provided; capped spend). |
+| **LLM gateway (OpenAI-compatible)** | Only external dependency. Server-side calls to any OpenAI-compatible gateway, configured in the environment; the organizer **LiteLLM gateway for submission** (capped spend). Config: `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` (legacy `LITELLM_*` accepted). Provider is config, not code. |
 | **Company seed data** | Fabricated Northstar Systems model in committed files (e.g. JSON). Owned by the app; no external source. Fields: projects, tasks (effort, type: integration/QA, deps), people, skills, availability windows, milestones (due working-day, acceptance), customer commitments, invoices (amount, gated-by milestone), recovery budget, contractor option (rate, availability). |
 | **Data ownership & retention** | All data is fabricated and ephemeral; execution changes live only in session state and reset on demand. No persistent store, no PII, no retention obligation. |
 | **Secrets** | Only the LiteLLM key; stored in env vars, never in repo/knowledge/docs. |

@@ -2,10 +2,12 @@
 Project: CompanyTwin AI (organizational digital twin)
 Complexity: Standard
 Status: Draft
-Version: 0.1
+Version: 0.2
 Owner: Participant
-Last updated: 2026-11-27
-Based on: docs/PRD.md v0.1, docs/architecture.md v0.1, docs/design.md v0.1 (all Approved)
+Last updated: 2026-11-28
+Based on: docs/PRD.md v0.1, docs/architecture.md v0.2, docs/design.md v0.1 (all Approved)
+
+> v0.2: orchestration is **LangGraph** (architecture ADR-002/003 revised). Dependency and model-call rules updated below; everything else unchanged.
 
 > These are enforceable constraints for this repo, derived from `04_ENGINEERING_STANDARDS.md` and the approved docs. Commands marked **(confirm at scaffold)** are resolved in the Phase-0 setup ticket, not assumed to exist yet.
 
@@ -40,15 +42,16 @@ Based on: docs/PRD.md v0.1, docs/architecture.md v0.1, docs/design.md v0.1 (all 
   - `api.*` validates, enforces budget, and shapes responses; it **never** calls LiteLLM directly.
 - **Validation at boundaries:** every request body is a Pydantic model; reject unknown `presetId`/`stepId`/`approvedPlanId`; bound `transcript`/`workingTwin` size.
 - **Contract enforcement:** the step/plan response shape is the contract (architecture §7); changing it is a contract change (§10 approval).
-- **One model call per `/api/run/step`** — never fan out an unbounded number of calls in a request (NFR-OPS-001). Optional parallel specialists (`asyncio.gather`) are allowed **only** within a bounded, documented step and still count against the run budget.
+- **One model call per graph node** — never make an unbounded number of calls. The whole run is capped by a **node/call budget** enforced in the graph (NFR-OPS-001). Parallel specialist nodes (LangGraph fan-out) are allowed but each still counts one call against the budget.
+- **Orchestration is a LangGraph `StateGraph`** (`orchestration/graph.py`); the verifier→planner revision is a **conditional edge** capped at one revision. Nodes call `twin.solver` for numbers; the model is reached only through `agents/llm.py` (`ChatOpenAI` → LiteLLM).
 - **Stateless:** no reliance on server memory between requests; derive from seed + client `RunContext` (NFR-REL-001).
 
 ---
 
 ## 4. Dependency policy
 
-- **Approved baseline:** `fastapi`, `uvicorn`, `openai` (LiteLLM-compatible), `python-dotenv`, `pydantic`. **Dev:** `pytest`, `ruff`, `httpx` (test client), type checker.
-- **Pinning:** pin versions in `requirements.txt` (and a dev set) before first deploy; keep the bundle **< 500 MB** (NFR/platform) — **no** PyTorch/TensorFlow/transformers or other heavy ML; models are accessed only via the gateway.
+- **Approved baseline:** `fastapi`, `uvicorn`, `openai`, `python-dotenv`, `pydantic`, **`langgraph`, `langchain-openai`** (pulls `langchain-core`). **Dev:** `pytest`, `ruff`, `httpx`, `mypy`.
+- **Pinning:** versions pinned in `requirements.txt`. **Watch the deployed function size against Vercel's limit** — the langchain stack is non-trivial (AR6); **no** PyTorch/TensorFlow/transformers or other heavy ML; models are reached only via the gateway.
 - **New dependency = owner approval** (§10): justify need, check it's maintained, confirm it doesn't pull heavy transitive weight or break the bundle limit. Prefer the standard library.
 - Treat all third-party packages and all model output as **untrusted**.
 
@@ -74,7 +77,7 @@ Based on: docs/PRD.md v0.1, docs/architecture.md v0.1, docs/design.md v0.1 (all 
 
 ## 7. Security requirements
 
-- **Secrets:** `LITELLM_*` (and optional `DEMO_PASSCODE`, `MAX_CALLS_PER_RUN`) come from env only; `.env.local` stays gitignored; never commit, log, screenshot, or send to the browser. Only `/api/health` exposes the boolean `litellm_configured` (FR-SEC-001).
+- **Secrets:** `LLM_BASE_URL/API_KEY/MODEL` (legacy `LITELLM_*` accepted; optional `DEMO_PASSCODE`, `MAX_CALLS_PER_RUN`) come from env only, resolved in `config.py`; `.env.local` stays gitignored; never commit, log, screenshot, or send to the browser. The provider is chosen in the environment (the LiteLLM gateway for submission) — a change of values, not code or repo content. Only `/api/health` exposes the boolean `llm_configured` (FR-SEC-001).
 - **Server-side authorization of the one guarded action:** `/api/execute` must verify `approvedPlanId` was produced in the same run before applying changes (FR-EXEC-001). No identity auth by design.
 - **Input validation** at every external boundary (browser bodies, and defensive parsing of model output — model text is data, never executed).
 - **Budget/abuse:** enforce ≤1 model call per request and a fixed max steps per run; **recommended P2 hardening:** `DEMO_PASSCODE` or a lightweight per-IP throttle (NFR-OPS-001). Document the residual risk honestly.
@@ -87,7 +90,7 @@ Based on: docs/PRD.md v0.1, docs/architecture.md v0.1, docs/design.md v0.1 (all 
 - **Framework:** `pytest` + FastAPI `TestClient`/`httpx`. (confirm at scaffold)
 - **Required by tier (Standard):**
   - **Unit** — `twin.solver` math is mandatory and high-coverage (pure, deterministic): AT-TWIN-001-01, AT-IMP-001/002/003, AT-PLAN-001/002/004, AT-EXEC-002/003.
-  - **Integration** — step loop, budget cap, approval gate, honest failure, deterministic re-run, no-external-call: AT-ORCH-002/003/004/005, AT-EVENT-001/002, AT-EXEC-001/004, AT-REL-001, AT-OPS-001, AT-PERF-001. Model boundary uses an **injected test double** (asserts a call occurred; can simulate failure) — never a real paid call in unit/integration.
+  - **Integration** — graph node execution + the conditional verifier→planner edge, budget cap, approval gate, honest node failure, deterministic re-run, no-external-call: AT-ORCH-002/003/004/005, AT-EVENT-001/002, AT-EXEC-001/004, AT-REL-001, AT-OPS-001, AT-PERF-001. Model boundary uses an **injected fake chat model** (LangChain fake/stub — asserts node invocation and routing; can simulate failure) — never a real paid call in unit/integration.
   - **E2E/smoke** — happy path of Flow A: AT-UI-001-01 (+ manual usability pass).
   - **Security** — key/`sk-` scan + real-data review: AT-SEC-001/002.
 - **Evidence rule:** a passing test is an **observed run**, reported with the command and result. A written test is not a passed test. If a check cannot run (e.g. no gateway), report **`Not run`** — never invent a result (this is also §10 Forbidden).

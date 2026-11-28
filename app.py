@@ -9,6 +9,7 @@ from openai import OpenAI
 from pydantic import BaseModel
 
 import branding
+import config
 
 ROOT = Path(__file__).resolve().parent
 INDEX_PATH = ROOT / "templates" / "index.html"
@@ -26,15 +27,9 @@ def render_index() -> str:
         .replace("{{EVENT_PILL}}", branding.EVENT_PILL)
     )
 
+
 if os.path.isfile(".env.local"):
     load_dotenv(".env.local")  # on Vercel, values come from project Environment Variables
-
-REQUIRED_ENV = ("LITELLM_API_KEY", "LITELLM_BASE_URL", "LITELLM_MODEL")
-
-
-def litellm_configured() -> bool:
-    return all(os.environ.get(name) for name in REQUIRED_ENV)
-
 
 app = FastAPI()
 
@@ -47,30 +42,27 @@ class ChatRequest(BaseModel):
 def health():
     return {
         "ok": True,
-        "litellm_configured": litellm_configured(),
+        "llm_configured": config.llm_configured(),
     }
 
 
 @app.post("/api/chat")
 def chat(req: ChatRequest):
-    if not litellm_configured():
+    if not config.llm_configured():
         return JSONResponse(
             {
                 "error": (
-                    "LiteLLM is not configured yet. When you receive your key, "
-                    "copy .env.local.example to .env.local, fill in the three values, "
-                    "and restart uvicorn."
+                    "LLM provider is not configured. Copy .env.local.example to .env.local "
+                    "and set LLM_BASE_URL / LLM_API_KEY / LLM_MODEL, then restart uvicorn."
                 )
             },
             status_code=503,
         )
     try:
-        client = OpenAI(
-            api_key=os.environ["LITELLM_API_KEY"],
-            base_url=os.environ["LITELLM_BASE_URL"],
-        )
+        settings = config.get_llm_settings()
+        client = OpenAI(api_key=settings.api_key, base_url=settings.base_url)
         completion = client.chat.completions.create(
-            model=os.environ["LITELLM_MODEL"],
+            model=settings.model,
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": req.message},
@@ -79,9 +71,7 @@ def chat(req: ChatRequest):
         return {"reply": completion.choices[0].message.content}
     except Exception as err:
         print(err)
-        return JSONResponse(
-            {"error": "The AI call failed. Check the logs."}, status_code=500
-        )
+        return JSONResponse({"error": "The AI call failed. Check the logs."}, status_code=500)
 
 
 @app.get("/", response_class=HTMLResponse)

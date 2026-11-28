@@ -1,4 +1,7 @@
-fastapi
-uvicorn
-openai
-python-dotenv
+fastapi==0.165.0
+uvicorn==0.54.0
+openai==3.60.0
+python-dotenv==1.2.4
+pydantic==2.14.4
+langgraph==1.2.24
+langchain-openai==1.8.5

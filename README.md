@@ -4,7 +4,7 @@
 
 **AI / implementers:** [AGENTS.md](./AGENTS.md) · **Portal / deadlines:** [HACKATHON.md](./HACKATHON.md) · **Tasks:** [docs/phases.md](./docs/phases.md) · **Status:** [docs/memory.md](./docs/memory.md) (active: **TASK-001**).
 
-Stack: Python 3.12 · FastAPI · LiteLLM (server-side) · Vercel. Repo code is still the **chat starter**; build follows phases from TASK-001.
+Stack: Python 3.11+ · FastAPI · LangGraph · LangChain ChatOpenAI → LiteLLM (server-side) · Vercel. Build follows phases; TASK-001 (scaffold) done.
 
 ## Quick start
 

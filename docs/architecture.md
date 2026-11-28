@@ -2,10 +2,12 @@
 Project: CompanyTwin AI (organizational digital twin)
 Complexity: Standard
 Status: Draft
-Version: 0.1
+Version: 0.2
 Owner: Participant — engineering accountable
-Last updated: 2026-11-27
+Last updated: 2026-11-28
 Based on: docs/PRD.md v0.1 (Approved)
+
+> **Change record (v0.1 → v0.2, approved 2026-11-28):** Adopt **LangGraph** for multi-agent orchestration (reverses ADR-003, which had chosen plain Python) and revise ADR-002 accordingly. No PRD requirement changes — LangGraph is a mechanism; all FR/NFR/AC/AT keep their meaning and IDs. Deterministic solver (ADR-001) is unchanged: graph nodes call it as plain functions.
 
 ---
 
@@ -13,13 +15,13 @@ Based on: docs/PRD.md v0.1 (Approved)
 
 **Driving requirements.** FR-ORCH-001…005 (coordinated, real, visible multi-agent run), FR-IMP/PLAN/VER/EXEC (investigate → plan → verify → approve → execute → verify), FR-TWIN (seeded connected model), FR-SEC-001/002 (server-side key, fabricated data). NFR-PERF-001 (no request > ~5 min), NFR-REL-001 (no server memory between requests), NFR-OPS-001 (bounded model spend), NFR-USE-001 (facts vs. calculations vs. predictions).
 
-**The two constraints that shape everything.** Vercel Hobby gives (a) a ~5-minute per-request ceiling and (b) **no reliable server state between requests**. A naïve "one request runs all agents" design risks timeout and depends on in-memory run state. Therefore the architecture is built around **a client-driven loop that runs one agent step per request, carrying run state in the client**.
+**The platform constraints.** Vercel Hobby gives a ~5-minute per-request ceiling and no reliable server state between requests. **The orchestration is a LangGraph `StateGraph` run server-side.** The investigation→plan→verify graph executes in **one streamed request** that emits a per-node event for the live agent trail; the **human-approval gate sits at the request boundary** — a separate `/api/execute` request applies the approved plan. So no LangGraph state needs to persist between requests (each request is self-contained), and the only long-running request is the streamed graph run, kept under the ceiling by a bounded node budget and optional parallel specialist nodes.
 
-**The correctness constraint.** FR-PLAN-003 forbids invented numbers. Therefore **all quantitative results (completion days, deadline impact, cost) are computed by a deterministic solver from the seed data**, not by the LLM. Agents reason, choose and explain; the solver computes.
+**The correctness constraint.** FR-PLAN-003 forbids invented numbers. **All quantitative results are computed by the deterministic `twin.solver` from the seed**, not by the LLM. Graph nodes reason, choose and explain; they call the solver for every number (ADR-001).
 
-**Non-goals (architecture).** No database, no auth service, no queues/workers, no microservices, no multi-environment topology, no live integrations. These trace to PRD exclusions §4.3 and the Standard tier.
+**Non-goals (architecture).** No database, no auth service, no queues/workers, no microservices, no multi-environment topology, no live integrations (PRD §4.3).
 
-**Major tradeoffs.** Simplicity/robustness on Vercel over orchestration elegance (client loop vs. server-side agent framework); deterministic trust over "let the model do the math"; sequential steps over parallel (parallelism is an optional, bounded enhancement).
+**Major tradeoffs.** A real orchestration graph (LangGraph) over hand-rolled control flow — clearer multi-agent story, native conditional edges and parallel fan-out — accepting a heavier dependency and a single streamed run to manage against the 5-min ceiling. Deterministic trust over "let the model do the math."
 
 ---
 
@@ -29,33 +31,32 @@ Based on: docs/PRD.md v0.1 (Approved)
 
 ```
 Browser (demo UI)
-  │  drives the step loop, holds RunContext (transcript + working twin state)
+  │  POST /api/run/stream {presetId}  → consumes SSE node events, renders the live trail
+  │  POST /api/execute {approvedPlanId} after the human approves
   ▼
 FastAPI app (stateless per request)
-  ├─ Routes/API            validate input, enforce step budget, shape responses
-  ├─ Orchestration         step registry + sequence + RunContext schema
-  ├─ Agents                role definitions, prompt builders, LiteLLM client wrapper
-  └─ Twin                  seed loader, dependency graph, DETERMINISTIC solver
+  ├─ Routes/API            validate input, stream node events, shape responses
+  ├─ Orchestration         LangGraph StateGraph: nodes, edges, conditional verifier→planner edge, node budget
+  ├─ Agents                graph nodes (role prompt builders) + ChatOpenAI→LiteLLM factory
+  └─ Twin                  seed loader, dependency graph, DETERMINISTIC solver (called by nodes)
         │                                   │
         ▼                                   ▼
-  data/seed/northstar.json (read-only)   LiteLLM gateway (external, server-side key)
+  data/seed/northstar.json (read-only)   LiteLLM gateway (external, server-side key, via LangChain ChatOpenAI)
 ```
 
-### Request/data flow (Flow A, primary)
+### The graph (Flow A, primary)
 
 ```
-1  GET  /api/state                → seed → initial twin state (facts)
-2  POST /api/event/start          → validate preset → RunContext{event, twin, transcript:[]}
-3  POST /api/run/step  (repeat)   → run ONE agent (Observer→Impact→HR→Finance→Sales→Planner→Verifier)
-                                     server recomputes hard facts via solver; LLM adds judgment/narrative
-                                     returns step{role, evidence, output, derivedFacts, nextStepId, budget}
-   (Verifier may set nextStepId back to Planner once → revised plan)       [FR-ORCH-004, FR-VER-002]
-4  POST /api/execute              → requires an approved planId → solver applies plan → new twin state
-5  POST /api/outcome              → solver re-checks new state vs selected plan → match/mismatch
-   POST /api/reset (or client)    → discard working state, reload seed
+START
+  → observer/impact_node ──► specialists (HR ∥ Finance ∥ Sales, parallel fan-out) ──► planner_node
+                                                                                        │
+                                                                        verifier_node ◄─┘
+                                                                        │   conditional edge:
+                                                                        │   reject → planner_node (once)
+                                                                        │   approve → END (emit verified plans)
 ```
 
-The browser renders each step as it returns, producing the visible agent trail (FR-ORCH-003) and the side-by-side plan comparison (FR-UI-002).
+Each node = one LLM call (via ChatOpenAI→LiteLLM) + solver-computed facts. The graph streams a node event as each finishes, producing the visible ordered trail (FR-ORCH-003) and the plan comparison (FR-UI-002). After `END`, the browser shows the plans; **the human approves; `/api/execute` (a separate request) applies the plan via the solver and verifies the outcome.**
 
 ---
 
@@ -63,12 +64,15 @@ The browser renders each step as it returns, producing the visible agent trail (
 
 | Layer | Choice | Rationale | Alternatives considered |
 |---|---|---|---|
-| Runtime | **Python 3.12** | Repo baseline; strong for the deterministic solver. | — |
-| Web framework | **FastAPI** | Already in repo; async enables optional parallel specialist calls; Pydantic validates the RunContext/step contracts; built-in OpenAPI aids testing. | **Flask** (viable, no native async/validation) — rejected as a downgrade; **Next.js** — rejected, Python requested (PRD OQ2 closed). |
-| Model access | **LiteLLM gateway via `openai` SDK**, server-side only | Mandated by rules; one provider path; capped key. | None (organizer-constrained). |
-| UI | **Server-rendered HTML + vanilla JS** (extend current `templates/` + `static/`) | No build step, tiny bundle (NFR-PERF-002), fast to ship, easy to keep key out of client. | React/Next — rejected (build complexity, no benefit at this scope). |
-| State store | **None (stateless)** — RunContext in the client; seed is read-only | NFR-REL-001; no persistence requirement; fabricated/ephemeral data. | DB/KV — rejected (no requirement; adds ops). |
+| Runtime | **Python 3.11+** | Repo baseline (local 3.11.9; Vercel can run 3.12). | — |
+| Web framework | **FastAPI** | Async suits streaming (SSE) and parallel nodes; Pydantic validates request contracts. | Flask (no native async/streaming ergonomics) — rejected. |
+| **Orchestration** | **LangGraph** (`langgraph==1.2.24`) | A real multi-agent graph: explicit nodes, handoffs, a **conditional edge** for verifier→planner revision, and **parallel fan-out** for specialists. Allowed by the hackathon guide; a strong, legible orchestration artifact for judges. | Plain-Python registry (prior ADR-003) — reversed by owner decision; frameworks like CrewAI/AutoGen — not chosen. |
+| Model access | **LangChain `ChatOpenAI`** (`langchain-openai==1.8.5`) pointed at **any OpenAI-compatible gateway**, server-side only; endpoint configured in the environment, the LiteLLM gateway for submission | `ChatOpenAI(base_url, api_key, model)` from `config.get_llm_settings()`; provider-neutral env vars `LLM_*` (legacy `LITELLM_*` accepted as fallback). Key never leaves the server. | Raw `openai` SDK — still present transitively; LangChain chosen to integrate with LangGraph nodes. |
+| UI | **Server-rendered HTML + vanilla JS** consuming **SSE** | No build step, tiny bundle; `EventSource`/fetch-stream renders the trail live. | React/Next — rejected (build complexity). |
+| State store | **None (stateless)** — each request self-contained; seed read-only | NFR-REL-001; graph state lives in memory only for the single streamed run. | DB/KV — rejected (no requirement). |
 | Deploy | **Vercel Hobby**, auto-deploy on push to `main` | Mandated. | — |
+
+Bundle note: the langgraph + langchain stack is pure-Python but non-trivial; **must verify the deployed function stays within Vercel's size limit** (AR6).
 
 ---
 
@@ -76,14 +80,12 @@ The browser renders each step as it returns, producing the visible agent trail (
 
 | Module | Responsibility | Depends on | Must not |
 |---|---|---|---|
-| **api (routes)** | Validate requests, enforce step budget, call orchestration, shape JSON/HTML responses, health. | orchestration, twin | call LiteLLM directly; expose the key; trust client-supplied numbers. |
-| **orchestration** | Define RunContext schema, the agent step registry and allowed sequence, budget counters, transition rules (incl. the single Verifier→Planner revision). | agents, twin | perform math; hold state across requests. |
-| **agents** | For each role: build the prompt/input from RunContext + twin facts, call the LiteLLM wrapper, parse the model's judgment/narrative + its chosen plan option(s). | twin (read), litellm client | compute completion/cost numbers; invent facts. |
-| **agents.litellm** | Thin wrapper over the `openai`-compatible client: config from env, one call, timeout, one bounded retry, structured error. | env | log secrets/payloads; retry unbounded. |
-| **twin.model** | Typed entities (projects, tasks, people, skills, availability, milestones, customers, invoices, budget, contractor) and the dependency graph. | seed loader | depend on agents/api. |
-| **twin.solver** | **Deterministic engine**: schedule tasks under an assignment, compute completion day, deadline impact, incremental cost, milestone/invoice eligibility; generate candidate recovery options; apply an approved plan; verify outcome. Pure functions. | twin.model | call the model; have side effects outside returned state. |
-| **twin.seed** | Load and validate `data/seed/northstar.json` into the model. | — | contain secrets or real data. |
-| **UI (templates/static)** | Drive the step loop, render the agent trail, plan comparison, approval, outcome, reset. | api | contain the key or model-call logic. |
+| **api (routes)** | Validate requests, run the graph and **stream node events**, shape execute/outcome responses, health. | orchestration, twin | call the model directly; expose the key; trust client-supplied numbers. |
+| **orchestration** | Build the LangGraph `StateGraph` (`graph.py`): register nodes, wire edges incl. the conditional verifier→planner edge, enforce the per-run **node/call budget**; define the graph **State** (`state.py`). | agents, twin | perform math; hold state across requests. |
+| **agents** | Graph **nodes** (`nodes.py`) — one per role; each builds its prompt from the graph State + solver facts (`roles.py`), invokes the chat model, parses judgment/narrative + chosen option. `llm.py` is the **ChatOpenAI→LiteLLM factory**. | twin (read), langchain-openai | compute numbers; invent facts; log the key. |
+| **twin.solver** | **Deterministic engine**: schedule, completion day, deadline impact, incremental cost, eligibility; candidate plans; apply approved plan; verify outcome. Pure functions, **called by nodes as tools**. | twin.model | call the model; side effects. |
+| **twin.model / twin.seed** | Entities + dependency graph; load/validate `northstar.json`. | — | contain secrets or real data. |
+| **UI (templates/static)** | Start a run, consume SSE, render trail + plan comparison + approval + outcome + reset. | api | contain the key or model-call logic. |
 
 Dependency direction: `api → orchestration → {agents, twin}`, `agents → twin(read)`. `twin.solver` is a pure leaf. No circular dependencies.
 
@@ -93,51 +95,42 @@ Dependency direction: `api → orchestration → {agents, twin}`, `agents → tw
 
 ```
 agent-a-thon/
-├─ app.py                     [EXISTING — to be refactored: mount routers, keep render_index]
-├─ branding.py                [EXISTING — rebrand to CompanyTwin]
-├─ requirements.txt           [EXISTING — add deps as needed]
-├─ vercel.json                [PROPOSED — explicit FastAPI build/routes if needed]
+├─ app.py                     [EXISTING — refactor: mount routers, keep render_index]
+├─ branding.py                [EXISTING — rebrand]
+├─ requirements.txt           [EXISTING — pinned; + langgraph, langchain-openai]
+├─ vercel.json                [PROPOSED — add only once first deploy confirms what's needed (AR4)]
 ├─ api/                       [PROPOSED]
 │  ├─ state.py                   GET /api/state, /api/health
-│  ├─ run.py                     POST /api/event/start, /api/run/step
+│  ├─ run.py                     POST /api/run/stream  (SSE: runs the graph, emits node events)
 │  └─ execute.py                 POST /api/execute, /api/outcome, /api/reset
 ├─ orchestration/             [PROPOSED]
-│  ├─ context.py                 RunContext pydantic schema
-│  ├─ registry.py                step order, transitions, budget
-│  └─ budget.py                  per-run call cap enforcement
+│  ├─ state.py                   LangGraph graph State (messages/transcript, event, plans, verdict, budget)
+│  ├─ graph.py                   build_graph(): nodes, edges, conditional verifier→planner edge
+│  └─ budget.py                  per-run node/call budget
 ├─ agents/                    [PROPOSED]
-│  ├─ base.py                    prompt-build + parse scaffolding
-│  ├─ roles.py                   role definitions/system prompts
-│  └─ litellm_client.py          server-side gateway wrapper
+│  ├─ llm.py                     ChatOpenAI factory (base_url/api_key/model from env) → LiteLLM
+│  ├─ nodes.py                   the role node functions used by the graph
+│  └─ roles.py                   role system prompts + input builders
 ├─ twin/                      [PROPOSED]
-│  ├─ model.py                   entities + dependency graph
-│  ├─ solver.py                  deterministic scheduler/cost/outcome
-│  └─ seed.py                    loader + validation
-├─ data/seed/
-│  └─ northstar.json          [PROPOSED — fabricated company]
-├─ templates/
-│  └─ index.html              [EXISTING — replace single-prompt UI with demo flow]
-├─ static/
-│  ├─ css/main.css            [EXISTING — extend]
-│  └─ js/                     [EXISTING theme.js; chat.js REPLACED by run.js/state.js/plans.js]
-├─ tests/                     [PROPOSED]
-│  ├─ test_solver.py             unit (deterministic math)
-│  ├─ test_run_steps.py          integration (steps, budget, failure, approval gate)
-│  └─ test_security.py           repo/key scan
-└─ docs/                      [EXISTING — PRD.md, architecture.md, …]
+│  ├─ model.py · solver.py · seed.py   deterministic core (called by nodes)
+├─ data/seed/northstar.json   [PROPOSED — TASK-004]
+├─ templates/index.html       [EXISTING — replace single-prompt UI]
+├─ static/ (css/main.css, js/{theme.js, run.js})  [chat.js REPLACED by run.js (SSE)]
+├─ tests/ (test_solver.py, test_graph.py, test_security.py)   [PROPOSED]
+└─ docs/ · AGENTS.md          [EXISTING]
 ```
 
-Existing single-prompt `/api/chat` + `chat.js` are **replaced**, not extended.
+> Scaffold note: TASK-001 created `agents/litellm_client.py`, `orchestration/context.py`, `orchestration/registry.py`. Under v0.2 these become `agents/llm.py`, `orchestration/state.py`, `orchestration/graph.py` — renamed when TASK-008/009 land.
 
 ---
 
 ## 6. Data & State
 
-- **Seed (read-only, committed).** `data/seed/northstar.json` holds the fabricated model. Validated on load (every invoice → a milestone; every milestone → ≥1 task; availability windows well-formed). This is the single source of hard facts.
-- **RunContext (ephemeral, client-held).** `{ runId, event, workingTwin, transcript[], budget, approvedPlanId? }`. Sent with each `/api/run/step`. Bounded well under 4.5 MB (NFR-PERF-002).
-- **Trust rule.** The server **recomputes** all derived facts from the seed + event + candidate plan each step via the solver; it does **not** trust numbers in the client transcript. Model-generated *narrative* is passed through for display and as context to the next agent.
-- **Working twin & execution.** `/api/execute` applies the approved plan to a working copy via the solver and returns the new state; the client holds it. **Reset** reloads the seed. No persistence; nothing shared between users or requests (NFR-REL-001).
-- **Acknowledged limitation.** Because the transcript is client-carried, a determined user could alter prior *narrative*. Numbers are protected (server-recomputed); narrative tampering only affects that user's own demo and cannot exceed the call budget. Documented, accepted for a fabricated-data demo.
+- **Seed (read-only, committed).** `data/seed/northstar.json`, validated on load. Single source of hard facts.
+- **Run state (ephemeral, in-memory for one streamed request).** The LangGraph **State** object holds the event, accumulating node outputs/transcript, the solver-derived facts, candidate plans and the verifier verdict. It exists only for the duration of the single `/api/run/stream` invocation — which is permitted, since it is one request (NFR-REL-001 forbids reliance on memory *between* requests, not within one).
+- **Approval at the request boundary.** The graph run ends by emitting verified plans. The human approves client-side. `/api/execute` is a **separate, self-contained request** carrying `{presetId, approvedPlanId}`; the server reloads the seed and **recomputes** the applied state + outcome via the solver — so no graph checkpoint needs to persist and no DB is required.
+- **Trust rule.** The solver recomputes all numbers server-side; the LLM narrative is passed through for display only.
+- **Reset** reloads the seed. Nothing is shared between users or requests.
 
 ---
 
@@ -145,25 +138,24 @@ Existing single-prompt `/api/chat` + `chat.js` are **replaced**, not extended.
 
 | Endpoint | In | Out | Notes |
 |---|---|---|---|
-| `GET /api/health` | — | `{ok, litellm_configured}` | existing, kept. |
+| `GET /api/health` | — | `{ok, llm_configured}` | existing. |
 | `GET /api/state` | — | initial twin state (facts) | from seed. |
-| `POST /api/event/start` | `{presetId}` | `{runId, event, twin, firstStepId, budget}` | validate `presetId ∈ presets`. |
-| `POST /api/run/step` | `{runId, stepId, event, transcript, workingTwin}` | `{stepId, role, evidenceUsed[], output, derivedFacts, plans?, verdict?, nextStepId|null, budget}` | **exactly one** model call; server recomputes `derivedFacts`/`plans` via solver. |
-| `POST /api/execute` | `{runId, approvedPlanId, workingTwin}` | `{twin, applied:true}` | **requires** a plan id produced in this run (FR-EXEC-001). |
-| `POST /api/outcome` | `{runId, approvedPlanId, workingTwin}` | `{match:bool, expected, actual, deltas[]}` | solver re-check. |
-| `POST /api/reset` | `{runId}` | initial state | client may also reset locally. |
+| `POST /api/run/stream` | `{presetId}` | **SSE stream** of node events: `{node, role, evidenceUsed[], output, derivedFacts, plans?, verdict?, status}`, terminated by a `done` event carrying the verified plans | validate `presetId`; runs the LangGraph graph; **one model call per node**; budget-bounded; solver supplies all numbers. |
+| `POST /api/execute` | `{presetId, approvedPlanId}` | `{twin, applied:true}` | **requires** a plan id produced for this preset/run (FR-EXEC-001); solver applies. |
+| `POST /api/outcome` | `{presetId, approvedPlanId}` | `{match, expected, actual, deltas[]}` | solver re-check. |
+| `POST /api/reset` | — | initial state | client may also reset locally. |
 
-**Validation & errors.** All bodies validated by Pydantic. Error shape `{error, code}` with safe generic messages (NFR-SEC-002); unknown preset/step/plan → 400; gateway/config problems → 503/500 without leaking internals. **Idempotency:** steps are pure given identical input (seeded), so a retried POST reproduces the same result; no dedup store needed. **Versioning:** single internal API, no external consumers; not versioned.
+**Validation & errors.** Pydantic on all bodies; error shape `{error, code}` with safe generic messages (NFR-SEC-002). **Streaming:** SSE (`text/event-stream`); on a node failure the stream emits a `failed` event and closes — no fabricated content (FR-ORCH-005). **Idempotency:** a run on the same preset/seed is deterministic in its derived facts; narrative may vary (model), numbers do not. **Versioning:** single internal API; not versioned.
 
 ---
 
 ## 8. Security Boundaries
 
-- **Secret handling (FR-SEC-001, NFR-SEC-001).** `LITELLM_API_KEY/BASE_URL/MODEL` read from env server-side only; `.env.local` gitignored; never sent to the browser, logged, or committed. Only `/api/health` exposes a boolean `litellm_configured`.
-- **Trust boundaries.** Two untrusted inputs: the browser (request bodies) and the LiteLLM response (treated as text, never executed; parsed defensively). Validate `presetId`, `stepId`, `approvedPlanId`, and bound `transcript`/`workingTwin` size.
-- **Authorization.** None by design (single public demo workspace, PRD §4.3). The only guarded action — applying state changes — is gated on an **in-run approved plan id**, not on identity.
-- **Least privilege / data.** No DB, no PII, fabricated data only (FR-SEC-002); the app makes exactly one outbound destination — the LiteLLM gateway.
-- **Abuse/budget (NFR-OPS-001).** See §9; the public URL + capped key is the main residual security/cost risk.
+- **Secret handling (FR-SEC-001, NFR-SEC-001).** `LLM_BASE_URL/API_KEY/MODEL` (legacy `LITELLM_*` accepted) read from env server-side via `config.py`; passed to `ChatOpenAI(base_url, api_key, model)`; `.env.local` gitignored; never sent to the browser/logged/committed. Only `/api/health` exposes the boolean `llm_configured`.
+- **Trust boundaries.** Browser bodies and model output are untrusted; validate `presetId`/`approvedPlanId`; model text is data, never executed, parsed defensively.
+- **Authorization.** None by design (single public demo). The one guarded action — `/api/execute` — is gated on an in-run `approvedPlanId`, not identity.
+- **Least privilege / data.** No DB, no PII, fabricated data only; one outbound destination (the LiteLLM gateway).
+- **Abuse/budget (NFR-OPS-001).** Node budget caps model calls per run; see §9.
 
 ---
 
@@ -171,34 +163,33 @@ Existing single-prompt `/api/chat` + `chat.js` are **replaced**, not extended.
 
 | Failure | Handling |
 |---|---|
-| LiteLLM timeout/5xx | One bounded retry in the wrapper, then the step returns `status:"failed"`; UI marks it failed/unavailable; **no fabricated output** (FR-ORCH-005). Safe generic message to client; provider error logged server-side without secrets. |
-| Not configured | `/api/run/step` returns 503 with the "configure LiteLLM" guidance (existing pattern). |
-| Request near 5-min cap | Each request is a single agent call, well under the cap (NFR-PERF-001); no server-side multi-agent chain in one request. |
-| Model returns an unparseable/implausible plan choice | Parser falls back to the solver's deterministic candidate set; the model's free text is still shown; numbers stay solver-authoritative. |
-| Budget exhausted | `budget.remaining == 0` → further steps refused with a clear message (FR-ORCH / NFR-OPS). |
-| **Abuse of public URL** | Residual risk. Mitigations: hard cap of one model call per request; fixed max steps per run enforced server-side per `runId` within the request budget field; **optional** lightweight per-IP throttle or a shared passcode as a stretch (NFR-OPS-001, PRD OQ4). Honest limitation: without server state, a scripted caller could start many runs — the passcode/throttle is the real cap and is the recommended P2 hardening. |
-| Reset mid-run | Discards working state; no external effect (FR-EXEC-004). |
+| Model (node) timeout/5xx | One bounded retry in `llm.py`, then the node emits `status:"failed"`; the SSE stream sends a `failed` event and ends that path; **no fabricated output** (FR-ORCH-005). Provider error logged server-side without secrets. |
+| Not configured | `/api/run/stream` returns 503 with the "configure LiteLLM" guidance. |
+| Run near 5-min cap | Run is bounded (node budget) and **streamed** (progress reaches the UI as it happens); **parallel specialist nodes** cut wall-time. New risk: streaming behavior on Vercel (AR5). |
+| Budget exhausted | Graph halts with a clear `budget` event (NFR-OPS-001). |
+| Verifier rejects | Conditional edge routes back to `planner_node` **once**; a revised plan is emitted (FR-VER-002, FR-ORCH-004). |
+| No feasible plan | Plans still emitted, each naming violated constraints (FR-PLAN-004). |
+| Execute without approval | `/api/execute` refuses without a valid in-run `approvedPlanId` (FR-EXEC-001). |
+| Reset mid-run | Client discards the stream/working state; no external effect. |
 
-Rollback/compensation: not applicable — execution only mutates the client's working twin, which reset restores; nothing external to undo.
+Rollback/compensation: n/a — execution mutates only the client's working twin, restored by reset.
 
 ---
 
 ## 10. Deployment & Configuration
 
-- **Platform:** Vercel Hobby, Python/FastAPI preset; production domain `https://<project>.vercel.app`; auto-deploy on push to `main`.
-- **Config:** env vars `LITELLM_BASE_URL`, `LITELLM_API_KEY`, `LITELLM_MODEL` (Vercel project settings + local `.env.local`). Optional `DEMO_PASSCODE`, `MAX_CALLS_PER_RUN` (P2).
-- **Build:** `requirements.txt`; add `vercel.json` only if the default FastAPI detection needs explicit routing for `/api/*` + static. No DB, no migrations.
-- **Secrets:** stored only in Vercel env / local `.env.local`; rotation = update env + redeploy (per DEPLOYMENT.md).
-- **Rollback/recovery:** redeploy a previous Vercel deployment; app is stateless so recovery is immediate; no data to restore.
+- **Platform:** Vercel Hobby, Python/FastAPI preset; auto-deploy on push to `main`.
+- **Config:** env `LLM_BASE_URL/API_KEY/MODEL` (any OpenAI-compatible gateway; the LiteLLM gateway for submission; legacy `LITELLM_*` accepted); optional `DEMO_PASSCODE`, `MAX_CALLS_PER_RUN`.
+- **Build:** pinned `requirements.txt`; `vercel.json` added only once the first deploy shows what routing/streaming config is needed (AR4/AR5). **Verify the langchain bundle fits Vercel's function size limit (AR6).**
+- **Rollback/recovery:** redeploy a prior build; stateless, nothing to restore.
 
 ---
 
 ## 11. Observability & Operations
 
-- **Structured logs** per run/step: `runId`, `stepId`, `role`, duration ms, provider status, model-call count, budget remaining. **Never** log the key, prompts' sensitive content (none here), or full payloads (NFR-OPS-002).
-- **Health:** `/api/health` → `{ok, litellm_configured}` for a quick liveness/config check.
-- **Alerting:** none required at this tier; Vercel deploy status + logs suffice.
-- **Support owner:** the participant (single-owner project).
+- **Structured logs** per run/node: `runId, node, role, duration_ms, provider_status, call_count, budget_remaining`. Never log the key, prompts, or full payloads (NFR-OPS-002).
+- **Health:** `/api/health` → `{ok, llm_configured}`.
+- **Support owner:** the participant.
 
 ---
 
@@ -206,12 +197,10 @@ Rollback/compensation: not applicable — execution only mutates the client's wo
 
 | Layer | What | Real vs. mock |
 |---|---|---|
-| **Unit** | `twin.solver` — scheduling, completion day, deadline impact, incremental cost, milestone/invoice eligibility, outcome check. Highest value; fully deterministic. | Real, no model. |
-| **Integration** | `/api/run/step` sequence; budget cap; approval gate (no execute without approved plan); honest failure on gateway error; reset/no-external-call; deterministic re-run. | **LiteLLM wrapper injected with a test double** that (a) asserts a call occurred (AT-ORCH-002-01) and (b) can simulate failure (AT-ORCH-005-01). |
-| **E2E / smoke** | Happy path through the client loop (served HTML + step endpoints). | Test double or a single cheap real call in a smoke run. |
-| **Security** | Repo/bundle/network scan for the key and `sk-`; real-data review. | Static scan + manual. |
-
-Contract checks: Pydantic schemas on every request/response are the enforced contract; tests assert the step response shape and the plan-comparison fields.
+| **Unit** | `twin.solver` — scheduling, completion, cost, eligibility, candidate plans, outcome. Deterministic, highest value. | Real, no model. |
+| **Integration** | The LangGraph graph: node execution order, the **conditional verifier→planner edge** (rejection → revised plan), budget cap, honest node failure, deterministic derived facts. `/api/execute` approval gate + outcome + reset. | **A fake chat model** (LangChain `GenericFakeChatModel`/stub) injected via `llm.py` — asserts node invocation and routing; no paid calls. |
+| **E2E / smoke** | Happy path of Flow A through the streamed run + approval + outcome. | Fake model, or one cheap real call in a smoke run. |
+| **Security** | Key/`sk-` scan; real-data review. | Static scan + manual. |
 
 ---
 
@@ -219,27 +208,23 @@ Contract checks: Pydantic schemas on every request/response are the enforced con
 
 ### Architecture decisions (ADRs)
 
-- **ADR-001 — Deterministic solver owns all numbers; LLM agents reason/explain only.** Guarantees FR-PLAN-003 (no invented figures), makes results testable without the model, and keeps the demo correct and repeatable. The model chooses among and narrates solver-produced options.
-- **ADR-002 — Client-driven step loop; one agent/model call per request; state in client RunContext.** Satisfies NFR-PERF-001 (no long request) and NFR-REL-001 (no server memory) directly, and yields the visible ordered trail (FR-ORCH-003) and bounded calls (NFR-OPS-001) as a by-product. Server-side streaming of a single run is noted as an alternative if step-loop latency feels high, but carries the 5-min risk; not chosen by default.
-- **ADR-003 — FastAPI (Python).** Repo baseline; async supports optional parallel specialists; Pydantic/OpenAPI aid contracts and testing. Flask is a viable Python alternative but lacks native async/validation; Next.js excluded per the Python decision. Closes PRD OQ2.
-- **ADR-004 — No database; in-session working state only.** No persistence requirement; fabricated/ephemeral data; reset reloads seed. Avoids unjustified infrastructure (Complexity Policy §3).
+- **ADR-001 — Deterministic solver owns all numbers; nodes reason/explain only.** Unchanged. Graph nodes call `twin.solver` for every figure (FR-PLAN-003).
+- **ADR-002 (revised v0.2) — LangGraph graph, run streamed in one request to the approval boundary; execution separate.** The investigation→plan→verify graph runs server-side and streams per-node SSE events (visible trail, FR-ORCH-003). The human-approval gate is the boundary between the streamed run and a separate `/api/execute` request, so no cross-request graph state is needed and Vercel statelessness + no-DB still hold (NFR-REL-001). The 5-min ceiling is managed by a bounded node budget, streaming, and parallel specialist nodes (NFR-PERF-001). Prior v0.1 design (client-driven one-call-per-request loop) is superseded.
+- **ADR-003 (reversed v0.2) — Use LangGraph for orchestration.** Owner decision. LangGraph gives explicit nodes, handoffs, a conditional edge for the verifier revision, and parallel fan-out — a stronger, more legible multi-agent artifact than a hand-rolled registry, and is allowed by the hackathon guide. Accepted costs: a heavier dependency (AR6) and a single streamed run to manage (AR5).
+- **ADR-004 — No database; in-session working state only.** Unchanged.
 
-### Implemented agent roster (resolves the open "how many agents" question)
+### Agent roster (6 core nodes)
+Graph nodes for the primary scenario: **Impact → (HR ∥ Finance ∥ Sales) → Planner → Verifier (→ Planner once) → [END]**, then a separate **Execution** step (solver, post-approval). The "Orchestrator" is the graph itself. Observer/Sales-vs-merge and parallel-vs-sequential specialists are tuning choices for TASK-011/013; default is parallel specialist fan-out to cut latency.
 
-For the **primary recovery scenario**, implement **8 model-backed agent steps** plus an **Orchestrator** realized as the registry/sequence (control logic, not necessarily its own model call):
-
-`Observer → Impact Investigator → HR/Resource → Finance → Sales → Planner → Verifier (→ Planner revise once) → Execution`.
-
-Operations/Procurement from the conceptual roster is **excluded from the primary scenario** (it belongs to a supplier-type event, a P2 second scenario). This comfortably exceeds G1's "≥3 roles with handoffs + a rejecting verifier." Whether to **merge** the four specialists (HR/Finance/Sales/Delivery) behind one parallel `asyncio.gather` request to cut latency is a bounded implementation choice recorded for the design/phases stage; the default is distinct sequential steps for maximum visible orchestration.
-
-### Open items carried forward
+### Open items
 
 | ID | Item | Where resolved |
 |---|---|---|
-| AR1 | Exact step latency acceptable? If too slow, consider parallel specialists or server streaming (ADR-002 alt). | Design/Phases, after a first real run. |
-| AR2 | Passcode/throttle for the public URL. | Phases (P2 hardening), PRD OQ4. |
-| AR3 | Solver scope: does the primary preset need a full scheduler or a small fixed calculator for the known chain? | Design; start minimal, expand only if a second scenario is added. |
-| AR4 | `vercel.json` needed, or does default detection route `/api/*` + static correctly? | Phases setup ticket (verify on first deploy). |
+| AR1 | Run latency acceptable? | After TASK-010; tune via parallel nodes. |
+| AR2 | Passcode/throttle for the public URL. | Phases (P2), PRD OQ4. |
+| AR4 | Vercel `/api` routing with the FastAPI preset. | First deploy (TASK-003). |
+| **AR5** | **SSE streaming behavior on Vercel Python functions.** | First deploy + TASK-010. |
+| **AR6** | **langchain/langgraph bundle vs Vercel function size limit.** | First deploy (TASK-003). |
 
 ### Consistency with PRD
-No new scope introduced; every module serves a PRD requirement; no microservices/DB/queue/cache; auth intentionally absent per PRD §4.3; failure and budget behavior realize NFR-REL/OPS. No PRD change requests arise from this architecture.
+No PRD scope change; LangGraph is a mechanism. Every FR/NFR keeps its meaning and ID; the solver still guarantees FR-PLAN-003; failure/budget behavior still realizes NFR-REL/OPS/PERF.

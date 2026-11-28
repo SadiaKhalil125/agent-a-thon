@@ -12,28 +12,29 @@ Quick links, rules, rubric, ideas, and deadlines. Use this so you don’t re-pas
 | --- | --- | --- |
 | 0 | [AGENTS.md](./AGENTS.md) | Entry point for Cursor/Claude: doc order, hard rules, active ticket |
 | 1 | [docs/PRD.md](./docs/PRD.md) | CompanyTwin: problem, Flow A, FR/NFR, acceptance, release gate |
-| 2 | [docs/architecture.md](./docs/architecture.md) | FastAPI; **solver owns all numbers**; **one agent step per request**; client-held `RunContext` |
+| 2 | [docs/architecture.md](./docs/architecture.md) | FastAPI; **LangGraph orchestration**; **solver owns all numbers**; streamed SSE run + separate approve/execute |
 | 3 | [docs/design.md](./docs/design.md) | Single-page demo UI: state → event → agent trail → plans → approve → outcome |
 | 4 | [docs/rules.md](./docs/rules.md) | Engineering + AI guardrails (enforced) |
 | 5 | [docs/phases.md](./docs/phases.md) | P0–P6 phases; **TASK-001…023** + traceability |
-| 6 | [docs/memory.md](./docs/memory.md) | Verified implementation state (**active: TASK-001**, not started) |
+| 6 | [docs/memory.md](./docs/memory.md) | Verified implementation state (**TASK-001 done**; next TASK-003 deploy / TASK-004 seed) |
 
 **Key architecture choices (memorize):**
 
 - **ADR-001:** `twin/solver.py` computes numbers; agents narrate only (no invented figures).
-- **ADR-002:** Browser loop — `POST /api/run/step` = **one** LiteLLM call; state in client (Vercel stateless / 5 min limit).
+- **ADR-002 (v0.2):** LangGraph `StateGraph` run server-side, **streamed (SSE), one model call per node**, node-budget bounded; human approval at the request boundary → separate `/api/execute` (keeps Vercel stateless / 5-min safe).
+- **ADR-003 (v0.2):** Orchestration framework = **LangGraph** (verifier→planner = conditional edge; specialists = parallel fan-out).
 - **Primary scenario:** dev unavailable days 1–5 → impact chain → wait / reassign backup / contractor; backup conflict on Project B.
 - **Replaces** current starter `/api/chat` + chat UI (see phases TASK-010+).
 
-**Ops:** LiteLLM key still TBD; P0/P1 (scaffold + solver) do **not** need the key. First real call target: **TASK-010** on Vercel.
+**Ops:** LiteLLM key **available** (owner confirmed); P0/P1 (scaffold + solver) still don't need it. First real call target: **TASK-010** on Vercel.
 
-**Git note (per memory.md):** `docs/` and `AGENTS.md` may still be untracked — commit when you want the plan in history.
+**Git note:** `docs/` and `AGENTS.md` are **committed** (owner commits `19a377a`/`3aa978d`); the TASK-001 scaffold is not yet committed.
 
 ---
 
 ## Next steps (your checklist)
 
-1. **Watch your inbox** — personal **LiteLLM** key: `LITELLM_BASE_URL`, `LITELLM_API_KEY`, `LITELLM_MODEL` → `.env.local` + Vercel env vars.
+1. **LLM provider** — app reads `LLM_BASE_URL/API_KEY/MODEL` (legacy `LITELLM_*` accepted) from `.env.local` + Vercel env vars; any OpenAI-compatible gateway. **Submission:** organizer LiteLLM key (watch your inbox).
 2. **GitHub + Vercel** — [setup guide](https://ssi-ai-hackathon.vercel.app/guide) (this repo: Python/FastAPI track, Steps P1–P5 + shared Steps 6–9).
 3. **Pick an idea** — [use cases & must-haves](https://ssi-ai-hackathon.vercel.app/use-cases).
 4. **Build to the rubric** — [rules & scoring](https://ssi-ai-hackathon.vercel.app/rules).
