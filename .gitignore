@@ -1,3 +1,33 @@
+# Python
 .venv/
+venv/
 __pycache__/
+*.py[cod]
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Secrets and local config (keep .env.local.example tracked)
+.env
+.env.*
+!.env.local.example
 .env*.local
+
+# Deploy tooling
+.vercel/
+
+# Editor and local agent tooling
+.cursor/
+.claude/
+.vscode/
+.idea/
+
+# OS and logs
+.DS_Store
+Thumbs.db
+*.log
