@@ -37,6 +37,16 @@ def test_console_can_be_forced_on_or_off(monkeypatch: pytest.MonkeyPatch) -> Non
     assert client.get("/dev").status_code == 404
 
 
+def test_home_page_is_the_console_even_on_vercel(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Temporary: `/` serves the console so it opens on Vercel (where /dev is hidden)."""
+    monkeypatch.setenv("VERCEL", "1")
+    monkeypatch.delenv("DEV_CONSOLE", raising=False)
+    res = client.get("/")
+    assert res.status_code == 200
+    assert "CompanyTwin engine test console" in res.text
+    assert "sk-" not in res.text
+
+
 def test_console_page_holds_no_secret_and_only_calls_this_server() -> None:
     html = client.get("/dev").text
     assert "sk-" not in html

@@ -19,11 +19,16 @@ router = APIRouter()
 CONSOLE_PATH = Path(__file__).resolve().parent.parent / "devconsole" / "index.html"
 
 
+def console_html() -> str:
+    """The console page. Also served at `/` for now (see `app.home`) so it opens on Vercel."""
+    return CONSOLE_PATH.read_text(encoding="utf-8")
+
+
 @router.get("/dev", response_class=HTMLResponse, include_in_schema=False)
 def dev_console() -> str:
     if not config.dev_console_enabled():
         raise ApiError(404, "ValidationError", "Not found.")
-    return CONSOLE_PATH.read_text(encoding="utf-8")
+    return console_html()
 
 
-__all__ = ["router"]
+__all__ = ["console_html", "router"]
