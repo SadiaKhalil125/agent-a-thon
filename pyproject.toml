@@ -3,6 +3,17 @@ name = "companytwin-ai"
 version = "0.1.0"
 description = "CompanyTwin AI — organizational digital twin (SSI Agent-A-Thon 2026)"
 requires-python = ">=3.11"
+# Vercel reads dependencies from here when [project] exists (it then ignores requirements.txt).
+# Keep this list identical to requirements.txt; tests/test_dependency_sync.py enforces it.
+dependencies = [
+    "fastapi==0.165.0",
+    "uvicorn==0.54.0",
+    "openai==3.60.0",
+    "python-dotenv==1.2.4",
+    "pydantic==2.14.4",
+    "langgraph==1.2.24",
+    "langchain-openai==1.8.5",
+]
 
 [tool.ruff]
 line-length = 100

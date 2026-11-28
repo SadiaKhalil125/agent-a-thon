@@ -124,7 +124,7 @@ Pre-submit checklist:
 
 | Symptom | Fix |
 | --- | --- |
-| `ModuleNotFoundError` on Vercel | Add package to `requirements.txt`, push |
+| `ModuleNotFoundError` on Vercel | Add the package to **both** `requirements.txt` and `[project].dependencies` in `pyproject.toml` (Vercel reads `pyproject.toml` when it has a `[project]` table; `tests/test_dependency_sync.py` checks they match), push |
 | Works locally, fails on Vercel | Match env vars in Vercel, then **Redeploy** |
 | `401` / Authentication Error | Re-copy key from organizer email |
 | `model not found` | Use a model name from `/models` |
