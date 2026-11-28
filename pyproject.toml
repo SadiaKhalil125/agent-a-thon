@@ -15,8 +15,9 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.mypy]
 python_version = "3.11"
 ignore_missing_imports = true
-files = ["twin", "agents", "orchestration", "api", "config.py", "app.py"]
+files = ["twin", "agents", "orchestration", "api", "integrations", "config.py", "app.py"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "-q"
